@@ -1,0 +1,13 @@
+schemat:
+- snake case collection
+- camel case fields
+- string id type
+- TimeRange ???
+
+kod:
+- poprawa documents
+- usunięcie customer
+- dodanie repository, service i odpowiednich controllers
+
+back/front:
+- google sheets z endpointami
