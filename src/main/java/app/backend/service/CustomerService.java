@@ -13,6 +13,8 @@ public class CustomerService {
 
     public void addCustomer() {
         this.repository.save(new Customer("Adam", "Something"));
+        this.repository.save(new Customer("Ben", "Whatever"));
+        this.repository.save(new Customer("Chad", "Whatnot"));
     }
 
     public void addCustomer(String firstName, String lastName) {
