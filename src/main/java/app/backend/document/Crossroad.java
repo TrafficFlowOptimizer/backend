@@ -12,15 +12,15 @@ public class Crossroad {
 
     private String name;
     private String location;
-    private String userId;
+    private String creator;
     private CrossroadType type;
     private List<String> roadIds;
     private List<String> collisionIds;
 
-    public Crossroad(String name, String location, String userId, CrossroadType type, List<String> roadIds, List<String> collisionIds) {
+    public Crossroad(String name, String location, String creator, CrossroadType type, List<String> roadIds, List<String> collisionIds) {
         this.name = name;
         this.location = location;
-        this.userId = userId;
+        this.creator = creator;
         this.type = type;
         this.roadIds = roadIds;
         this.collisionIds = collisionIds;
@@ -50,12 +50,12 @@ public class Crossroad {
         this.location = location;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public CrossroadType getType() {
