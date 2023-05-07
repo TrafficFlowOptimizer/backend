@@ -1,0 +1,14 @@
+schemat:
+- snake case collection
+- camel case fields
+- string id type
+- TimeRange ???
+
+kod:
+- poprawa documents
+- usunięcie customer -> DONE
+- dodanie repository, service i odpowiednich controllers
+- sprawdzic czemu "Field injection is not recommended" przy użyciu autowired
+
+back/front:
+- google sheets z endpointami
