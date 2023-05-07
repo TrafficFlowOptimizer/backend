@@ -1,4 +1,4 @@
-package app.backend.document;
+package app.backend.document.road;
 
 public enum RoadType {
     SOURCE,
