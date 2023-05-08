@@ -11,7 +11,7 @@ public class Controller {
     @ResponseBody
     @GetMapping(value="/")
     public ResponseEntity<String> home() {
-        return ResponseEntity.ok("Hello from unsecured endpoint");
+        return ResponseEntity.ok("Hello world!");
     }
 
 }

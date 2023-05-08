@@ -1,6 +1,10 @@
 package app.backend.document;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "users")
@@ -8,9 +12,22 @@ public class User {
     @Id
     private String id;
 
+    // TODO: add emails?
+
+    @NotBlank
     private String firstName;
+
+    @NotBlank
     private String lastName;
+
+    @Indexed(unique=true)
+    @NotBlank
+    @Size(min = 4, message = "{validation.name.size.too_short}")
+    @Size(min = 16, message = "{validation.name.size.too_long}")
     private String nickname;
+
+    //TODO
+    @NotBlank
     private String password;
 
     public User(String firstName, String lastName, String nickname, String password) {
