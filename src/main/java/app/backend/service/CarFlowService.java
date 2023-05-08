@@ -21,11 +21,8 @@ public class CarFlowService {
 
         return carFlow.get();
     }
-    public CarFlow addCarFlow(
-        int carFlowPm,
-        LocalTime startTime,
-        LocalTime endTime
-    ){
+
+    public CarFlow addCarFlow(int carFlowPm, LocalTime startTime, LocalTime endTime){
     return carFlowRepository.insert(new CarFlow(carFlowPm, startTime, endTime));
     }
 
@@ -38,12 +35,7 @@ public class CarFlowService {
         return carFlow.get();
     }
 
-    public CarFlow updateCarFlow(
-            String id,
-            int carFlowPm,
-            LocalTime startTime,
-            LocalTime endTime
-    ) throws Exception {
+    public CarFlow updateCarFlow(String id, int carFlowPm, LocalTime startTime, LocalTime endTime) throws Exception {
         Optional<CarFlow> carFlow = carFlowRepository.findById(id);
         if (carFlow.isEmpty()){
             throw new Exception("Cannot update carFlow with id: " + id + " because it does not exists");
