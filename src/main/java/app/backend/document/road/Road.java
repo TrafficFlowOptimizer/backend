@@ -1,10 +1,8 @@
-package app.backend.document;
+package app.backend.document.road;
 
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
 
 @Document(collection = "roads")
 public class Road {
