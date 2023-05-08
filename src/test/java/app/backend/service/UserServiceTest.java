@@ -12,8 +12,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.function.Supplier;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
@@ -51,38 +49,18 @@ class UserServiceTest {
     }
 
     @Test
-    public void getUserById_nonExistentUser_userNotFound() {
+    public void getUserById_improperUser_userNotFound() {
         String id = "";
         Exception exception = assertThrows(Exception.class, () -> {
             userService.getUserById(id);
         });
 
+        assertEquals(0, userService.userRepository.count());
         assertEquals("Cannot get user with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
-    public void getUserById_existingUser_correctUser() {
-        String firstName = "John";
-        String lastName = "Doe";
-        String nickname = "JDoe";
-        String password = "password@123";
-
-        User user = userService.addUser(firstName, lastName, nickname, password);
-        User found = null;
-        try {
-            found = userService.getUserById(user.getId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        assertNotNull(found);
-        assertEquals(firstName, found.getFirstName());
-        assertEquals(lastName, found.getLastName());
-        assertEquals(nickname, found.getNickname());
-        assertEquals(password, found.getPassword());
-    }
-
-    @Test
-    public void getUserById_multipleUsers_correctUser() {
+    public void getUserById_properUser_correctUser() {
         String firstName = "John";
         String lastName = "Doe";
         String nickname = "JDoe";
@@ -90,12 +68,15 @@ class UserServiceTest {
 
         User user = userService.addUser(firstName, lastName, nickname, password);
         userService.addUser("Notjohn", "Notdoe", "stillnotJD", "password@123");
+
         User found = null;
         try {
             found = userService.getUserById(user.getId());
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        assertEquals(2, userService.userRepository.count());
         assertNotNull(found);
         assertEquals(firstName, found.getFirstName());
         assertEquals(lastName, found.getLastName());
@@ -112,6 +93,7 @@ class UserServiceTest {
 
         User user = userService.addUser(firstName, lastName, nickname, password);
 
+        assertEquals(1, userService.userRepository.count());
         assertEquals(firstName, user.getFirstName());
         assertEquals(lastName, user.getLastName());
         assertEquals(nickname, user.getNickname());
@@ -138,11 +120,12 @@ class UserServiceTest {
             userService.getUserById(id);
         });
 
+        assertEquals(0, userService.userRepository.count());
         assertEquals("Cannot get user with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
-    public void deleteUserById_nonExistentUser_userNotFound() {
+    public void deleteUserById_improperUser_userNotFound() {
         String firstName = "John";
         String lastName = "Doe";
         String nickname = "JDoe";
@@ -155,6 +138,62 @@ class UserServiceTest {
             userService.deleteUserById(id);
         });
 
+        assertEquals(1, userService.userRepository.count());
         assertEquals("Cannot delete user with id: " + id + " because it does not exist.", exception.getMessage());
+    }
+
+    @Test
+    public void updateUser_properUser_userUpdated() {
+        String firstName = "John";
+        String lastName = "Doe";
+        String nickname = "JDoe";
+        String password = "password@123";
+
+        User user = userService.addUser(firstName, lastName, nickname, password);
+
+        String id = user.getId();
+        String firstNameUpdated = "Jon";
+        String lastNameUpdated = "Tho";
+        String nicknameUpdated = "JTho";
+        String passwordUpdated = "password@234";
+
+        User updated = null;
+        try {
+            userService.updateUser(id, firstNameUpdated, lastNameUpdated, nicknameUpdated, passwordUpdated);
+            updated = userService.getUserById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(1, userService.userRepository.count());
+        assertNotNull(updated);
+        assertEquals(firstNameUpdated, updated.getFirstName());
+        assertEquals(lastNameUpdated, updated.getLastName());
+        assertEquals(nicknameUpdated, updated.getNickname());
+        assertEquals(passwordUpdated, updated.getPassword());
+    }
+
+    @Test
+    public void updateUser_improperUser_userNotFound() {
+        String firstName = "John";
+        String lastName = "Doe";
+        String nickname = "JDoe";
+        String password = "password@123";
+
+        userService.addUser(firstName, lastName, nickname, password);
+
+        String id = "";
+        String firstNameUpdated = "Jon";
+        String lastNameUpdated = "Tho";
+        String nicknameUpdated = "JTho";
+        String passwordUpdated = "password@234";
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            userService.updateUser(id, firstNameUpdated, lastNameUpdated, nicknameUpdated, passwordUpdated);
+            userService.deleteUserById(id);
+        });
+
+        assertEquals(1, userService.userRepository.count());
+        assertEquals("Cannot update user with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }
