@@ -22,6 +22,7 @@ public class CarFlow {
         this.endTime = endTime;
     }
 
+
     public String getId() {
         return id;
     }
