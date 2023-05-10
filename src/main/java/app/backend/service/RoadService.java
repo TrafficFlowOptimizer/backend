@@ -21,11 +21,8 @@ public class RoadService {
 
         return road.get();
     }
-    public Road addRoad(
-            String name,
-            RoadType type,
-            int capacity
-    ){
+
+    public Road addRoad(String name, RoadType type, int capacity){
         return roadRepository.insert(new Road(name, type, capacity));
     }
 
@@ -38,15 +35,10 @@ public class RoadService {
         return road.get();
     }
 
-    public Road updateRoad(
-            String id,
-            String name,
-            RoadType type,
-            int capacity
-    ) throws Exception {
+    public Road updateRoad(String id, String name, RoadType type, int capacity) throws Exception {
         Optional<Road> road = roadRepository.findById(id);
         if (road.isEmpty()){
-            throw new Exception("Cannot update road with id: " + id + " because it does not exists");
+            throw new Exception("Cannot update road with id: " + id + " because it does not exist.");
         }
         Road roadToUpdate = road.get();
 

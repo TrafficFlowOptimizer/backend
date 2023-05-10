@@ -1,5 +1,7 @@
 package app.backend.document.crossroad;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -10,11 +12,21 @@ public class Crossroad {
     @Id
     private String id;
 
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String location;
+
+    @NotBlank
     private String creator;
+
+    @NotNull
     private CrossroadType type;
+
+    //@NotEmpty
     private List<String> roadIds;
+    //@NotEmpty
     private List<String> collisionIds;
 
     public Crossroad(String name, String location, String creator, CrossroadType type, List<String> roadIds, List<String> collisionIds) {

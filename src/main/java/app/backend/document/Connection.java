@@ -1,5 +1,6 @@
 package app.backend.document;
 
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -10,9 +11,16 @@ public class Connection {
     @Id
     private String id;
 
+    //@NotEmpty?
     private List<String> trafficLightIds;
+
+    @NotBlank
     private String sourceId;
+
+    @NotBlank
     private String targetId;
+
+    //@NotEmpty?
     private List<String> carFlowIds;
 
     public Connection(List<String> trafficLightIds, String sourceId, String targetId, List<String> carFlowIds) {

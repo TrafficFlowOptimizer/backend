@@ -21,8 +21,8 @@ public class TrafficLightService {
 
         return trafficLight.get();
     }
-    public TrafficLight addTrafficLight(
-    ){
+
+    public TrafficLight addTrafficLight(){
         return trafficLightRepository.insert(new TrafficLight());
     }
 

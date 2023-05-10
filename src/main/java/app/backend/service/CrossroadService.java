@@ -22,14 +22,8 @@ public class CrossroadService {
 
         return crossroad.get();
     }
-    public Crossroad addCrossroad(
-            String name,
-            String location,
-            String ownerId,
-            CrossroadType type,
-            List<String> roadIDs,
-            List<String> collisionIDs
-    ){
+
+    public Crossroad addCrossroad(String name, String location, String ownerId, CrossroadType type, List<String> roadIDs, List<String> collisionIDs) {
         return crossroadRepository.insert(new Crossroad(name, location, ownerId, type, roadIDs, collisionIDs));
     }
 
@@ -39,21 +33,14 @@ public class CrossroadService {
             throw new Exception("Cannot delete crossroad with id: " + id + " because it does not exist.");
         }
         crossroadRepository.deleteById(id);
+
         return crossroad.get();
     }
 
-    public Crossroad updateCrossroad(
-            String id,
-            String name,
-            String location,
-            String creator,
-            CrossroadType type,
-            List<String> roadIDs,
-            List<String> collisionIDs
-    ) throws Exception {
+    public Crossroad updateCrossroad(String id, String name, String location, String creator, CrossroadType type, List<String> roadIDs, List<String> collisionIDs) throws Exception {
         Optional<Crossroad> crossroad = crossroadRepository.findById(id);
         if (crossroad.isEmpty()){
-            throw new Exception("Cannot update crossroad with id: " + id + " because it does not exists");
+            throw new Exception("Cannot update crossroad with id: " + id + " because it does not exist.");
         }
         Crossroad crossroadToUpdate = crossroad.get();
 

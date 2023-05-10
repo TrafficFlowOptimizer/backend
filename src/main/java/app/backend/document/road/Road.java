@@ -1,6 +1,9 @@
 package app.backend.document.road;
 
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -9,14 +12,15 @@ public class Road {
     @Id
     private String id;
 
+    @NotBlank
     private String name;
-    private RoadType type;
-    private int capacity;
 
-    public Road(String name, RoadType type) {
-        this.name = name;
-        this.type = type;
-    }
+    @NotNull
+    private RoadType type;
+
+    // TODO: czy może być 0?
+    @PositiveOrZero
+    private int capacity;
 
     public Road(String name, RoadType type, int capacity) {
         this.name = name;

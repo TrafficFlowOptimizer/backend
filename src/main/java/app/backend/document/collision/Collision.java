@@ -1,5 +1,8 @@
 package app.backend.document.collision;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -8,8 +11,13 @@ public class Collision {
     @Id
     private String id;
 
+    @NotBlank
     private String trafficLight1Id;
+
+    @NotBlank
     private String trafficLight2Id;
+
+    @NotNull
     private CollisionType type;
 
     public Collision(String trafficLight1Id, String trafficLight2Id, CollisionType type) {
