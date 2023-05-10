@@ -1,5 +1,6 @@
 package app.backend.service;
 
+import app.backend.document.CarFlow;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.crossroad.CrossroadType;
 import org.junit.jupiter.api.AfterEach;
@@ -13,6 +14,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,241 +23,172 @@ import static org.junit.jupiter.api.Assertions.*;
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CarFlowServiceTest {
-//
-//    @Autowired
-//    private CrossroadService crossroadService;
-//
-//    @Container
-//    private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
-//            .withExposedPorts(27017);
-//
-//    @Container
-//    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:15-alpine")
-//            .withUsername("postgres")
-//            .withPassword("postgres")
-//            .withDatabaseName("test");
-//
-//    @DynamicPropertySource
-//    static void mongoDbProperties(DynamicPropertyRegistry registry) {
-//        mongoDBContainer.start();
-//        registry.add("spring.data.mongodb.uri", ()-> mongoDBContainer.getReplicaSetUrl() + "?retryWrites=false");
-//    }
-//
-//    @DynamicPropertySource
-//    static void postgreSQLProperties(DynamicPropertyRegistry registry) {
-//        postgreSQLContainer.start();
-//        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-//    }
-//
-//    @AfterEach
-//    public void cleanUpEach(){
-//        crossroadService.crossroadRepository.deleteAll();
-//    }
-//
-//    @Test
-//    public void getCrossroadById_improperCrossroad_crossroadNotFound() {
-//        String id = "";
-//        Exception exception = assertThrows(Exception.class, () -> {
-//            crossroadService.getCrossroadById(id);
-//        });
-//
-//        assertEquals(0, crossroadService.crossroadRepository.count());
-//        assertEquals("Cannot get crossroad with id: " + id + " because it does not exist.", exception.getMessage());
-//    }
-//
-//    @Test
-//    public void getCrossroadById_properCrossroad_correctRoad() {
-//        String name = "John";
-//        String location = "Doe";
-//        String ownerId = "abc";
-//        CrossroadType type = CrossroadType.PUBLIC;
-//        List<String> roadIDs = new ArrayList<>();
-//        roadIDs.add("123");
-//        roadIDs.add("234");
-//        List<String> collisionIDs = new ArrayList<>();
-//        collisionIDs.add("dfg");
-//        collisionIDs.add("gfd");
-//
-//        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs);
-//        crossroadService.addCrossroad("Notjohn", "Notdoe", "sdf", CrossroadType.PUBLIC, new ArrayList<>(), new ArrayList<>());
-//
-//        Crossroad found = null;
-//        try {
-//            found = crossroadService.getCrossroadById(crossroad.getId());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        assertEquals(2, crossroadService.crossroadRepository.count());
-//        assertNotNull(found);
-//        assertEquals(name, found.getName());
-//        assertEquals(location, found.getLocation());
-////        assertEquals(ownerId, found.getOwnerId()); TODO
-//        assertEquals(type, found.getType());
-//        assertEquals(roadIDs, found.getRoadIds());
-//        assertEquals(collisionIDs, found.getCollisionIds());
-//    }
-//
-//    @Test
-//    public void addCrossroad_properCrossroad_roadAdded() {
-//        String name = "John";
-//        String location = "Doe";
-//        String ownerId = "abc";
-//        CrossroadType type = CrossroadType.PUBLIC;
-//        List<String> roadIDs = new ArrayList<>();
-//        roadIDs.add("123");
-//        roadIDs.add("234");
-//        List<String> collisionIDs = new ArrayList<>();
-//        collisionIDs.add("dfg");
-//        collisionIDs.add("gfd");
-//
-//        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs);
-//
-//        assertEquals(1, crossroadService.crossroadRepository.count());
-//        assertEquals(name, crossroad.getName());
-//        assertEquals(location, crossroad.getLocation());
-////        assertEquals(ownerId, crossroad.getOwnerId()); TODO
-//        assertEquals(type, crossroad.getType());
-//        assertEquals(roadIDs, crossroad.getRoadIds());
-//        assertEquals(collisionIDs, crossroad.getCollisionIds());
-//    }
-//
-//    @Test
-//    public void deleteCrossroadById_properCrossroad_roadDeleted() {
-//        String name = "John";
-//        String location = "Doe";
-//        String ownerId = "abc";
-//        CrossroadType type = CrossroadType.PUBLIC;
-//        List<String> roadIDs = new ArrayList<>();
-//        roadIDs.add("123");
-//        roadIDs.add("234");
-//        List<String> collisionIDs = new ArrayList<>();
-//        collisionIDs.add("dfg");
-//        collisionIDs.add("gfd");
-//
-//        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs);
-//
-//        String id = crossroad.getId();
-//        try {
-//            crossroadService.deleteCrossroadById(id);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        Exception exception = assertThrows(Exception.class, () -> {
-//            crossroadService.getCrossroadById(id);
-//        });
-//
-//        assertEquals(0, crossroadService.crossroadRepository.count());
-//        assertEquals("Cannot get crossroad with id: " + id + " because it does not exist.", exception.getMessage());
-//    }
-//
-//    @Test
-//    public void deleteCrossroadById_improperCrossroad_crossroadNotFound() {
-//        String name = "John";
-//        String location = "Doe";
-//        String ownerId = "abc";
-//        CrossroadType type = CrossroadType.PUBLIC;
-//        List<String> roadIDs = new ArrayList<>();
-//        roadIDs.add("123");
-//        roadIDs.add("234");
-//        List<String> collisionIDs = new ArrayList<>();
-//        collisionIDs.add("dfg");
-//        collisionIDs.add("gfd");
-//
-//        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs);
-//        String id = "";
-//
-//        Exception exception = assertThrows(Exception.class, () -> {
-//            crossroadService.deleteCrossroadById(id);
-//        });
-//
-//        assertEquals(1, crossroadService.crossroadRepository.count());
-//        assertEquals("Cannot delete crossroad with id: " + id + " because it does not exist.", exception.getMessage());
-//    }
-//
-//    @Test
-//    public void updateCrossroad_properCrossroad_roadUpdated() {
-//        String name = "John";
-//        String location = "Doe";
-//        String ownerId = "abc";
-//        CrossroadType type = CrossroadType.PUBLIC;
-//        List<String> roadIDs = new ArrayList<>();
-//        roadIDs.add("123");
-//        roadIDs.add("234");
-//        List<String> collisionIDs = new ArrayList<>();
-//        collisionIDs.add("dfg");
-//        collisionIDs.add("gfd");
-//
-//        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs);
-//
-//        String id = crossroad.getId();
-//        String nameUpdated = "Johna";
-//        String locationUpdated = "Doea";
-//        String ownerIdUpdated = "abca";
-//        CrossroadType typeUpdated = CrossroadType.PRIVATE;
-//        List<String> roadIDsUpdated = new ArrayList<>();
-//        roadIDs.add("123");
-//        roadIDs.add("234");
-//        roadIDs.add("234");
-//        List<String> collisionIDsUpdated = new ArrayList<>();
-//        collisionIDs.add("dfg");
-//        collisionIDs.add("gfd");
-//        collisionIDs.add("gfd");
-//
-//        Crossroad updated = null;
-//        try {
-//            crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, ownerIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated);
-//            updated = crossroadService.getCrossroadById(id);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        assertEquals(1, crossroadService.crossroadRepository.count());
-//        assertNotNull(updated);
-//        assertEquals(nameUpdated, updated.getName());
-//        assertEquals(locationUpdated, updated.getLocation());
-////        assertEquals(ownerIdUpdated, updated.getOwnerId()); TODO
-//        assertEquals(typeUpdated, updated.getType());
-//        assertEquals(roadIDsUpdated, updated.getRoadIds());
-//        assertEquals(collisionIDsUpdated, updated.getCollisionIds());
-//    }
-//
-//    @Test
-//    public void updateCrossroad_improperCrossroad_crossroadNotFound() {
-//        String name = "John";
-//        String location = "Doe";
-//        String ownerId = "abc";
-//        CrossroadType type = CrossroadType.PUBLIC;
-//        List<String> roadIDs = new ArrayList<>();
-//        roadIDs.add("123");
-//        roadIDs.add("234");
-//        List<String> collisionIDs = new ArrayList<>();
-//        collisionIDs.add("dfg");
-//        collisionIDs.add("gfd");
-//
-//        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs);
-//
-//        String id = "";
-//        String nameUpdated = "Johna";
-//        String locationUpdated = "Doea";
-//        String ownerIdUpdated = "abca";
-//        CrossroadType typeUpdated = CrossroadType.PRIVATE;
-//        List<String> roadIDsUpdated = new ArrayList<>();
-//        roadIDs.add("123");
-//        roadIDs.add("234");
-//        roadIDs.add("234");
-//        List<String> collisionIDsUpdated = new ArrayList<>();
-//        collisionIDs.add("dfg");
-//        collisionIDs.add("gfd");
-//        collisionIDs.add("gfd");
-//
-//        Exception exception = assertThrows(Exception.class, () -> {
-//            crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, ownerIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated);
-//            crossroadService.deleteCrossroadById(id);
-//        });
-//
-//        assertEquals(1, crossroadService.crossroadRepository.count());
-//        assertEquals("Cannot update crossroad with id: " + id + " because it does not exist.", exception.getMessage());
-//    }
+
+    @Autowired
+    private CarFlowService carFlowService;
+
+    @Container
+    private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
+            .withExposedPorts(27017);
+
+    @Container
+    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:15-alpine")
+            .withUsername("postgres")
+            .withPassword("postgres")
+            .withDatabaseName("test");
+
+    @DynamicPropertySource
+    static void mongoDbProperties(DynamicPropertyRegistry registry) {
+        mongoDBContainer.start();
+        registry.add("spring.data.mongodb.uri", ()-> mongoDBContainer.getReplicaSetUrl() + "?retryWrites=false");
+    }
+
+    @DynamicPropertySource
+    static void postgreSQLProperties(DynamicPropertyRegistry registry) {
+        postgreSQLContainer.start();
+        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
+    }
+
+    @AfterEach
+    public void cleanUpEach(){
+        carFlowService.carFlowRepository.deleteAll();
+    }
+
+    @Test
+    public void getCarFlowById_improperCarFlow_carFlowNotFound() {
+        String id = "";
+        Exception exception = assertThrows(Exception.class, () -> {
+            carFlowService.getCarFlowById(id);
+        });
+
+        assertEquals(0, carFlowService.carFlowRepository.count());
+        assertEquals("Cannot get carFlow with id: " + id + " because it does not exist.", exception.getMessage());
+    }
+
+    @Test
+    public void getCarFlowById_properCarFlow_correctCarFlow() {
+        int flow = 7;
+        LocalTime start = LocalTime.ofSecondOfDay(0);
+        LocalTime end = LocalTime.ofSecondOfDay(1600);
+
+        CarFlow carFlow = carFlowService.addCarFlow(flow, start, end);
+        carFlowService.addCarFlow(11, LocalTime.ofSecondOfDay(12), LocalTime.ofSecondOfDay(22));
+
+        CarFlow found = null;
+        try {
+            found = carFlowService.getCarFlowById(carFlow.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(2, carFlowService.carFlowRepository.count());
+        assertNotNull(found);
+        assertEquals(flow, found.getCarFlowPm());
+        assertEquals(start, found.getStartTime());
+        assertEquals(end, found.getEndTime());
+    }
+
+    @Test
+    public void addCarFlow_properCarFlow_carFlowAdded() {
+        int flow = 7;
+        LocalTime start = LocalTime.ofSecondOfDay(0);
+        LocalTime end = LocalTime.ofSecondOfDay(1600);
+
+        CarFlow carFlow = carFlowService.addCarFlow(flow, start, end);
+
+        assertEquals(1, carFlowService.carFlowRepository.count());
+        assertEquals(flow, carFlow.getCarFlowPm());
+        assertEquals(start, carFlow.getStartTime());
+        assertEquals(end, carFlow.getEndTime());
+    }
+
+    @Test
+    public void deleteCarFlowById_properCarFlow_carFlowDeleted() {
+        int flow = 7;
+        LocalTime start = LocalTime.ofSecondOfDay(0);
+        LocalTime end = LocalTime.ofSecondOfDay(1600);
+
+        CarFlow carFlow = carFlowService.addCarFlow(flow, start, end);
+
+        String id = carFlow.getId();
+        try {
+            carFlowService.deleteCarFlowById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            carFlowService.getCarFlowById(id);
+        });
+
+        assertEquals(0, carFlowService.carFlowRepository.count());
+        assertEquals("Cannot get carFlow with id: " + id + " because it does not exist.", exception.getMessage());
+    }
+
+    @Test
+    public void deleteCarFlowById_improperCarFlow_carFlowNotFound() {
+        int flow = 7;
+        LocalTime start = LocalTime.ofSecondOfDay(0);
+        LocalTime end = LocalTime.ofSecondOfDay(1600);
+
+        CarFlow carFlow = carFlowService.addCarFlow(flow, start, end);
+        String id = "";
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            carFlowService.deleteCarFlowById(id);
+        });
+
+        assertEquals(1, carFlowService.carFlowRepository.count());
+        assertEquals("Cannot delete carFlow with id: " + id + " because it does not exist.", exception.getMessage());
+    }
+
+    @Test
+    public void updateCarFlow_properCarFlow_carFlowUpdated() {
+        int flow = 7;
+        LocalTime start = LocalTime.ofSecondOfDay(0);
+        LocalTime end = LocalTime.ofSecondOfDay(1600);
+
+        CarFlow carFlow = carFlowService.addCarFlow(flow, start, end);
+
+        String id = carFlow.getId();
+        int flowUpdated = 13;
+        LocalTime startUpdated = LocalTime.ofSecondOfDay(1800);
+        LocalTime endUpdated = LocalTime.ofSecondOfDay(2000);
+
+        CarFlow updated = null;
+        try {
+            carFlowService.updateCarFlow(id, flowUpdated, startUpdated, endUpdated);
+            updated = carFlowService.getCarFlowById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(1, carFlowService.carFlowRepository.count());
+        assertNotNull(updated);
+        assertEquals(flowUpdated, updated.getCarFlowPm());
+        assertEquals(startUpdated, updated.getStartTime());
+        assertEquals(endUpdated, updated.getEndTime());
+    }
+
+    @Test
+    public void updateCarFlow_improperCarFlow_carFlowNotFound() {
+        int flow = 7;
+        LocalTime start = LocalTime.ofSecondOfDay(0);
+        LocalTime end = LocalTime.ofSecondOfDay(1600);
+
+        CarFlow carFlow = carFlowService.addCarFlow(flow, start, end);
+
+        String id = "";
+        int flowUpdated = 13;
+        LocalTime startUpdated = LocalTime.ofSecondOfDay(1800);
+        LocalTime endUpdated = LocalTime.ofSecondOfDay(2000);
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            carFlowService.updateCarFlow(id, flowUpdated, startUpdated, endUpdated);
+            carFlowService.deleteCarFlowById(id);
+        });
+
+        assertEquals(1, carFlowService.carFlowRepository.count());
+        assertEquals("Cannot update carFlow with id: " + id + " because it does not exist.", exception.getMessage());
+    }
 }

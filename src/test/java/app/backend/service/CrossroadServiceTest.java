@@ -64,7 +64,7 @@ class CrossroadServiceTest {
     }
 
     @Test
-    public void getCrossroadById_properCrossroad_correctRoad() {
+    public void getCrossroadById_properCrossroad_correctCrossroad() {
         String name = "John";
         String location = "Doe";
         String ownerId = "abc";
@@ -97,7 +97,7 @@ class CrossroadServiceTest {
     }
 
     @Test
-    public void addCrossroad_properCrossroad_roadAdded() {
+    public void addCrossroad_properCrossroad_crossroadAdded() {
         String name = "John";
         String location = "Doe";
         String ownerId = "abc";
@@ -121,7 +121,7 @@ class CrossroadServiceTest {
     }
 
     @Test
-    public void deleteCrossroadById_properCrossroad_roadDeleted() {
+    public void deleteCrossroadById_properCrossroad_crossroadDeleted() {
         String name = "John";
         String location = "Doe";
         String ownerId = "abc";
@@ -175,7 +175,7 @@ class CrossroadServiceTest {
     }
 
     @Test
-    public void updateCrossroad_properCrossroad_roadUpdated() {
+    public void updateCrossroad_properCrossroad_crossroadUpdated() {
         String name = "John";
         String location = "Doe";
         String ownerId = "abc";
