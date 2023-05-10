@@ -22,11 +22,6 @@ public class Road {
     @PositiveOrZero
     private int capacity;
 
-    public Road(String name, RoadType type) {
-        this.name = name;
-        this.type = type;
-    }
-
     public Road(String name, RoadType type, int capacity) {
         this.name = name;
         this.type = type;

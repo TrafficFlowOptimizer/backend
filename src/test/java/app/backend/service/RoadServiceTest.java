@@ -116,7 +116,6 @@ class RoadServiceTest {
             roadService.getRoadById(id);
         });
 
-        System.out.println(roadService.roadRepository.count());
         assertEquals(0, roadService.roadRepository.count());
         assertEquals("Cannot get road with id: " + id + " because it does not exist.", exception.getMessage());
     }

@@ -45,7 +45,7 @@ public class ConnectionService {
         }
         Connection connectionToUpdate = connection.get();
 
-        connectionToUpdate.setCarFlowIds(trafficLightIDs);
+        connectionToUpdate.setTrafficLightIds(trafficLightIDs);
         connectionToUpdate.setSourceId(sourceId);
         connectionToUpdate.setTargetId(targetId);
         connectionToUpdate.setCarFlowIds(carFlowIDs);
