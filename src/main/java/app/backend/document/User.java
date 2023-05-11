@@ -1,5 +1,6 @@
 package app.backend.document;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,8 +13,6 @@ public class User {
     @Id
     private String id;
 
-    // TODO: add emails?
-
     @NotBlank
     private String firstName;
 
@@ -23,17 +22,22 @@ public class User {
     @Indexed(unique=true)
     @NotBlank
     @Size(min = 4, message = "{validation.name.size.too_short}")
-    @Size(min = 16, message = "{validation.name.size.too_long}")
+    @Size(max = 32, message = "{validation.name.size.too_long}")
     private String nickname;
+
+    @Email
+    @NotBlank
+    private String email;
 
     //TODO
     @NotBlank
     private String password;
 
-    public User(String firstName, String lastName, String nickname, String password) {
+    public User(String firstName, String lastName, String nickname, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nickname = nickname;
+        this.email = email;
         this.password = password;
     }
 
@@ -67,6 +71,14 @@ public class User {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

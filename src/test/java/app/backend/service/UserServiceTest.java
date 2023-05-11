@@ -64,10 +64,11 @@ class UserServiceTest {
         String firstName = "John";
         String lastName = "Doe";
         String nickname = "JDoe";
+        String email = "j.d@gmail.com";
         String password = "password@123";
 
-        User user = userService.addUser(firstName, lastName, nickname, password);
-        userService.addUser("Notjohn", "Notdoe", "stillnotJD", "password@123");
+        User user = userService.addUser(firstName, lastName, nickname, email, password);
+        userService.addUser("Notjohn", "Notdoe", "stillnotJD", "email@email.pl", "password@123");
 
         User found = null;
         try {
@@ -81,6 +82,7 @@ class UserServiceTest {
         assertEquals(firstName, found.getFirstName());
         assertEquals(lastName, found.getLastName());
         assertEquals(nickname, found.getNickname());
+        assertEquals(email, found.getEmail());
         assertEquals(password, found.getPassword());
     }
 
@@ -89,14 +91,16 @@ class UserServiceTest {
         String firstName = "John";
         String lastName = "Doe";
         String nickname = "JDoe";
+        String email = "j.d@gmail.com";
         String password = "password@123";
 
-        User user = userService.addUser(firstName, lastName, nickname, password);
+        User user = userService.addUser(firstName, lastName, nickname, email, password);
 
         assertEquals(1, userService.userRepository.count());
         assertEquals(firstName, user.getFirstName());
         assertEquals(lastName, user.getLastName());
         assertEquals(nickname, user.getNickname());
+        assertEquals(email, user.getEmail());
         assertEquals(password, user.getPassword());
     }
 
@@ -105,9 +109,10 @@ class UserServiceTest {
         String firstName = "John";
         String lastName = "Doe";
         String nickname = "JDoe";
+        String email = "j.d@gmail.com";
         String password = "password@123";
 
-        User user = userService.addUser(firstName, lastName, nickname, password);
+        User user = userService.addUser(firstName, lastName, nickname, email, password);
         String id = user.getId();
 
         try {
@@ -129,9 +134,10 @@ class UserServiceTest {
         String firstName = "John";
         String lastName = "Doe";
         String nickname = "JDoe";
+        String email = "j.d@gmail.com";
         String password = "password@123";
 
-        User user = userService.addUser(firstName, lastName, nickname, password);
+        User user = userService.addUser(firstName, lastName, nickname, email, password);
         String id = "";
 
         Exception exception = assertThrows(Exception.class, () -> {
@@ -147,19 +153,21 @@ class UserServiceTest {
         String firstName = "John";
         String lastName = "Doe";
         String nickname = "JDoe";
+        String email = "j.d@gmail.com";
         String password = "password@123";
 
-        User user = userService.addUser(firstName, lastName, nickname, password);
+        User user = userService.addUser(firstName, lastName, nickname, email, password);
 
         String id = user.getId();
         String firstNameUpdated = "Jon";
         String lastNameUpdated = "Tho";
         String nicknameUpdated = "JTho";
+        String emailUpdated = "j.dup@gmail.com";
         String passwordUpdated = "password@234";
 
         User updated = null;
         try {
-            userService.updateUser(id, firstNameUpdated, lastNameUpdated, nicknameUpdated, passwordUpdated);
+            userService.updateUser(id, firstNameUpdated, lastNameUpdated, nicknameUpdated, emailUpdated, passwordUpdated);
             updated = userService.getUserById(id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,6 +178,7 @@ class UserServiceTest {
         assertEquals(firstNameUpdated, updated.getFirstName());
         assertEquals(lastNameUpdated, updated.getLastName());
         assertEquals(nicknameUpdated, updated.getNickname());
+        assertEquals(emailUpdated, updated.getEmail());
         assertEquals(passwordUpdated, updated.getPassword());
     }
 
@@ -178,18 +187,20 @@ class UserServiceTest {
         String firstName = "John";
         String lastName = "Doe";
         String nickname = "JDoe";
+        String email = "j.d@gmail.com";
         String password = "password@123";
 
-        userService.addUser(firstName, lastName, nickname, password);
+        userService.addUser(firstName, lastName, nickname, email, password);
 
         String id = "";
         String firstNameUpdated = "Jon";
         String lastNameUpdated = "Tho";
         String nicknameUpdated = "JTho";
+        String emailUpdated = "j.dup@gmail.com";
         String passwordUpdated = "password@234";
 
         Exception exception = assertThrows(Exception.class, () -> {
-            userService.updateUser(id, firstNameUpdated, lastNameUpdated, nicknameUpdated, passwordUpdated);
+            userService.updateUser(id, firstNameUpdated, lastNameUpdated, nicknameUpdated, emailUpdated, passwordUpdated);
             userService.deleteUserById(id);
         });
 

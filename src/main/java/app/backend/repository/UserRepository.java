@@ -2,6 +2,11 @@ package app.backend.repository;
 
 import app.backend.document.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository extends MongoRepository<User, String > {
+import java.util.Optional;
+
+@Repository
+public interface UserRepository extends MongoRepository<User, String> {
+    Optional<User> findByNickname(String nickname);
 }
