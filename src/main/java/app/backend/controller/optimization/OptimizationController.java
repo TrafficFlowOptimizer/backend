@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class OptimizationController {
 
-    @PostMapping(value="/optimizations/upload")
+    @PostMapping(value="/optimizations")
     public String upload() {
         return "upload";
     }
