@@ -46,7 +46,6 @@ public class Controller {
             int numberOfRoads = roads.size();
 
             List<String> collisions = crossroad.getRoadIds();
-            int numberOfCollisions = collisions.size();
             Map<Boolean, List<String>> collisionsDivided = collisions
                     .stream()
                     .collect(Collectors.partitioningBy(collisionId -> {
@@ -108,15 +107,16 @@ public class Controller {
                         return null;
                     }).toList();
 
+            // TODO: finish
             List<JSONArray> roadConnections = connections
                     .stream()
                     .map(connectionId -> {
                         try {
                             return new JSONArray(
-                                    Arrays.asList(
-                                            connectionService.getConnectionById(connectionId).getSourceId(),
-                                            connectionService.getConnectionById(connectionId).getTargetId()
-                                    )
+                                Arrays.asList(
+                                        connectionService.getConnectionById(connectionId).getSourceId(),
+                                        connectionService.getConnectionById(connectionId).getTargetId()
+                                )
                             );
                         } catch (Exception e) {
                             e.printStackTrace();
