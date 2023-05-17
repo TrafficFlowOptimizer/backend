@@ -35,11 +35,11 @@ public class CarFlow {
         this.id = id;
     }
 
-    public int getCarFlowPm() {
+    public int getCarFlow() {
         return carFlow;
     }
 
-    public void setCarFlowPm(int carFlowPm) {
+    public void setCarFlow(int carFlowPm) {
         this.carFlow = carFlowPm;
     }
 

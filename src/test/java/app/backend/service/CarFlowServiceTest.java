@@ -79,7 +79,7 @@ class CarFlowServiceTest {
 
         assertEquals(2, carFlowService.carFlowRepository.count());
         assertNotNull(found);
-        assertEquals(flow, found.getCarFlowPm());
+        assertEquals(flow, found.getCarFlow());
         assertEquals(start, found.getStartTime());
         assertEquals(end, found.getEndTime());
     }
@@ -93,7 +93,7 @@ class CarFlowServiceTest {
         CarFlow carFlow = carFlowService.addCarFlow(flow, start, end);
 
         assertEquals(1, carFlowService.carFlowRepository.count());
-        assertEquals(flow, carFlow.getCarFlowPm());
+        assertEquals(flow, carFlow.getCarFlow());
         assertEquals(start, carFlow.getStartTime());
         assertEquals(end, carFlow.getEndTime());
     }
@@ -161,7 +161,7 @@ class CarFlowServiceTest {
 
         assertEquals(1, carFlowService.carFlowRepository.count());
         assertNotNull(updated);
-        assertEquals(flowUpdated, updated.getCarFlowPm());
+        assertEquals(flowUpdated, updated.getCarFlow());
         assertEquals(startUpdated, updated.getStartTime());
         assertEquals(endUpdated, updated.getEndTime());
     }

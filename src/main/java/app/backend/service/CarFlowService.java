@@ -22,8 +22,8 @@ public class CarFlowService {
         return carFlow.get();
     }
 
-    public CarFlow addCarFlow(int carFlowPm, LocalTime startTime, LocalTime endTime){
-    return carFlowRepository.insert(new CarFlow(carFlowPm, startTime, endTime));
+    public CarFlow addCarFlow(int carFlow, LocalTime startTime, LocalTime endTime){
+    return carFlowRepository.insert(new CarFlow(carFlow, startTime, endTime));
     }
 
     public CarFlow deleteCarFlowById(String id) throws Exception {
@@ -42,7 +42,7 @@ public class CarFlowService {
         }
         CarFlow carFlowToUpdate = carFlow.get();
 
-        carFlowToUpdate.setCarFlowPm(carFlowPm);
+        carFlowToUpdate.setCarFlow(carFlowPm);
         carFlowToUpdate.setCarStartTime(startTime);
         carFlowToUpdate.setEndTime(endTime);
 
