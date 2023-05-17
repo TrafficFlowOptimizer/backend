@@ -14,18 +14,18 @@ public class CarFlow {
     private String id;
 
     @PositiveOrZero
-    private int carFlowPm;
+    private int carFlow;
 
-    // TODO: czy local time czy coś innego uwzględniającego dnie
+    // TODO: is LocalTime the right type??
     private LocalTime startTime;
+
     private LocalTime endTime;
 
-    public CarFlow(int carFlowPm, LocalTime startTime, LocalTime endTime) {
-        this.carFlowPm = carFlowPm;
+    public CarFlow(int carFlow, LocalTime startTime, LocalTime endTime) {
+        this.carFlow = carFlow;
         this.startTime = startTime;
         this.endTime = endTime;
     }
-
 
     public String getId() {
         return id;
@@ -36,15 +36,17 @@ public class CarFlow {
     }
 
     public int getCarFlowPm() {
-        return carFlowPm;
+        return carFlow;
     }
 
     public void setCarFlowPm(int carFlowPm) {
-        this.carFlowPm = carFlowPm;
+        this.carFlow = carFlowPm;
     }
+
     public void setCarStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
+
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
@@ -52,6 +54,7 @@ public class CarFlow {
     public LocalTime getStartTime() {
         return startTime;
     }
+
     public LocalTime getEndTime() {
         return endTime;
     }

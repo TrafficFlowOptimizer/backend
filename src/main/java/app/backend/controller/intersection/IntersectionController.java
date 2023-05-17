@@ -23,7 +23,7 @@ public class IntersectionController {
 
     @GetMapping(value="/intersections/{user}")
     public List<Crossroad> list(@PathVariable String userId) { //trzeba podać userId; docelowo token będzie to załatwiał
-        List<Crossroad> intersections = crossroadService.getCrossroadByCreator(userId);
+        List<Crossroad> intersections = crossroadService.getCrossroadByCreatorId(userId);
         return intersections;
     }
 

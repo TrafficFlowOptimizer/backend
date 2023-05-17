@@ -67,7 +67,7 @@ class CrossroadServiceTest {
     public void getCrossroadById_properCrossroad_correctCrossroad() {
         String name = "John";
         String location = "Doe";
-        String ownerId = "abc";
+        String creatorId = "abc";
         CrossroadType type = CrossroadType.PUBLIC;
         List<String> roadIDs = new ArrayList<>();
         roadIDs.add("123");
@@ -75,9 +75,15 @@ class CrossroadServiceTest {
         List<String> collisionIDs = new ArrayList<>();
         collisionIDs.add("dfg");
         collisionIDs.add("gfd");
+        List<String> connectionIds = new ArrayList<>();
+        collisionIDs.add("a");
+        collisionIDs.add("v");
+        List<String> trafficLightIds = new ArrayList<>();
+        collisionIDs.add("s");
+        collisionIDs.add("f");
 
-        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs);
-        crossroadService.addCrossroad("Notjohn", "Notdoe", "sdf", CrossroadType.PUBLIC, new ArrayList<>(), new ArrayList<>());
+        Crossroad crossroad = crossroadService.addCrossroad(name, location, creatorId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
+        crossroadService.addCrossroad("Notjohn", "Notdoe", "sdf", CrossroadType.PUBLIC, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
         Crossroad found = null;
         try {
@@ -90,17 +96,19 @@ class CrossroadServiceTest {
         assertNotNull(found);
         assertEquals(name, found.getName());
         assertEquals(location, found.getLocation());
-//        assertEquals(ownerId, found.getOwnerId()); TODO
+        assertEquals(creatorId, found.getCreatorId());
         assertEquals(type, found.getType());
         assertEquals(roadIDs, found.getRoadIds());
         assertEquals(collisionIDs, found.getCollisionIds());
+        assertEquals(connectionIds, found.getConnectionIds());
+        assertEquals(trafficLightIds, found.getTrafficLightIds());
     }
 
     @Test
     public void addCrossroad_properCrossroad_crossroadAdded() {
         String name = "John";
         String location = "Doe";
-        String ownerId = "abc";
+        String creatorId = "abc";
         CrossroadType type = CrossroadType.PUBLIC;
         List<String> roadIDs = new ArrayList<>();
         roadIDs.add("123");
@@ -108,16 +116,24 @@ class CrossroadServiceTest {
         List<String> collisionIDs = new ArrayList<>();
         collisionIDs.add("dfg");
         collisionIDs.add("gfd");
+        List<String> connectionIds = new ArrayList<>();
+        collisionIDs.add("a");
+        collisionIDs.add("v");
+        List<String> trafficLightIds = new ArrayList<>();
+        collisionIDs.add("s");
+        collisionIDs.add("f");
 
-        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs);
+        Crossroad crossroad = crossroadService.addCrossroad(name, location, creatorId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
 
         assertEquals(1, crossroadService.crossroadRepository.count());
         assertEquals(name, crossroad.getName());
         assertEquals(location, crossroad.getLocation());
-//        assertEquals(ownerId, crossroad.getOwnerId()); TODO
+        assertEquals(creatorId, crossroad.getCreatorId());
         assertEquals(type, crossroad.getType());
         assertEquals(roadIDs, crossroad.getRoadIds());
         assertEquals(collisionIDs, crossroad.getCollisionIds());
+        assertEquals(connectionIds, crossroad.getConnectionIds());
+        assertEquals(trafficLightIds, crossroad.getTrafficLightIds());
     }
 
     @Test
@@ -132,8 +148,14 @@ class CrossroadServiceTest {
         List<String> collisionIDs = new ArrayList<>();
         collisionIDs.add("dfg");
         collisionIDs.add("gfd");
+        List<String> connectionIds = new ArrayList<>();
+        collisionIDs.add("a");
+        collisionIDs.add("v");
+        List<String> trafficLightIds = new ArrayList<>();
+        collisionIDs.add("s");
+        collisionIDs.add("f");
 
-        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs);
+        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
 
         String id = crossroad.getId();
         try {
@@ -162,8 +184,14 @@ class CrossroadServiceTest {
         List<String> collisionIDs = new ArrayList<>();
         collisionIDs.add("dfg");
         collisionIDs.add("gfd");
+        List<String> connectionIds = new ArrayList<>();
+        collisionIDs.add("a");
+        collisionIDs.add("v");
+        List<String> trafficLightIds = new ArrayList<>();
+        collisionIDs.add("s");
+        collisionIDs.add("f");
 
-        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs);
+        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
         String id = "";
 
         Exception exception = assertThrows(Exception.class, () -> {
@@ -178,7 +206,7 @@ class CrossroadServiceTest {
     public void updateCrossroad_properCrossroad_crossroadUpdated() {
         String name = "John";
         String location = "Doe";
-        String ownerId = "abc";
+        String creatorId = "abc";
         CrossroadType type = CrossroadType.PUBLIC;
         List<String> roadIDs = new ArrayList<>();
         roadIDs.add("123");
@@ -186,13 +214,19 @@ class CrossroadServiceTest {
         List<String> collisionIDs = new ArrayList<>();
         collisionIDs.add("dfg");
         collisionIDs.add("gfd");
+        List<String> connectionIds = new ArrayList<>();
+        collisionIDs.add("a");
+        collisionIDs.add("v");
+        List<String> trafficLightIds = new ArrayList<>();
+        collisionIDs.add("s");
+        collisionIDs.add("f");
 
-        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs);
+        Crossroad crossroad = crossroadService.addCrossroad(name, location, creatorId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
 
         String id = crossroad.getId();
         String nameUpdated = "Johna";
         String locationUpdated = "Doea";
-        String ownerIdUpdated = "abca";
+        String creatorIdUpdated = "abca";
         CrossroadType typeUpdated = CrossroadType.PRIVATE;
         List<String> roadIDsUpdated = new ArrayList<>();
         roadIDs.add("123");
@@ -202,10 +236,16 @@ class CrossroadServiceTest {
         collisionIDs.add("dfg");
         collisionIDs.add("gfd");
         collisionIDs.add("gfd");
+        List<String> connectionIdsUpdated = new ArrayList<>();
+        collisionIDs.add("dsaads");
+        collisionIDs.add("fjksla");
+        List<String> trafficLightIdsUpdated = new ArrayList<>();
+        collisionIDs.add("iwopeq");
+        collisionIDs.add("als");
 
         Crossroad updated = null;
         try {
-            crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, ownerIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated);
+            crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, creatorIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated, connectionIdsUpdated, trafficLightIdsUpdated);
             updated = crossroadService.getCrossroadById(id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -215,10 +255,12 @@ class CrossroadServiceTest {
         assertNotNull(updated);
         assertEquals(nameUpdated, updated.getName());
         assertEquals(locationUpdated, updated.getLocation());
-//        assertEquals(ownerIdUpdated, updated.getOwnerId()); TODO
+        assertEquals(creatorIdUpdated, updated.getCreatorId());
         assertEquals(typeUpdated, updated.getType());
         assertEquals(roadIDsUpdated, updated.getRoadIds());
         assertEquals(collisionIDsUpdated, updated.getCollisionIds());
+        assertEquals(connectionIds, updated.getConnectionIds());
+        assertEquals(trafficLightIds, updated.getTrafficLightIds());
     }
 
     @Test
@@ -233,8 +275,14 @@ class CrossroadServiceTest {
         List<String> collisionIDs = new ArrayList<>();
         collisionIDs.add("dfg");
         collisionIDs.add("gfd");
+        List<String> connectionIds = new ArrayList<>();
+        collisionIDs.add("a");
+        collisionIDs.add("v");
+        List<String> trafficLightIds = new ArrayList<>();
+        collisionIDs.add("s");
+        collisionIDs.add("f");
 
-        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs);
+        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
 
         String id = "";
         String nameUpdated = "Johna";
@@ -249,9 +297,15 @@ class CrossroadServiceTest {
         collisionIDs.add("dfg");
         collisionIDs.add("gfd");
         collisionIDs.add("gfd");
+        List<String> connectionIdsUpdated = new ArrayList<>();
+        collisionIDs.add("dsaads");
+        collisionIDs.add("fjksla");
+        List<String> trafficLightIdsUpdated = new ArrayList<>();
+        collisionIDs.add("iwopeq");
+        collisionIDs.add("als");
 
         Exception exception = assertThrows(Exception.class, () -> {
-            crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, ownerIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated);
+            crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, ownerIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated, connectionIdsUpdated, trafficLightIdsUpdated);
             crossroadService.deleteCrossroadById(id);
         });
 

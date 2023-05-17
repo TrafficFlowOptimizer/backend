@@ -2,7 +2,6 @@ package app.backend.document;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -29,7 +28,6 @@ public class User {
     @NotBlank
     private String email;
 
-    //TODO
     @NotBlank
     private String password;
 

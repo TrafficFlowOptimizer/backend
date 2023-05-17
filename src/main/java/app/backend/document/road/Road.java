@@ -1,6 +1,5 @@
 package app.backend.document.road;
 
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -18,7 +17,7 @@ public class Road {
     @NotNull
     private RoadType type;
 
-    // TODO: czy może być 0?
+    // TODO: is 0 acceptable ??
     @PositiveOrZero
     private int capacity;
 

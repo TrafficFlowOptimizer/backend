@@ -15,11 +15,12 @@ public class Crossroad {
     @NotBlank
     private String name;
 
+    // TODO: Location type might be better
     @NotBlank
     private String location;
 
     @NotBlank
-    private String creator;
+    private String creatorId;
 
     @NotNull
     private CrossroadType type;
@@ -28,14 +29,20 @@ public class Crossroad {
     private List<String> roadIds;
     //@NotEmpty
     private List<String> collisionIds;
+    //@NotEmpty
+    private List<String> connectionIds;
+    //@NotEmpty
+    private List<String> trafficLightIds;
 
-    public Crossroad(String name, String location, String creator, CrossroadType type, List<String> roadIds, List<String> collisionIds) {
+    public Crossroad(String name, String location, String creatorId, CrossroadType type, List<String> roadIds, List<String> collisionIds, List<String> connectionIds, List<String> trafficLightIds) {
         this.name = name;
         this.location = location;
-        this.creator = creator;
+        this.creatorId = creatorId;
         this.type = type;
         this.roadIds = roadIds;
         this.collisionIds = collisionIds;
+        this.connectionIds = connectionIds;
+        this.trafficLightIds = trafficLightIds;
     }
 
     public String getId() {
@@ -62,12 +69,12 @@ public class Crossroad {
         this.location = location;
     }
 
-    public String getCreator() {
-        return creator;
+    public String getCreatorId() {
+        return creatorId;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
     }
 
     public CrossroadType getType() {
@@ -92,5 +99,21 @@ public class Crossroad {
 
     public void setCollisionIds(List<String> collisionIds) {
         this.collisionIds = collisionIds;
+    }
+
+    public List<String> getConnectionIds() {
+        return connectionIds;
+    }
+
+    public void setConnectionIds(List<String> connectionIds) {
+        this.connectionIds = connectionIds;
+    }
+
+    public List<String> getTrafficLightIds() {
+        return trafficLightIds;
+    }
+
+    public void setTrafficLightIds(List<String> trafficLightIds) {
+        this.trafficLightIds = trafficLightIds;
     }
 }

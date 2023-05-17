@@ -5,7 +5,6 @@ import app.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
@@ -52,7 +51,7 @@ public class UserService {
         userToUpdate.setFirstName(firstName);
         userToUpdate.setLastName(lastName);
         userToUpdate.setNickname(nickname);
-        userToUpdate.setNickname(email);
+        userToUpdate.setEmail(email);
         userToUpdate.setPassword(password);
 
         userRepository.save(userToUpdate);

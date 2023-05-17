@@ -24,8 +24,8 @@ public class CrossroadService {
         return crossroad.get();
     }
 
-    public List<Crossroad> getCrossroadByCreator(String creatorId) {
-        Iterable<Crossroad> crossroads = crossroadRepository.findAllByCreator(creatorId);
+    public List<Crossroad> getCrossroadByCreatorId(String creatorId) {
+        Iterable<Crossroad> crossroads = crossroadRepository.findAllByCreatorId(creatorId);
         List<Crossroad> intersections = new LinkedList<>();
         for(Crossroad crossroad : crossroads) {
             intersections.add(crossroad);
@@ -34,8 +34,8 @@ public class CrossroadService {
         return intersections;
     }
 
-    public Crossroad addCrossroad(String name, String location, String ownerId, CrossroadType type, List<String> roadIDs, List<String> collisionIDs) {
-        return crossroadRepository.insert(new Crossroad(name, location, ownerId, type, roadIDs, collisionIDs));
+    public Crossroad addCrossroad(String name, String location, String ownerId, CrossroadType type, List<String> roadIDs, List<String> collisionIDs, List<String> connectionIds, List<String> trafficLightIds) {
+        return crossroadRepository.insert(new Crossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds));
     }
 
     public Crossroad deleteCrossroadById(String id) throws Exception {
@@ -48,7 +48,7 @@ public class CrossroadService {
         return crossroad.get();
     }
 
-    public Crossroad updateCrossroad(String id, String name, String location, String creator, CrossroadType type, List<String> roadIDs, List<String> collisionIDs) throws Exception {
+    public Crossroad updateCrossroad(String id, String name, String location, String creatorId, CrossroadType type, List<String> roadIDs, List<String> collisionIDs, List<String> connectionIds, List<String> trafficLightIds) throws Exception {
         Optional<Crossroad> crossroad = crossroadRepository.findById(id);
         if (crossroad.isEmpty()){
             throw new Exception("Cannot update crossroad with id: " + id + " because it does not exist.");
@@ -57,10 +57,12 @@ public class CrossroadService {
 
         crossroadToUpdate.setName(name);
         crossroadToUpdate.setLocation(location);
-        crossroadToUpdate.setCreator(creator);
+        crossroadToUpdate.setCreatorId(creatorId);
         crossroadToUpdate.setType(type);
         crossroadToUpdate.setRoadIds(roadIDs);
         crossroadToUpdate.setCollisionIds(collisionIDs);
+        crossroadToUpdate.setCollisionIds(connectionIds);
+        crossroadToUpdate.setCollisionIds(trafficLightIds);
 
         crossroadRepository.save(crossroadToUpdate);
 

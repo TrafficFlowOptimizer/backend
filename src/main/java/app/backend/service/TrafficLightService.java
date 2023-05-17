@@ -5,7 +5,6 @@ import app.backend.repository.TrafficLightRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalTime;
 import java.util.Optional;
 
 @Service

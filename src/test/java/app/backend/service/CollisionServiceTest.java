@@ -2,8 +2,6 @@ package app.backend.service;
 
 import app.backend.document.collision.Collision;
 import app.backend.document.collision.CollisionType;
-import app.backend.document.crossroad.Crossroad;
-import app.backend.document.crossroad.CrossroadType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +12,6 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

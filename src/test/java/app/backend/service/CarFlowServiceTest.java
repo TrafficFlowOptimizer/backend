@@ -1,8 +1,6 @@
 package app.backend.service;
 
 import app.backend.document.CarFlow;
-import app.backend.document.crossroad.Crossroad;
-import app.backend.document.crossroad.CrossroadType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +13,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
