@@ -14,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,27 +22,52 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// TODO: dodać indeksy dla użytkowanika kiedy już będą zaimplementowane w DB
 @RestController
 public class Controller {
 
-    @Autowired UserService userService;
-    @Autowired CrossroadService crossroadService;
-    @Autowired RoadService roadService;
-    @Autowired CollisionService collisionService;
-    @Autowired TrafficLightService trafficLightService;
-    @Autowired ConnectionService connectionService;
-    @Autowired CarFlowService carFlowService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    CrossroadService crossroadService;
+    @Autowired
+    RoadService roadService;
+    @Autowired
+    CollisionService collisionService;
+    @Autowired
+    TrafficLightService trafficLightService;
+    @Autowired
+    ConnectionService connectionService;
+    @Autowired
+    CarFlowService carFlowService;
 
     @ResponseBody
-    @GetMapping(value="/")
+    @GetMapping(value = "/")
     public ResponseEntity<String> home() {
         return ResponseEntity.ok("Hello world!");
     }
 
-    @GetMapping(value="/test")
-    public String parseJSON() {
+    private List<JSONArray> mapCollisions(List<String> collisions) {
+        return collisions
+                .stream()
+                .map(collisionId -> {
+                    try {
+                        return new JSONArray(
+                                Arrays.asList(
+                                        collisionService.getCollisionById(collisionId).getTrafficLight1Id(),
+                                        collisionService.getCollisionById(collisionId).getTrafficLight2Id()
+                                )
+                        );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return new JSONArray();
+                }).toList();
+    }
 
-        // random time for now
+
+    @GetMapping(value = "/test")
+    public String parseJSON() {
 
         JSONObject json = new JSONObject();
         String crossroadId = "id";
@@ -51,9 +75,11 @@ public class Controller {
         try {
             Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
 
+//  -----------------------------  roads  -----------------------------
             List<String> roads = crossroad.getRoadIds();
-            int numberOfRoads = roads.size();
+            json.append("number_of_roads", roads.size());
 
+//  -----------------------------  collisions  -----------------------------
             List<String> collisions = crossroad.getRoadIds();
             Map<Boolean, List<String>> collisionsDivided = collisions
                     .stream()
@@ -63,47 +89,50 @@ public class Controller {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        return false; // ?
+                        return false;
                     }));
 
             List<String> lightCollisions = collisionsDivided.get(true);
+            List<JSONArray> lightsLightCollisions = mapCollisions(lightCollisions);
+
+            json.append("lights_light_collisions", lightsLightCollisions);
+            json.append("light_collisions_no", lightsLightCollisions.size());
+
+
             List<String> heavyCollisions = collisionsDivided.get(false);
-            int numberOfLightCollisions = lightCollisions.size();
-            int numberOfHeavyCollisions = heavyCollisions.size();
-            List<JSONArray> lightsLightConflicts = lightCollisions
-                    .stream()
-                    .map(collisionId -> {
-                        try {
-                            return new JSONArray(
-                                    Arrays.asList(
-                                            collisionService.getCollisionById(collisionId).getTrafficLight1Id(),
-                                            collisionService.getCollisionById(collisionId).getTrafficLight2Id()
-                                    )
-                            );
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        return new JSONArray();
-                    }).toList();
-            List<JSONArray> lightsHeavyConflicts = heavyCollisions
-                    .stream()
-                    .map(collisionId -> {
-                        try {
-                            return new JSONArray(
-                                    Arrays.asList(
-                                            collisionService.getCollisionById(collisionId).getTrafficLight1Id(),
-                                            collisionService.getCollisionById(collisionId).getTrafficLight2Id()
-                                    )
-                            );
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        return new JSONArray();
-                    }).toList();
+            List<JSONArray> lightsHeavyCollisions = mapCollisions(heavyCollisions);
 
+            json.append("lights_heavy_collisions", lightsHeavyCollisions);
+            json.append("heavy_collisions_no", lightsHeavyCollisions.size());
+
+//  -----------------------------  connections  -----------------------------
             List<String> connections = crossroad.getConnectionIds();
-            int numberOfConnections = connections.size();
+            List<JSONArray> roadConnections = connections
+                    .stream()
+                    .map(connectionId -> {
+                        try {
+                            return new JSONArray(
+                                    Arrays.asList(
+                                            connectionService.getConnectionById(connectionId).getSourceId(),
+                                            connectionService.getConnectionById(connectionId).getTargetId(),
+                                            connectionService.getConnectionById(connectionId).getTrafficLightIds().size() > 0
+                                                    ? connectionService.getConnectionById(connectionId).getTrafficLightIds().get(0) :
+                                                    -1,
+                                            connectionService.getConnectionById(connectionId).getTrafficLightIds().size() > 1
+                                                    ? connectionService.getConnectionById(connectionId).getTrafficLightIds().get(1) :
+                                                    -1
+                                    )
+                            );
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return new JSONArray();
+                    }).toList();
 
+            json.append("roads_connections", roadConnections);
+            json.append("number_of_connections", roadConnections.size());
+
+//  -----------------------------  car flow  -----------------------------
             List<Integer> carFlows = connections
                     .stream()
                     .map(connectionId -> {
@@ -116,39 +145,21 @@ public class Controller {
                         return null;
                     }).toList();
 
-            // TODO: finish
-            List<JSONArray> roadConnections = connections
-                    .stream()
-                    .map(connectionId -> {
-                        try {
-                            return new JSONArray(
-                                Arrays.asList(
-                                        connectionService.getConnectionById(connectionId).getSourceId(),
-                                        connectionService.getConnectionById(connectionId).getTargetId()
-                                )
-                            );
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        return new JSONArray();
-                    }).toList();
+            json.append("car_flow_per_min", carFlows);
 
+//  -----------------------------  lights  -----------------------------
             List<String> lights = crossroad.getTrafficLightIds();
             int numberOfLights = lights.size();
 
+            json.append("number_of_lights", numberOfLights);
+
+//  -----------------------------  fixed values  -----------------------------
             json.append("time_units_in_minute", 60); // fixed for now
             json.append("number_of_time_units", 60); // fixed for now
-            json.append("number_of_lights", numberOfLights);
-            json.append("number_of_roads", numberOfRoads);
-            json.append("number_of_connections", numberOfConnections);
+
             json.append("lights_type", new JSONArray()); // optional
-            json.append("roads_connections", roadConnections);
-            json.append("lights", lights);
-            json.append("lights_heavy_conflicts", lightsHeavyConflicts);
-            json.append("heavy_conflicts_no", numberOfHeavyCollisions);
-            json.append("lights_light_conflicts", lightsLightConflicts);
-            json.append("light_conflicts_no", numberOfLightCollisions);
-            json.append("car_flow_per_min", carFlows);
+            json.append("lights", new JSONArray()); // optional
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -156,9 +167,9 @@ public class Controller {
         return json.toString();
     }
 
-    @GetMapping(value="/sample-data")
+    @GetMapping(value = "/sample-data")
     public String populateDb() {
-        this.populate_all();
+        this.populateAll();
 
         return "here";
     }
@@ -167,7 +178,7 @@ public class Controller {
     final int numberOfRoads = 12;
     final int numberOfConnections = 12;
 
-    private ArrayList<String> populate_lights() {
+    private ArrayList<String> populateLights() {
         ArrayList<String> lightsIDs = new ArrayList<>();
         for (int i = 0; i < numberOfLights; i++) {
             TrafficLight trafficLight = trafficLightService.addTrafficLight();
@@ -176,27 +187,27 @@ public class Controller {
         return lightsIDs;
     }
 
-    private ArrayList<String> populate_car_flows() {
-        ArrayList<String> car_flowsIDs = new ArrayList<>();
+    private ArrayList<String> populateCarFlows() {
+        ArrayList<String> carFlowsIDs = new ArrayList<>();
         for (int i = 0; i < numberOfConnections; i++) {
             Random ran = new Random();
-            int car_flow;
+            int carFlowValue;
             if (i % 3 == 0) {
-                car_flow = ran.nextInt(6) + 5;
+                carFlowValue = ran.nextInt(6) + 5;
             } else if (i % 3 == 1) {
-                car_flow = ran.nextInt(6) + 10;
+                carFlowValue = ran.nextInt(6) + 10;
             } else {
-                car_flow = ran.nextInt(6) + 15;
+                carFlowValue = ran.nextInt(6) + 15;
             }
             LocalTime start = LocalTime.ofSecondOfDay(0);
             LocalTime end = LocalTime.ofSecondOfDay(1600);
-            CarFlow carFlow = carFlowService.addCarFlow(car_flow, start, end);
-            car_flowsIDs.add(carFlow.getId());
+            CarFlow carFlow = carFlowService.addCarFlow(carFlowValue, start, end);
+            carFlowsIDs.add(carFlow.getId());
         }
-        return car_flowsIDs;
+        return carFlowsIDs;
     }
 
-    private ArrayList<String> populate_roads() {
+    private ArrayList<String> populateRoads() {
         ArrayList<String> roadsIDs = new ArrayList<>();
         for (int i = 0; i < numberOfRoads; i++) {
             String name = "Street_" + i;
@@ -213,14 +224,29 @@ public class Controller {
         return roadsIDs;
     }
 
-    private ArrayList<String> populate_collisions(ArrayList<String> lightsIDs) {
+    private String addCollision(int light1, int light2, ArrayList<String> lightsType, ArrayList<String> lightsIDs){
+        CollisionType type;
+        if (Objects.equals(lightsType.get(light1), "heavy") ||
+                Objects.equals(lightsType.get(light2), "heavy")) {
+
+            type = CollisionType.HEAVY;
+        } else {
+            type = CollisionType.LIGHT;
+        }
+        String trafficLight1Id = lightsIDs.get(light1);
+        String trafficLight2Id = lightsIDs.get(light2);
+        Collision collision = collisionService.addCollision(trafficLight1Id, trafficLight2Id, type);
+        return collision.getId();
+    }
+
+    private ArrayList<String> populateCollisions(ArrayList<String> lightsIDs) {
         ArrayList<String> collisionsIDs = new ArrayList<>();
 
-        ArrayList<String> lights_type = new ArrayList<>();
+        ArrayList<String> lightsType = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            lights_type.add("heavy");
-            lights_type.add("light");
-            lights_type.add("light");
+            lightsType.add("heavy");
+            lightsType.add("light");
+            lightsType.add("light");
         }
 
 
@@ -233,18 +259,7 @@ public class Controller {
                             light2 == (light1 + 8) % numberOfLights ||
                             light2 == (light1 + 9) % numberOfLights ||
                             light2 == (light1 + 10) % numberOfLights) {
-                        CollisionType type;
-                        if (Objects.equals(lights_type.get(light1), "heavy") ||
-                                Objects.equals(lights_type.get(light2), "heavy")) {
-
-                            type = CollisionType.HEAVY;
-                        } else {
-                            type = CollisionType.LIGHT;
-                        }
-                        String trafficLight1Id = lightsIDs.get(light1);
-                        String trafficLight2Id = lightsIDs.get(light2);
-                        Collision collision = collisionService.addCollision(trafficLight1Id, trafficLight2Id, type);
-                        collisionsIDs.add(collision.getId());
+                        collisionsIDs.add(addCollision(light1, light2, lightsType, lightsIDs));
                     }
                 }
                 if (light1 % 3 == 1) {
@@ -255,8 +270,8 @@ public class Controller {
                             light2 == (light1 + 8) % numberOfLights ||
                             light2 == (light1 + 9) % numberOfLights) {
                         CollisionType type;
-                        if (Objects.equals(lights_type.get(light1), "heavy") ||
-                                Objects.equals(lights_type.get(light2), "heavy") ||
+                        if (Objects.equals(lightsType.get(light1), "heavy") ||
+                                Objects.equals(lightsType.get(light2), "heavy") ||
                                 light2 == (light1 + 3) % numberOfLights ||
                                 light2 == (light1 + 9) % numberOfLights) {
                             type = CollisionType.HEAVY;
@@ -271,17 +286,7 @@ public class Controller {
                 }
                 if (light1 % 3 == 2) {
                     if (light2 == (light1 + 4) % numberOfLights || light2 == (light1 + 8) % numberOfLights) {
-                        CollisionType type;
-                        if (Objects.equals(lights_type.get(light1), "heavy") ||
-                                Objects.equals(lights_type.get(light2), "heavy")) {
-                            type = CollisionType.HEAVY;
-                        } else {
-                            type = CollisionType.LIGHT;
-                        }
-                        String trafficLight1Id = lightsIDs.get(light1);
-                        String trafficLight2Id = lightsIDs.get(light2);
-                        Collision collision = collisionService.addCollision(trafficLight1Id, trafficLight2Id, type);
-                        collisionsIDs.add(collision.getId());
+                        collisionsIDs.add(addCollision(light1, light2, lightsType, lightsIDs));
                     }
                 }
             }
@@ -290,9 +295,9 @@ public class Controller {
         return collisionsIDs;
     }
 
-    private ArrayList<String> populate_connections(ArrayList<String> lightsIDs,
-                                                   ArrayList<String> car_flowsIDs,
-                                                   ArrayList<String> roadsIDs) {
+    private ArrayList<String> populateConnections(ArrayList<String> lightsIDs,
+                                                  ArrayList<String> carFlowsIDs,
+                                                  ArrayList<String> roadsIDs) {
         ArrayList<String> collisionsIDs = new ArrayList<>();
 
 
@@ -307,7 +312,7 @@ public class Controller {
             sourceId = roadsIDs.get((i * 3 + 1) % numberOfRoads);
             targetId = roadsIDs.get(((i * 3 + 1) + 8) % numberOfRoads);
             lightsIDsTMP.add(lightsIDs.get(i * 3));
-            carFlowsIDsTMP.add(car_flowsIDs.get(i));
+            carFlowsIDsTMP.add(carFlowsIDs.get(i));
             connection = connectionService.addConnection(lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
 
@@ -317,7 +322,7 @@ public class Controller {
             lightsIDsTMP.clear();
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 1));
             carFlowsIDsTMP.clear();
-            carFlowsIDsTMP.add(car_flowsIDs.get(i + 1));
+            carFlowsIDsTMP.add(carFlowsIDs.get(i + 1));
             connection = connectionService.addConnection(lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
 
@@ -328,19 +333,19 @@ public class Controller {
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 1));
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 2));
             carFlowsIDsTMP.clear();
-            carFlowsIDsTMP.add(car_flowsIDs.get(i + 2));
+            carFlowsIDsTMP.add(carFlowsIDs.get(i + 2));
             connection = connectionService.addConnection(lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
         }
         return collisionsIDs;
     }
 
-    private void populate_all() {
-        ArrayList<String> lightsIDs = populate_lights();
-        ArrayList<String> car_flowsIDs = populate_car_flows();
-        ArrayList<String> roadsIDs = populate_roads();
-        ArrayList<String> collisionsIDs = populate_collisions(lightsIDs);
-        ArrayList<String> connectionsIDs = populate_connections(lightsIDs, car_flowsIDs, roadsIDs);
+    private void populateAll() {
+        ArrayList<String> lightsIDs = populateLights();
+        ArrayList<String> carFlowsIDs = populateCarFlows();
+        ArrayList<String> roadsIDs = populateRoads();
+        ArrayList<String> collisionsIDs = populateCollisions(lightsIDs);
+        ArrayList<String> connectionsIDs = populateConnections(lightsIDs, carFlowsIDs, roadsIDs);
 
 
         String name = "Crossroad";
