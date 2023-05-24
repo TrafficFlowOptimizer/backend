@@ -70,7 +70,7 @@ public class Controller {
             List<String> heavyCollisions = collisionsDivided.get(false);
             int numberOfLightCollisions = lightCollisions.size();
             int numberOfHeavyCollisions = heavyCollisions.size();
-            List<JSONArray> lightsLightConflicts = lightCollisions
+            List<JSONArray> lightsLightCollisions = lightCollisions
                     .stream()
                     .map(collisionId -> {
                         try {
@@ -85,7 +85,7 @@ public class Controller {
                         }
                         return new JSONArray();
                     }).toList();
-            List<JSONArray> lightsHeavyConflicts = heavyCollisions
+            List<JSONArray> lightsHeavyCollisions = heavyCollisions
                     .stream()
                     .map(collisionId -> {
                         try {
@@ -144,10 +144,10 @@ public class Controller {
             json.append("lights_type", new JSONArray()); // optional
             json.append("roads_connections", roadConnections);
             json.append("lights", lights);
-            json.append("lights_heavy_conflicts", lightsHeavyConflicts);
-            json.append("heavy_conflicts_no", numberOfHeavyCollisions);
-            json.append("lights_light_conflicts", lightsLightConflicts);
-            json.append("light_conflicts_no", numberOfLightCollisions);
+            json.append("lights_heavy_collisions", lightsHeavyCollisions);
+            json.append("heavy_collisions_no", numberOfHeavyCollisions);
+            json.append("lights_light_collisions", lightsLightCollisions);
+            json.append("light_collisions_no", numberOfLightCollisions);
             json.append("car_flow_per_min", carFlows);
         } catch (Exception e) {
             e.printStackTrace();
