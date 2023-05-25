@@ -34,6 +34,26 @@ public class CrossroadService {
         return intersections;
     }
 
+    public List<Crossroad> getCrossroadsByCreatorIdOrPublic(String creatorId) {
+        Iterable<Crossroad> crossroads = crossroadRepository.findAll();
+        List<Crossroad> intersections = new LinkedList<>();
+        for(Crossroad crossroad : crossroads) {
+            if(crossroad.getType().equals(CrossroadType.PUBLIC) || crossroad.getCreatorId().equals(creatorId)) {
+                intersections.add(crossroad);
+            }
+        }
+        return intersections;
+    }
+
+    public List<Crossroad> getCrossroadsPublic() {
+        Iterable<Crossroad> crossroads = crossroadRepository.findAllByType(CrossroadType.PUBLIC);
+        List<Crossroad> intersections = new LinkedList<>();
+        for(Crossroad crossroad : crossroads) {
+            intersections.add(crossroad);
+        }
+        return intersections;
+    }
+
     public Crossroad addCrossroad(String name, String location, String ownerId, CrossroadType type, List<String> roadIDs, List<String> collisionIDs, List<String> connectionIds, List<String> trafficLightIds) {
         return crossroadRepository.insert(new Crossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds));
     }
