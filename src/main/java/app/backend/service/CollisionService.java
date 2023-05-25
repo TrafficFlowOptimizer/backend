@@ -35,13 +35,14 @@ public class CollisionService {
         return collision.get();
     }
 
-    public Collision updateCollision(String id, String trafficLight1Id, String trafficLight2Id, CollisionType type) throws Exception {
+    public Collision updateCollision(String id, int index, String trafficLight1Id, String trafficLight2Id, CollisionType type) throws Exception {
         Optional<Collision> collision = collisionRepository.findById(id);
         if (collision.isEmpty()){
             throw new Exception("Cannot update collision with id: " + id + " because it does not exist.");
         }
         Collision collisionToUpdate = collision.get();
 
+        collisionToUpdate.setIndex(index);
         collisionToUpdate.setTrafficLight1Id(trafficLight1Id);
         collisionToUpdate.setTrafficLight2Id(trafficLight2Id);
         collisionToUpdate.setType(type);

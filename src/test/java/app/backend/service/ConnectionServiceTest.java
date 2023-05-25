@@ -186,6 +186,7 @@ class ConnectionServiceTest {
         connectionService.addConnection(1, new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
 
         String id = connection.getId();
+        int indexUpdated = 2;
         String sourceIdUpdated = "dsa";
         String targetIdUpdated = "ddsfdfs";
         List<String> trafficLightIDsUpdated = new ArrayList<>();
@@ -199,7 +200,7 @@ class ConnectionServiceTest {
 
         Connection updated = null;
         try {
-            connectionService.updateConnection(id, trafficLightIDsUpdated, sourceIdUpdated, targetIdUpdated, carFlowIDsUpdated);
+            connectionService.updateConnection(id, indexUpdated, trafficLightIDsUpdated, sourceIdUpdated, targetIdUpdated, carFlowIDsUpdated);
             updated = connectionService.getConnectionById(id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -207,6 +208,7 @@ class ConnectionServiceTest {
 
         assertEquals(2, connectionService.connectionRepository.count());
         assertNotNull(updated);
+        assertEquals(indexUpdated, updated.getIndex());
         assertEquals(trafficLightIDsUpdated, updated.getTrafficLightIds());
         assertEquals(sourceIdUpdated, updated.getSourceId());
         assertEquals(targetIdUpdated, updated.getTargetId());
@@ -228,6 +230,7 @@ class ConnectionServiceTest {
         Connection connection = connectionService.addConnection(index, trafficLightIDs, sourceId, targetId, carFlowIDs);
 
         String id = "";
+        int indexUpdated = 1;
         String sourceIdUpdated = "dsa";
         String targetIdUpdated = "ddsfdfs";
         List<String> trafficLightIDsUpdated = new ArrayList<>();
@@ -240,7 +243,7 @@ class ConnectionServiceTest {
         carFlowIDsUpdated.add("gfd");
 
         Exception exception = assertThrows(Exception.class, () -> {
-            connectionService.updateConnection(id, trafficLightIDsUpdated, sourceIdUpdated, targetIdUpdated, carFlowIDsUpdated);
+            connectionService.updateConnection(id, indexUpdated, trafficLightIDsUpdated, sourceIdUpdated, targetIdUpdated, carFlowIDsUpdated);
             connectionService.deleteConnectionById(id);
         });
 

@@ -153,13 +153,14 @@ class RoadServiceTest {
         Road road = roadService.addRoad(index, name, type, capacity);
 
         String id = road.getId();
+        int indexUpdated = 1;
         String nameUpdated = "Jon";
         RoadType typeUpdated = RoadType.INTER;
         int capacityUpdated = 11;
 
         Road updated = null;
         try {
-            roadService.updateRoad(id, nameUpdated, typeUpdated, capacityUpdated);
+            roadService.updateRoad(id, indexUpdated, nameUpdated, typeUpdated, capacityUpdated);
             updated = roadService.getRoadById(id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -167,7 +168,7 @@ class RoadServiceTest {
 
         assertEquals(1, roadService.roadRepository.count());
         assertNotNull(updated);
-        assertEquals(index, updated.getIndex());
+        assertEquals(indexUpdated, updated.getIndex());
         assertEquals(nameUpdated, updated.getName());
         assertEquals(typeUpdated, updated.getType());
         assertEquals(capacityUpdated, updated.getCapacity());
@@ -183,12 +184,13 @@ class RoadServiceTest {
         Road road = roadService.addRoad(index, name, type, capacity);
 
         String id = "";
+        int indexUpdated = 1;
         String nameUpdated = "Jon";
         RoadType typeUpdated = RoadType.INTER;
         int capacityUpdated = 11;
 
         Exception exception = assertThrows(Exception.class, () -> {
-            roadService.updateRoad(id, nameUpdated, typeUpdated, capacityUpdated);
+            roadService.updateRoad(id, indexUpdated, nameUpdated, typeUpdated, capacityUpdated);
             roadService.deleteRoadById(id);
         });
 

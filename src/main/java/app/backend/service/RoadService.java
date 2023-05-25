@@ -35,13 +35,14 @@ public class RoadService {
         return road.get();
     }
 
-    public Road updateRoad(String id, String name, RoadType type, int capacity) throws Exception {
+    public Road updateRoad(String id, int index, String name, RoadType type, int capacity) throws Exception {
         Optional<Road> road = roadRepository.findById(id);
         if (road.isEmpty()){
             throw new Exception("Cannot update road with id: " + id + " because it does not exist.");
         }
         Road roadToUpdate = road.get();
 
+        roadToUpdate.setIndex(index);
         roadToUpdate.setName(name);
         roadToUpdate.setType(type);
         roadToUpdate.setCapacity(capacity);

@@ -1,6 +1,8 @@
 package app.backend.service;
 
 import app.backend.document.TrafficLight;
+import app.backend.document.road.Road;
+import app.backend.document.road.RoadType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,5 +120,53 @@ class TrafficLightServiceTest {
 
         assertEquals(3, trafficLightService.trafficLightRepository.count());
         assertEquals("Cannot delete trafficLight with id: " + id + " because it does not exist.", exception.getMessage());
+    }
+
+    @Test
+    void updateTrafficLightById_properTrafficLight_trafficLightUpdated() {
+        int index = 0;
+
+        TrafficLight trafficLight = trafficLightService.addTrafficLight(index);
+
+        String id = trafficLight.getId();
+        int indexUpdated = 1;
+
+        TrafficLight updated = null;
+        try {
+            trafficLightService.updateTrafficLight(id, indexUpdated);
+            updated = trafficLightService.getTrafficLightById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(1, trafficLightService.trafficLightRepository.count());
+        assertNotNull(updated);
+        assertEquals(indexUpdated, updated.getIndex());
+    }
+
+    @Test
+    void updateTrafficLightById_improperTrafficLight_trafficLightNotFound() {
+        int index = 0;
+
+        TrafficLight trafficLight = trafficLightService.addTrafficLight(index);
+
+        String id = "";
+        int indexUpdated = 1;
+
+        TrafficLight updated = null;
+        try {
+            trafficLightService.updateTrafficLight(id, indexUpdated);
+            updated = trafficLightService.getTrafficLightById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            trafficLightService.updateTrafficLight(id, indexUpdated);
+            trafficLightService.deleteTrafficLightById(id);
+        });
+
+        assertEquals(1, trafficLightService.trafficLightRepository.count());
+        assertEquals("Cannot update trafficLight with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }

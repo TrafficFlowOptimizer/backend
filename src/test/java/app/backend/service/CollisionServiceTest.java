@@ -155,13 +155,14 @@ class CollisionServiceTest {
         Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
 
         String id = collision.getId();
+        int indexUpdated = 1;
         String trafficLight1IdUpdated = "dsadasasd";
         String trafficLight2IdUpdated = "fdsfds";
         CollisionType typeUpdated = CollisionType.LIGHT;
 
         Collision updated = null;
         try {
-            collisionService.updateCollision(id, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated);
+            collisionService.updateCollision(id, indexUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated);
             updated = collisionService.getCollisionById(id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -169,7 +170,7 @@ class CollisionServiceTest {
 
         assertEquals(1, collisionService.collisionRepository.count());
         assertNotNull(updated);
-        assertEquals(index, updated.getIndex());
+        assertEquals(indexUpdated, updated.getIndex());
         assertEquals(trafficLight1IdUpdated, updated.getTrafficLight1Id());
         assertEquals(trafficLight2IdUpdated, updated.getTrafficLight2Id());
         assertEquals(typeUpdated, updated.getType());
@@ -185,12 +186,13 @@ class CollisionServiceTest {
         Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
 
         String id = "";
+        int indexUpdated = 1;
         String trafficLight1IdUpdated = "dsadasasd";
         String trafficLight2IdUpdated = "fdsfds";
         CollisionType typeUpdated = CollisionType.LIGHT;
 
         Exception exception = assertThrows(Exception.class, () -> {
-            collisionService.updateCollision(id, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated);
+            collisionService.updateCollision(id, indexUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated);
             collisionService.deleteCollisionById(id);
         });
 
