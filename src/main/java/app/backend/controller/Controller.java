@@ -67,6 +67,9 @@ public class Controller {
 
     @GetMapping(value = "/test/{crossroadId}")
     public String parseJSON(@PathVariable String crossroadId) {
+        JSONObject jsonBase = new JSONObject();
+        jsonBase.append("time", 10);
+
         JSONObject json = new JSONObject();
 
         try {
@@ -161,7 +164,9 @@ public class Controller {
             e.printStackTrace();
         }
 
-        return json.toString();
+        jsonBase.append("configuration", json);
+
+        return jsonBase.toString();
     }
 
     @GetMapping(value = "/sample-data")
