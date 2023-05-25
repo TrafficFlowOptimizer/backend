@@ -153,14 +153,6 @@ class TrafficLightServiceTest {
         String id = "";
         int indexUpdated = 1;
 
-        TrafficLight updated = null;
-        try {
-            trafficLightService.updateTrafficLight(id, indexUpdated);
-            updated = trafficLightService.getTrafficLightById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         Exception exception = assertThrows(Exception.class, () -> {
             trafficLightService.updateTrafficLight(id, indexUpdated);
             trafficLightService.deleteTrafficLightById(id);

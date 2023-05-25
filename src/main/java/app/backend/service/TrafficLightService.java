@@ -34,7 +34,7 @@ public class TrafficLightService {
         return trafficLight.get();
     }
 
-    public TrafficLight updateTrafficLight(String id, int index) throws Exception{
+    public TrafficLight updateTrafficLight(String id, int index) throws Exception {
         Optional<TrafficLight> trafficLight = trafficLightRepository.findById(id);
         if (trafficLight.isEmpty()) {
             throw new Exception("Cannot update trafficLight with id: " + id + " because it does not exist.");
