@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -64,11 +65,9 @@ public class Controller {
                 }).toList();
     }
 
-    @GetMapping(value = "/test")
-    public String parseJSON() {
-
+    @GetMapping(value = "/test/{crossroadId}")
+    public String parseJSON(@PathVariable String crossroadId) {
         JSONObject json = new JSONObject();
-        String crossroadId = "id";
 
         try {
             Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
@@ -78,7 +77,7 @@ public class Controller {
             json.append("number_of_roads", roads.size());
 
 //  -----------------------------  collisions  -----------------------------
-            List<String> collisions = crossroad.getRoadIds();
+            List<String> collisions = crossroad.getCollisionIds();
             Map<Boolean, List<String>> collisionsDivided = collisions
                     .stream()
                     .collect(Collectors.partitioningBy(collisionId -> {
@@ -167,9 +166,7 @@ public class Controller {
 
     @GetMapping(value = "/sample-data")
     public String populateDb() {
-        this.populateAll();
-
-        return "here";
+        return this.populateAll();
     }
 
     final int numberOfLights = 12;
@@ -337,7 +334,7 @@ public class Controller {
         return collisionsIDs;
     }
 
-    private void populateAll() {
+    private String populateAll() {
         ArrayList<String> lightsIDs = populateLights();
         ArrayList<String> carFlowsIDs = populateCarFlows();
         ArrayList<String> roadsIDs = populateRoads();
@@ -358,5 +355,7 @@ public class Controller {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return crossroad.getId();
     }
 }
