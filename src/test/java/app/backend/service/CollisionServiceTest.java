@@ -62,12 +62,13 @@ class CollisionServiceTest {
 
     @Test
     public void getCollisionById_properCollision_correctCollision() {
+        int index = 0;
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(trafficLight1Id, trafficLight2Id, type);
-        collisionService.addCollision("sddas", "dsaadsds", CollisionType.LIGHT);
+        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
+        collisionService.addCollision(1, "sddas", "dsaadsds", CollisionType.LIGHT);
 
         Collision found = null;
         try {
@@ -78,6 +79,7 @@ class CollisionServiceTest {
 
         assertEquals(2, collisionService.collisionRepository.count());
         assertNotNull(found);
+        assertEquals(index, found.getIndex());
         assertEquals(trafficLight1Id, found.getTrafficLight1Id());
         assertEquals(trafficLight2Id, found.getTrafficLight2Id());
         assertEquals(type, found.getType());
@@ -85,15 +87,17 @@ class CollisionServiceTest {
 
     @Test
     public void addCollision_properCollision_collisionAdded() {
+        int index = 0;
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(trafficLight1Id, trafficLight2Id, type);
-        collisionService.addCollision("sddas", "dsaadsds", CollisionType.LIGHT);
+        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
+        collisionService.addCollision(1, "sddas", "dsaadsds", CollisionType.LIGHT);
 
         assertEquals(2, collisionService.collisionRepository.count());
         assertNotNull(collision);
+        assertEquals(index, collision.getIndex());
         assertEquals(trafficLight1Id, collision.getTrafficLight1Id());
         assertEquals(trafficLight2Id, collision.getTrafficLight2Id());
         assertEquals(type, collision.getType());
@@ -101,11 +105,12 @@ class CollisionServiceTest {
 
     @Test
     public void deleteCollisionById_properCollision_collisionDeleted() {
+        int index = 0;
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(trafficLight1Id, trafficLight2Id, type);
+        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
 
         String id = collision.getId();
         try {
@@ -124,11 +129,12 @@ class CollisionServiceTest {
 
     @Test
     public void deleteCollisionById_improperCollision_collisionNotFound() {
+        int index = 0;
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(trafficLight1Id, trafficLight2Id, type);
+        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
         String id = "";
 
         Exception exception = assertThrows(Exception.class, () -> {
@@ -141,11 +147,12 @@ class CollisionServiceTest {
 
     @Test
     public void updateCollision_properCollision_collisionUpdated() {
+        int index = 0;
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(trafficLight1Id, trafficLight2Id, type);
+        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
 
         String id = collision.getId();
         String trafficLight1IdUpdated = "dsadasasd";
@@ -162,6 +169,7 @@ class CollisionServiceTest {
 
         assertEquals(1, collisionService.collisionRepository.count());
         assertNotNull(updated);
+        assertEquals(index, updated.getIndex());
         assertEquals(trafficLight1IdUpdated, updated.getTrafficLight1Id());
         assertEquals(trafficLight2IdUpdated, updated.getTrafficLight2Id());
         assertEquals(typeUpdated, updated.getType());
@@ -169,11 +177,12 @@ class CollisionServiceTest {
 
     @Test
     public void updateCollision_improperCollision_collisionNotFound() {
+        int index = 0;
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(trafficLight1Id, trafficLight2Id, type);
+        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
 
         String id = "";
         String trafficLight1IdUpdated = "dsadasasd";

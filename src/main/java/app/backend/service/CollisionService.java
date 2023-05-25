@@ -22,8 +22,8 @@ public class CollisionService {
         return collision.get();
     }
 
-    public Collision addCollision(String trafficLight1Id, String trafficLight2Id, CollisionType type){
-        return collisionRepository.insert(new Collision(trafficLight1Id, trafficLight2Id, type));
+    public Collision addCollision(int index, String trafficLight1Id, String trafficLight2Id, CollisionType type){
+        return collisionRepository.insert(new Collision(index, trafficLight1Id, trafficLight2Id, type));
     }
 
     public Collision deleteCollisionById(String id) throws Exception {

@@ -64,6 +64,7 @@ class ConnectionServiceTest {
 
     @Test
     public void getConnectionById_properConnection_correctConnection() {
+        int index = 0;
         String sourceId = "abc";
         String targetId = "abc";
         List<String> trafficLightIDs = new ArrayList<>();
@@ -73,8 +74,8 @@ class ConnectionServiceTest {
         carFlowIDs.add("dfg");
         carFlowIDs.add("gfd");
 
-        Connection connection = connectionService.addConnection(trafficLightIDs, sourceId, targetId, carFlowIDs);
-        connectionService.addConnection(new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
+        Connection connection = connectionService.addConnection(index, trafficLightIDs, sourceId, targetId, carFlowIDs);
+        connectionService.addConnection(1, new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
 
         Connection found = null;
         try {
@@ -85,6 +86,7 @@ class ConnectionServiceTest {
 
         assertEquals(2, connectionService.connectionRepository.count());
         assertNotNull(found);
+        assertEquals(index, found.getIndex());
         assertEquals(trafficLightIDs, found.getTrafficLightIds());
         assertEquals(sourceId, found.getSourceId());
         assertEquals(targetId, found.getTargetId());
@@ -93,6 +95,7 @@ class ConnectionServiceTest {
 
     @Test
     public void addConnection_properConnection_connectionAdded() {
+        int index = 0;
         String sourceId = "abc";
         String targetId = "abc";
         List<String> trafficLightIDs = new ArrayList<>();
@@ -102,10 +105,11 @@ class ConnectionServiceTest {
         carFlowIDs.add("dfg");
         carFlowIDs.add("gfd");
 
-        Connection connection = connectionService.addConnection(trafficLightIDs, sourceId, targetId, carFlowIDs);
-        connectionService.addConnection(new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
+        Connection connection = connectionService.addConnection(index, trafficLightIDs, sourceId, targetId, carFlowIDs);
+        connectionService.addConnection(1, new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
 
         assertEquals(2, connectionService.connectionRepository.count());
+        assertEquals(index, connection.getIndex());
         assertEquals(trafficLightIDs, connection.getTrafficLightIds());
         assertEquals(sourceId, connection.getSourceId());
         assertEquals(targetId, connection.getTargetId());
@@ -114,6 +118,7 @@ class ConnectionServiceTest {
 
     @Test
     public void deleteConnectionById_properConnection_connectionDeleted() {
+        int index = 0;
         String sourceId = "abc";
         String targetId = "abc";
         List<String> trafficLightIDs = new ArrayList<>();
@@ -123,8 +128,8 @@ class ConnectionServiceTest {
         carFlowIDs.add("dfg");
         carFlowIDs.add("gfd");
 
-        Connection connection = connectionService.addConnection(trafficLightIDs, sourceId, targetId, carFlowIDs);
-        connectionService.addConnection(new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
+        Connection connection = connectionService.addConnection(index, trafficLightIDs, sourceId, targetId, carFlowIDs);
+        connectionService.addConnection(1, new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
 
         String id = connection.getId();
         try {
@@ -143,6 +148,7 @@ class ConnectionServiceTest {
 
     @Test
     public void deleteConnectionById_improperConnection_connectionNotFound() {
+        int index = 0;
         String sourceId = "abc";
         String targetId = "abc";
         List<String> trafficLightIDs = new ArrayList<>();
@@ -152,8 +158,8 @@ class ConnectionServiceTest {
         carFlowIDs.add("dfg");
         carFlowIDs.add("gfd");
 
-        Connection connection = connectionService.addConnection(trafficLightIDs, sourceId, targetId, carFlowIDs);
-        connectionService.addConnection(new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
+        Connection connection = connectionService.addConnection(index, trafficLightIDs, sourceId, targetId, carFlowIDs);
+        connectionService.addConnection(1, new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
         String id = "";
 
         Exception exception = assertThrows(Exception.class, () -> {
@@ -166,6 +172,7 @@ class ConnectionServiceTest {
 
     @Test
     public void updateConnection_properConnection_connectionUpdated() {
+        int index = 0;
         String sourceId = "abc";
         String targetId = "abc";
         List<String> trafficLightIDs = new ArrayList<>();
@@ -175,8 +182,8 @@ class ConnectionServiceTest {
         carFlowIDs.add("dfg");
         carFlowIDs.add("gfd");
 
-        Connection connection = connectionService.addConnection(trafficLightIDs, sourceId, targetId, carFlowIDs);
-        connectionService.addConnection(new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
+        Connection connection = connectionService.addConnection(index, trafficLightIDs, sourceId, targetId, carFlowIDs);
+        connectionService.addConnection(1, new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
 
         String id = connection.getId();
         String sourceIdUpdated = "dsa";
@@ -208,6 +215,7 @@ class ConnectionServiceTest {
 
     @Test
     public void updateConnection_improperConnection_connectionNotFound() {
+        int index = 0;
         String sourceId = "abc";
         String targetId = "abc";
         List<String> trafficLightIDs = new ArrayList<>();
@@ -217,7 +225,7 @@ class ConnectionServiceTest {
         carFlowIDs.add("dfg");
         carFlowIDs.add("gfd");
 
-        Connection connection = connectionService.addConnection(trafficLightIDs, sourceId, targetId, carFlowIDs);
+        Connection connection = connectionService.addConnection(index, trafficLightIDs, sourceId, targetId, carFlowIDs);
 
         String id = "";
         String sourceIdUpdated = "dsa";

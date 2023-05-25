@@ -2,6 +2,7 @@ package app.backend.document.collision;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -9,6 +10,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Collision {
     @Id
     private String id;
+
+    @PositiveOrZero
+    private int index;
 
     @NotBlank
     private String trafficLight1Id;
@@ -19,7 +23,8 @@ public class Collision {
     @NotNull
     private CollisionType type;
 
-    public Collision(String trafficLight1Id, String trafficLight2Id, CollisionType type) {
+    public Collision(int index, String trafficLight1Id, String trafficLight2Id, CollisionType type) {
+        this.index = index;
         this.trafficLight1Id = trafficLight1Id;
         this.trafficLight2Id = trafficLight2Id;
         this.type = type;
@@ -31,6 +36,14 @@ public class Collision {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     public String getTrafficLight1Id() {

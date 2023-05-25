@@ -1,5 +1,6 @@
 package app.backend.document;
 
+import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -8,7 +9,12 @@ public class TrafficLight {
     @Id
     private String id;
 
-    public TrafficLight() {}
+    @PositiveOrZero
+    private int index;
+
+    public TrafficLight(int index) {
+        this.index = index;
+    }
 
     public String getId() {
         return id;
@@ -16,5 +22,13 @@ public class TrafficLight {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

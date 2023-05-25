@@ -62,12 +62,13 @@ class RoadServiceTest {
 
     @Test
     public void getRoadById_properRoad_correctRoad() {
+        int index = 0;
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
 
-        Road road = roadService.addRoad(name, type, capacity);
-        roadService.addRoad("Notjohn", RoadType.TARGET, 12222);
+        Road road = roadService.addRoad(index, name, type, capacity);
+        roadService.addRoad(1, "Notjohn", RoadType.TARGET, 12222);
 
         Road found = null;
         try {
@@ -78,6 +79,7 @@ class RoadServiceTest {
 
         assertEquals(2, roadService.roadRepository.count());
         assertNotNull(found);
+        assertEquals(index, found.getIndex());
         assertEquals(name, found.getName());
         assertEquals(type, found.getType());
         assertEquals(capacity, found.getCapacity());
@@ -85,13 +87,15 @@ class RoadServiceTest {
 
     @Test
     public void addRoad_properRoad_roadAdded() {
+        int index = 0;
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
 
-        Road road = roadService.addRoad(name, type, capacity);
+        Road road = roadService.addRoad(index, name, type, capacity);
 
         assertEquals(1, roadService.roadRepository.count());
+        assertEquals(index, road.getIndex());
         assertEquals(name, road.getName());
         assertEquals(type, road.getType());
         assertEquals(capacity, road.getCapacity());
@@ -99,11 +103,12 @@ class RoadServiceTest {
 
     @Test
     public void deleteRoadById_properRoad_roadDeleted() {
+        int index = 0;
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
 
-        Road road = roadService.addRoad(name, type, capacity);
+        Road road = roadService.addRoad(index, name, type, capacity);
 
         String id = road.getId();
         try {
@@ -122,11 +127,12 @@ class RoadServiceTest {
 
     @Test
     public void deleteRoadById_improperRoad_roadNotFound() {
+        int index = 0;
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
 
-        Road road = roadService.addRoad(name, type, capacity);
+        Road road = roadService.addRoad(index, name, type, capacity);
         String id = "";
 
         Exception exception = assertThrows(Exception.class, () -> {
@@ -139,11 +145,12 @@ class RoadServiceTest {
 
     @Test
     public void updateRoad_properRoad_roadUpdated() {
+        int index = 0;
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
 
-        Road road = roadService.addRoad(name, type, capacity);
+        Road road = roadService.addRoad(index, name, type, capacity);
 
         String id = road.getId();
         String nameUpdated = "Jon";
@@ -160,6 +167,7 @@ class RoadServiceTest {
 
         assertEquals(1, roadService.roadRepository.count());
         assertNotNull(updated);
+        assertEquals(index, updated.getIndex());
         assertEquals(nameUpdated, updated.getName());
         assertEquals(typeUpdated, updated.getType());
         assertEquals(capacityUpdated, updated.getCapacity());
@@ -167,11 +175,12 @@ class RoadServiceTest {
 
     @Test
     public void updateRoad_improperRoad_roadNotFound() {
+        int index = 0;
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
 
-        Road road = roadService.addRoad(name, type, capacity);
+        Road road = roadService.addRoad(index, name, type, capacity);
 
         String id = "";
         String nameUpdated = "Jon";

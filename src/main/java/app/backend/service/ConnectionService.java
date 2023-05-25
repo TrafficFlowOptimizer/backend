@@ -22,8 +22,8 @@ public class ConnectionService {
         return connection.get();
     }
 
-    public Connection addConnection(List<String> trafficLightIDs, String sourceId, String targetId, List<String> carFlowIDs){
-        return connectionRepository.insert(new Connection(trafficLightIDs, sourceId, targetId, carFlowIDs));
+    public Connection addConnection(int index, List<String> trafficLightIDs, String sourceId, String targetId, List<String> carFlowIDs){
+        return connectionRepository.insert(new Connection(index, trafficLightIDs, sourceId, targetId, carFlowIDs));
     }
 
     public Connection deleteConnectionById(String id) throws Exception {

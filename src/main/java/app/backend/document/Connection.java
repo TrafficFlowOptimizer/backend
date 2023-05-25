@@ -1,6 +1,7 @@
 package app.backend.document;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -10,6 +11,9 @@ import java.util.List;
 public class Connection {
     @Id
     private String id;
+
+    @PositiveOrZero
+    private int index;
 
     //@NotEmpty?
     private List<String> trafficLightIds;
@@ -23,7 +27,8 @@ public class Connection {
     //@NotEmpty?
     private List<String> carFlowIds;
 
-    public Connection(List<String> trafficLightIds, String sourceId, String targetId, List<String> carFlowIds) {
+    public Connection(int index, List<String> trafficLightIds, String sourceId, String targetId, List<String> carFlowIds) {
+        this.index = index;
         this.trafficLightIds = trafficLightIds;
         this.sourceId = sourceId;
         this.targetId = targetId;
@@ -36,6 +41,14 @@ public class Connection {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     public List<String> getTrafficLightIds() {

@@ -22,8 +22,8 @@ public class RoadService {
         return road.get();
     }
 
-    public Road addRoad(String name, RoadType type, int capacity){
-        return roadRepository.insert(new Road(name, type, capacity));
+    public Road addRoad(int index, String name, RoadType type, int capacity){
+        return roadRepository.insert(new Road(index, name, type, capacity));
     }
 
     public Road deleteRoadById(String id) throws Exception {

@@ -11,17 +11,20 @@ public class Road {
     @Id
     private String id;
 
+    @PositiveOrZero
+    private int index;
+
     @NotBlank
     private String name;
 
     @NotNull
     private RoadType type;
 
-    // TODO: is 0 acceptable ??
     @PositiveOrZero
     private int capacity;
 
-    public Road(String name, RoadType type, int capacity) {
+    public Road(int index, String name, RoadType type, int capacity) {
+        this.index = index;
         this.name = name;
         this.type = type;
         this.capacity = capacity;
@@ -33,6 +36,14 @@ public class Road {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     public String getName() {

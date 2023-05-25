@@ -22,7 +22,6 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// TODO: dodać indeksy dla użytkowanika kiedy już będą zaimplementowane w DB
 @RestController
 public class Controller {
 
@@ -64,7 +63,6 @@ public class Controller {
                     return new JSONArray();
                 }).toList();
     }
-
 
     @GetMapping(value = "/test")
     public String parseJSON() {
@@ -181,7 +179,7 @@ public class Controller {
     private ArrayList<String> populateLights() {
         ArrayList<String> lightsIDs = new ArrayList<>();
         for (int i = 0; i < numberOfLights; i++) {
-            TrafficLight trafficLight = trafficLightService.addTrafficLight();
+            TrafficLight trafficLight = trafficLightService.addTrafficLight(i);
             lightsIDs.add(trafficLight.getId());
         }
         return lightsIDs;
@@ -218,13 +216,13 @@ public class Controller {
                 type = RoadType.SOURCE;
             }
             int capacity = -1;
-            Road road = roadService.addRoad(name, type, capacity);
+            Road road = roadService.addRoad(i, name, type, capacity);
             roadsIDs.add(road.getId());
         }
         return roadsIDs;
     }
 
-    private String addCollision(int light1, int light2, ArrayList<String> lightsType, ArrayList<String> lightsIDs){
+    private String addCollision(int index, int light1, int light2, ArrayList<String> lightsType, ArrayList<String> lightsIDs){
         CollisionType type;
         if (Objects.equals(lightsType.get(light1), "heavy") ||
                 Objects.equals(lightsType.get(light2), "heavy")) {
@@ -235,7 +233,7 @@ public class Controller {
         }
         String trafficLight1Id = lightsIDs.get(light1);
         String trafficLight2Id = lightsIDs.get(light2);
-        Collision collision = collisionService.addCollision(trafficLight1Id, trafficLight2Id, type);
+        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
         return collision.getId();
     }
 
@@ -249,7 +247,7 @@ public class Controller {
             lightsType.add("light");
         }
 
-
+        int index = 0;
         for (int light1 = 0; light1 < numberOfLights; light1++) {
             for (int light2 = light1; light2 < numberOfLights; light2++) {
                 if (light1 % 3 == 0) {
@@ -259,7 +257,7 @@ public class Controller {
                             light2 == (light1 + 8) % numberOfLights ||
                             light2 == (light1 + 9) % numberOfLights ||
                             light2 == (light1 + 10) % numberOfLights) {
-                        collisionsIDs.add(addCollision(light1, light2, lightsType, lightsIDs));
+                        collisionsIDs.add(addCollision(index, light1, light2, lightsType, lightsIDs));
                     }
                 }
                 if (light1 % 3 == 1) {
@@ -280,18 +278,18 @@ public class Controller {
                         }
                         String trafficLight1Id = lightsIDs.get(light1);
                         String trafficLight2Id = lightsIDs.get(light2);
-                        Collision collision = collisionService.addCollision(trafficLight1Id, trafficLight2Id, type);
+                        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
                         collisionsIDs.add(collision.getId());
                     }
                 }
                 if (light1 % 3 == 2) {
                     if (light2 == (light1 + 4) % numberOfLights || light2 == (light1 + 8) % numberOfLights) {
-                        collisionsIDs.add(addCollision(light1, light2, lightsType, lightsIDs));
+                        collisionsIDs.add(addCollision(index, light1, light2, lightsType, lightsIDs));
                     }
                 }
+                index++;
             }
         }
-
         return collisionsIDs;
     }
 
@@ -299,7 +297,6 @@ public class Controller {
                                                   ArrayList<String> carFlowsIDs,
                                                   ArrayList<String> roadsIDs) {
         ArrayList<String> collisionsIDs = new ArrayList<>();
-
 
         for (int i = 0; i < 4; i++) {
             ArrayList<String> lightsIDsTMP = new ArrayList<>();
@@ -313,7 +310,7 @@ public class Controller {
             targetId = roadsIDs.get(((i * 3 + 1) + 8) % numberOfRoads);
             lightsIDsTMP.add(lightsIDs.get(i * 3));
             carFlowsIDsTMP.add(carFlowsIDs.get(i));
-            connection = connectionService.addConnection(lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
+            connection = connectionService.addConnection(3*i, lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
 
 
@@ -323,7 +320,7 @@ public class Controller {
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 1));
             carFlowsIDsTMP.clear();
             carFlowsIDsTMP.add(carFlowsIDs.get(i + 1));
-            connection = connectionService.addConnection(lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
+            connection = connectionService.addConnection(3*i + 1, lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
 
 
@@ -334,7 +331,7 @@ public class Controller {
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 2));
             carFlowsIDsTMP.clear();
             carFlowsIDsTMP.add(carFlowsIDs.get(i + 2));
-            connection = connectionService.addConnection(lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
+            connection = connectionService.addConnection(3*i + 2, lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
         }
         return collisionsIDs;
@@ -346,7 +343,6 @@ public class Controller {
         ArrayList<String> roadsIDs = populateRoads();
         ArrayList<String> collisionsIDs = populateCollisions(lightsIDs);
         ArrayList<String> connectionsIDs = populateConnections(lightsIDs, carFlowsIDs, roadsIDs);
-
 
         String name = "Crossroad";
         String location = "Kijowska-KWielkiego";
@@ -362,6 +358,5 @@ public class Controller {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }

@@ -21,8 +21,8 @@ public class TrafficLightService {
         return trafficLight.get();
     }
 
-    public TrafficLight addTrafficLight(){
-        return trafficLightRepository.insert(new TrafficLight());
+    public TrafficLight addTrafficLight(int index){
+        return trafficLightRepository.insert(new TrafficLight(index));
     }
 
     public TrafficLight deleteTrafficLightById(String id) throws Exception {
