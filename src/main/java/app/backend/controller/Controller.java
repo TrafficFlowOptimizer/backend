@@ -181,7 +181,7 @@ public class Controller {
     private ArrayList<String> populateLights() {
         ArrayList<String> lightsIDs = new ArrayList<>();
         for (int i = 0; i < numberOfLights; i++) {
-            TrafficLight trafficLight = trafficLightService.addTrafficLight(i);
+            TrafficLight trafficLight = trafficLightService.addTrafficLight(i+1);
             lightsIDs.add(trafficLight.getId());
         }
         return lightsIDs;
@@ -218,7 +218,7 @@ public class Controller {
                 type = RoadType.SOURCE;
             }
             int capacity = -1;
-            Road road = roadService.addRoad(i, name, type, capacity);
+            Road road = roadService.addRoad(i+1, name, type, capacity);
             roadsIDs.add(road.getId());
         }
         return roadsIDs;
@@ -249,7 +249,7 @@ public class Controller {
             lightsType.add("light");
         }
 
-        int index = 0;
+        int index = 1;
         for (int light1 = 0; light1 < numberOfLights; light1++) {
             for (int light2 = light1; light2 < numberOfLights; light2++) {
                 if (light1 % 3 == 0) {
@@ -312,7 +312,7 @@ public class Controller {
             targetId = roadsIDs.get(((i * 3 + 1) + 8) % numberOfRoads);
             lightsIDsTMP.add(lightsIDs.get(i * 3));
             carFlowsIDsTMP.add(carFlowsIDs.get(i));
-            connection = connectionService.addConnection(3*i, lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
+            connection = connectionService.addConnection(3*i+1, lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
 
 
@@ -322,7 +322,7 @@ public class Controller {
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 1));
             carFlowsIDsTMP.clear();
             carFlowsIDsTMP.add(carFlowsIDs.get(i + 1));
-            connection = connectionService.addConnection(3*i + 1, lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
+            connection = connectionService.addConnection(3*i + 2, lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
 
 
@@ -333,7 +333,7 @@ public class Controller {
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 2));
             carFlowsIDsTMP.clear();
             carFlowsIDsTMP.add(carFlowsIDs.get(i + 2));
-            connection = connectionService.addConnection(3*i + 2, lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
+            connection = connectionService.addConnection(3*i + 3, lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
         }
         return collisionsIDs;
