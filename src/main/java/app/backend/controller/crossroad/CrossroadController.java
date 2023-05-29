@@ -6,16 +6,13 @@ import app.backend.service.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -79,17 +76,23 @@ public class CrossroadController {
         return "ok";
     }
 
-    @GetMapping(value="/crossroad/{crossroadId}/optimization")
+    @GetMapping(value="/crossroad/{crossroadId}/optimization",  produces = MediaType.APPLICATION_JSON_VALUE)
     public String getOptimization(@PathVariable String crossroadId) {
         int serverPort = 9091;
 
+        String result = "{}";
         try (Socket socket = new Socket("localhost", serverPort)) {
             JSONObject jsonData = this.parseJSON(crossroadId);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(jsonData.toString());
+            out.println(jsonData);
+
+            InputStream optimizerResponse =  socket.getInputStream();
+            Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
+            result = s.hasNext() ? s.next() : "";
+            System.out.println(result);
         } catch (IOException ignored) {}
 
-        return "optimization";
+        return result;
     }
 
     private JSONObject parseJSON(@PathVariable String crossroadId) {
@@ -178,6 +181,12 @@ public class CrossroadController {
             int numberOfLights = lights.size();
 
             json.put("number_of_lights", numberOfLights);
+
+            List<Integer> lights_IDs = new ArrayList<>();
+            for (int i = 1; i <= numberOfLights; i++){
+                lights_IDs.add(i);
+            }
+            json.put("lights_IDs", lights_IDs);
 
 //  -----------------------------  fixed values  -----------------------------
             json.put("time_units_in_minute", 60); // fixed for now
