@@ -85,6 +85,7 @@ public class CrossroadController {
         try (Socket socket = new Socket("localhost", serverPort)) {
             JSONObject jsonData = this.parseJSON(crossroadId);
             OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
+            System.out.println(jsonData);
             out.write(jsonData.toString());
         } catch (IOException ignored) {}
 
@@ -93,7 +94,7 @@ public class CrossroadController {
 
     private JSONObject parseJSON(@PathVariable String crossroadId) {
         JSONObject jsonBase = new JSONObject();
-        jsonBase.append("time", 10);
+        jsonBase.put("time", 10);
 
         JSONObject json = new JSONObject();
 
@@ -102,7 +103,7 @@ public class CrossroadController {
 
 //  -----------------------------  roads  -----------------------------
             List<String> roads = crossroad.getRoadIds();
-            json.append("number_of_roads", roads.size());
+            json.put("number_of_roads", roads.size());
 
 //  -----------------------------  collisions  -----------------------------
             List<String> collisions = crossroad.getCollisionIds();
@@ -120,15 +121,15 @@ public class CrossroadController {
             List<String> lightCollisions = collisionsDivided.get(true);
             List<JSONArray> lightsLightCollisions = mapCollisions(lightCollisions);
 
-            json.append("lights_light_collisions", lightsLightCollisions);
-            json.append("light_collisions_no", lightsLightCollisions.size());
+            json.put("lights_light_collisions", lightsLightCollisions);
+            json.put("light_collisions_no", lightsLightCollisions.size());
 
 
             List<String> heavyCollisions = collisionsDivided.get(false);
             List<JSONArray> lightsHeavyCollisions = mapCollisions(heavyCollisions);
 
-            json.append("lights_heavy_collisions", lightsHeavyCollisions);
-            json.append("heavy_collisions_no", lightsHeavyCollisions.size());
+            json.put("lights_heavy_collisions", lightsHeavyCollisions);
+            json.put("heavy_collisions_no", lightsHeavyCollisions.size());
 
 //  -----------------------------  connections  -----------------------------
             List<String> connections = crossroad.getConnectionIds();
@@ -138,13 +139,13 @@ public class CrossroadController {
                         try {
                             return new JSONArray(
                                     Arrays.asList(
-                                            connectionService.getConnectionById(connectionId).getSourceId(),
-                                            connectionService.getConnectionById(connectionId).getTargetId(),
+                                            roadService.getRoadById(connectionService.getConnectionById(connectionId).getSourceId()).getIndex(),
+                                            roadService.getRoadById(connectionService.getConnectionById(connectionId).getTargetId()).getIndex(),
                                             connectionService.getConnectionById(connectionId).getTrafficLightIds().size() > 0
-                                                    ? connectionService.getConnectionById(connectionId).getTrafficLightIds().get(0) :
+                                                    ? trafficLightService.getTrafficLightById(connectionService.getConnectionById(connectionId).getTrafficLightIds().get(0)).getIndex() :
                                                     -1,
                                             connectionService.getConnectionById(connectionId).getTrafficLightIds().size() > 1
-                                                    ? connectionService.getConnectionById(connectionId).getTrafficLightIds().get(1) :
+                                                    ? trafficLightService.getTrafficLightById(connectionService.getConnectionById(connectionId).getTrafficLightIds().get(1)).getIndex():
                                                     -1
                                     )
                             );
@@ -154,8 +155,8 @@ public class CrossroadController {
                         return new JSONArray();
                     }).toList();
 
-            json.append("roads_connections", roadConnections);
-            json.append("number_of_connections", roadConnections.size());
+            json.put("roads_connections", roadConnections);
+            json.put("number_of_connections", roadConnections.size());
 
 //  -----------------------------  car flow  -----------------------------
             List<Integer> carFlows = connections
@@ -170,26 +171,26 @@ public class CrossroadController {
                         return null;
                     }).toList();
 
-            json.append("car_flow_per_min", carFlows);
+            json.put("car_flow_per_min", carFlows);
 
 //  -----------------------------  lights  -----------------------------
             List<String> lights = crossroad.getTrafficLightIds();
             int numberOfLights = lights.size();
 
-            json.append("number_of_lights", numberOfLights);
+            json.put("number_of_lights", numberOfLights);
 
 //  -----------------------------  fixed values  -----------------------------
-            json.append("time_units_in_minute", 60); // fixed for now
-            json.append("number_of_time_units", 60); // fixed for now
+            json.put("time_units_in_minute", 60); // fixed for now
+            json.put("number_of_time_units", 60); // fixed for now
 
-            json.append("lights_type", new JSONArray()); // optional
-            json.append("lights", new JSONArray()); // optional
+            json.put("lights_type", new JSONArray()); // optional
+            json.put("lights", new JSONArray()); // optional
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        jsonBase.append("configuration", json);
+        jsonBase.put("configuration", json);
 
         return jsonBase;
     }
@@ -201,8 +202,8 @@ public class CrossroadController {
                     try {
                         return new JSONArray(
                                 Arrays.asList(
-                                        collisionService.getCollisionById(collisionId).getTrafficLight1Id(),
-                                        collisionService.getCollisionById(collisionId).getTrafficLight2Id()
+                                        trafficLightService.getTrafficLightById(collisionService.getCollisionById(collisionId).getTrafficLight1Id()).getIndex(),
+                                        trafficLightService.getTrafficLightById(collisionService.getCollisionById(collisionId).getTrafficLight2Id()).getIndex()
                                 )
                         );
                     } catch (Exception e) {

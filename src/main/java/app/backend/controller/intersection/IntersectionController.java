@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/intersections")
 public class IntersectionController {
 
     @Autowired
@@ -16,18 +17,18 @@ public class IntersectionController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(value="/intersections")
+    @PostMapping(value="")
     public String upload() {
         return "upload";
     }
 
-    @GetMapping(value="/intersections/{user}")
+    @GetMapping(value="/{user}")
     public List<Crossroad> list(@PathVariable String userId) { //trzeba podać userId; docelowo token będzie to załatwiał
         List<Crossroad> intersections = crossroadService.getCrossroadByCreatorId(userId);
         return intersections;
     }
 
-    @GetMapping(value="/intersections/{id}")
+    @GetMapping(value="/{id}")
     public Crossroad get(@PathVariable String id) {
         try {
             return crossroadService.getCrossroadById(id);
@@ -36,7 +37,7 @@ public class IntersectionController {
         }
     }
 
-    @PutMapping(value="/intersections/{id}")
+    @PutMapping(value="/{id}")
     public String update() {
         return "update";
     }
