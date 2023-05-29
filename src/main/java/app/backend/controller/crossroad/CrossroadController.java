@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -81,16 +83,20 @@ public class CrossroadController {
         int serverPort = 9091;
 
         String result = "{}";
-        try (Socket socket = new Socket("localhost", serverPort)) {
-            JSONObject jsonData = this.parseJSON(crossroadId);
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(jsonData);
-
-            InputStream optimizerResponse =  socket.getInputStream();
-            Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
-            result = s.hasNext() ? s.next() : "";
-            System.out.println(result);
-        } catch (IOException ignored) {}
+        try {
+            result = new String(Files.readAllBytes(Paths.get("templateOutput.json")));
+        }
+        catch (Exception ignored){}
+//        try (Socket socket = new Socket("localhost", serverPort)) {
+//            JSONObject jsonData = this.parseJSON(crossroadId);
+//            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+//            out.println(jsonData);
+//
+//            InputStream optimizerResponse =  socket.getInputStream();
+//            Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
+//            result = s.hasNext() ? s.next() : "";
+//            System.out.println(result);
+//        } catch (IOException ignored) {}
 
         return result;
     }
