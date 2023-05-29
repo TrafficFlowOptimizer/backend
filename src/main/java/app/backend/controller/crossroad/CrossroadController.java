@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -80,13 +81,12 @@ public class CrossroadController {
 
     @GetMapping(value="/crossroad/{crossroadId}/optimization")
     public String getOptimization(@PathVariable String crossroadId) {
-        int serverPort = 8000;
+        int serverPort = 9091;
 
         try (Socket socket = new Socket("localhost", serverPort)) {
             JSONObject jsonData = this.parseJSON(crossroadId);
-            OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
-            System.out.println(jsonData);
-            out.write(jsonData.toString());
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            out.println(jsonData.toString());
         } catch (IOException ignored) {}
 
         return "optimization";
