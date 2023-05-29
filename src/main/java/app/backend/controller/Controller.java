@@ -242,7 +242,8 @@ public class Controller {
         ArrayList<String> collisionsIDs = populateCollisions(lightsIDs);
         ArrayList<String> connectionsIDs = populateConnections(lightsIDs, carFlowsIDs, roadsIDs);
 
-        String name = "Crossroad";
+        int randomName = new Random().nextInt(100);
+        String name = "Crossroad" + randomName;
         String location = "Kijowska-KWielkiego";
         String creatorId = "NK";
         CrossroadType type = CrossroadType.PUBLIC;

@@ -78,17 +78,16 @@ public class CrossroadController {
         return "ok";
     }
 
-    @GetMapping(value="/crossroad/{crossroadId}/optimization",  produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getOptimization(@PathVariable String crossroadId) {
+    @GetMapping(value="/crossroad/{crossroadId}/optimization/{time}",  produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getOptimization(@PathVariable String crossroadId, @PathVariable int time) {
         int serverPort = 9091;
-
         String result = "{}";
         try {
             result = new String(Files.readAllBytes(Paths.get("templateOutput.json")));
         }
         catch (Exception ignored){}
 //        try (Socket socket = new Socket("localhost", serverPort)) {
-//            JSONObject jsonData = this.parseJSON(crossroadId);
+//            JSONObject jsonData = this.parseJSON(crossroadId, time);
 //            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 //            out.println(jsonData);
 //
@@ -101,9 +100,9 @@ public class CrossroadController {
         return result;
     }
 
-    private JSONObject parseJSON(@PathVariable String crossroadId) {
+    private JSONObject parseJSON(@PathVariable String crossroadId, @PathVariable int time) {
         JSONObject jsonBase = new JSONObject();
-        jsonBase.put("time", 10);
+        jsonBase.put("time", time);
 
         JSONObject json = new JSONObject();
 
