@@ -139,13 +139,13 @@ public class CrossroadController {
                         try {
                             return new JSONArray(
                                     Arrays.asList(
-                                            connectionService.getConnectionById(connectionId).getSourceId(),
-                                            connectionService.getConnectionById(connectionId).getTargetId(),
+                                            roadService.getRoadById(connectionService.getConnectionById(connectionId).getSourceId()).getIndex(),
+                                            roadService.getRoadById(connectionService.getConnectionById(connectionId).getTargetId()).getIndex(),
                                             connectionService.getConnectionById(connectionId).getTrafficLightIds().size() > 0
-                                                    ? connectionService.getConnectionById(connectionId).getTrafficLightIds().get(0) :
+                                                    ? trafficLightService.getTrafficLightById(connectionService.getConnectionById(connectionId).getTrafficLightIds().get(0)).getIndex() :
                                                     -1,
                                             connectionService.getConnectionById(connectionId).getTrafficLightIds().size() > 1
-                                                    ? connectionService.getConnectionById(connectionId).getTrafficLightIds().get(1) :
+                                                    ? trafficLightService.getTrafficLightById(connectionService.getConnectionById(connectionId).getTrafficLightIds().get(1)).getIndex():
                                                     -1
                                     )
                             );
@@ -202,8 +202,8 @@ public class CrossroadController {
                     try {
                         return new JSONArray(
                                 Arrays.asList(
-                                        collisionService.getCollisionById(collisionId).getTrafficLight1Id(),
-                                        collisionService.getCollisionById(collisionId).getTrafficLight2Id()
+                                        trafficLightService.getTrafficLightById(collisionService.getCollisionById(collisionId).getTrafficLight1Id()).getIndex(),
+                                        trafficLightService.getTrafficLightById(collisionService.getCollisionById(collisionId).getTrafficLight2Id()).getIndex()
                                 )
                         );
                     } catch (Exception e) {
