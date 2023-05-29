@@ -85,8 +85,6 @@ public class CrossroadController {
 
         try (Socket socket = new Socket("localhost", serverPort)) {
             JSONObject jsonData = this.parseJSON(crossroadId);
-            JSONObject json = new JSONObject();
-            json.put("type", "CONNECT");
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             out.println(jsonData.toString());
         } catch (IOException ignored) {}
