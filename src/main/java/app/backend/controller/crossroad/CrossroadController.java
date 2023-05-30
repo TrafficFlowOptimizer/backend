@@ -17,6 +17,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.Thread.sleep;
+
 @RestController
 public class CrossroadController {
 
@@ -83,6 +85,7 @@ public class CrossroadController {
         int serverPort = 9091;
         String result = "{}";
         try {
+            sleep(20000);
             result = new String(Files.readAllBytes(Paths.get("templateOutput.json")));
         }
         catch (Exception ignored){}
