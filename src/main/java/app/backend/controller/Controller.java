@@ -86,14 +86,13 @@ public class Controller {
     private ArrayList<String> populateCarFlows() {
         ArrayList<String> carFlowsIDs = new ArrayList<>();
         for (int i = 0; i < numberOfConnections; i++) {
-            Random ran = new Random();
             int carFlowValue;
             if (i % 3 == 0) {
-                carFlowValue = ran.nextInt(6) + 5;
+                carFlowValue = 7+i;
             } else if (i % 3 == 1) {
-                carFlowValue = ran.nextInt(6) + 10;
+                carFlowValue = 12+i;
             } else {
-                carFlowValue = ran.nextInt(6) + 15;
+                carFlowValue = 17+i;
             }
             LocalTime start = LocalTime.ofSecondOfDay(0);
             LocalTime end = LocalTime.ofSecondOfDay(1600);

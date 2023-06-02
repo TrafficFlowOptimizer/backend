@@ -4,6 +4,7 @@ import app.backend.document.collision.CollisionType;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.service.*;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -11,9 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -84,23 +86,109 @@ public class CrossroadController {
     public String getOptimization(@PathVariable String crossroadId, @PathVariable int time) {
         int serverPort = 9091;
         String result = "{}";
-        try {
-            sleep(20000);
-            result = new String(Files.readAllBytes(Paths.get("templateOutput.json")));
-        }
-        catch (Exception ignored){}
-//        try (Socket socket = new Socket("localhost", serverPort)) {
-//            JSONObject jsonData = this.parseJSON(crossroadId, time);
-//            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-//            out.println(jsonData);
-//
-//            InputStream optimizerResponse =  socket.getInputStream();
-//            Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
-//            result = s.hasNext() ? s.next() : "";
-//            System.out.println(result);
-//        } catch (IOException ignored) {}
+        try (Socket socket = new Socket("localhost", serverPort)) {
+            JSONObject jsonData = this.parseJSON(crossroadId, time);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            out.println(jsonData);
 
+            InputStream optimizerResponse = socket.getInputStream();
+            Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
+            result = s.hasNext() ? s.next() : "";
+
+
+            result = parseOutput(result, crossroadId);
+
+        } catch (Exception e) {
+            try {
+                sleep(3000);
+                result = parseOutput(Files.readString(Paths.get("templateOTResponse.json")), crossroadId);
+//                result = new String(Files.readAllBytes(Paths.get("templateOutput.json")));
+            } catch (Exception ignored) {
+            }
+        }
+        System.out.println(result);
         return result;
+    }
+
+    private String parseOutput(String text, @PathVariable String crossroadId) throws Exception {
+        JSONObject obj = new JSONObject(text);
+        JSONArray arr = obj.getJSONArray("results");
+
+        Map<Integer, JSONArray> map = new HashMap<>();
+        for(int i=0;i<arr.length();i++){
+            map.put(i+1, arr.getJSONArray(i));
+        }
+
+        Crossroad crossroadDB = crossroadService.getCrossroadById(crossroadId);
+        List<String> connectionsDB = crossroadDB.getConnectionIds();
+
+        List<List<Integer>> roadConnections = connectionsDB
+                .stream()
+                .map(connectionId -> {
+                    try {
+                        List<Integer> innerList = new ArrayList<>();
+                        for(int i=0;i<connectionService.getConnectionById(connectionId).getTrafficLightIds().size();i++){
+                            innerList.add(trafficLightService.getTrafficLightById(connectionService.getConnectionById(connectionId).getTrafficLightIds().get(i)).getIndex());
+                        }
+                        return innerList;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return new ArrayList<Integer>();
+                }).toList();
+
+        List<Integer> flows = connectionsDB
+                .stream()
+                .map(connectionId -> {
+                    try {
+                        String carFlowID = connectionService.getConnectionById(connectionId).getCarFlowIds().get(0);
+                        return carFlowService.getCarFlowById(carFlowID).getCarFlow();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return 1;
+                }).toList();
+
+        JSONObject response = new JSONObject();
+        JSONArray JsonConnections = new JSONArray();
+        for(int i=0;i<roadConnections.size();i++){
+            JSONObject JsonConnection = new JSONObject();
+
+            JSONArray JsonLights = new JSONArray();
+            float possibleFlow = 0;
+            for(int light:roadConnections.get(i)){
+                JSONObject JsonLight = new JSONObject();
+                JsonLight.put("lightId", light);
+                JSONArray sequence = map.get(light);
+                JsonLight.put("sequence", sequence);
+                JsonLight.put("direction", "forward");
+
+                JsonLights.put(JsonLight);
+
+                possibleFlow+=countOccurrences(sequence, 1);
+            }
+            float expectedFlow = flows.get(i);
+            final DecimalFormat df = new DecimalFormat("0.00");
+            df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+            JsonConnection.put("flow", df.format(possibleFlow/expectedFlow));
+
+            JsonConnection.put("lights", JsonLights);
+
+            JsonConnections.put(JsonConnection);
+        }
+        response.put("connections", JsonConnections);
+
+        return response.toString();
+    }
+
+    public static int countOccurrences(JSONArray jsonArray, int target) throws JSONException {
+        int count = 0;
+        for (int i = 0; i < jsonArray.length(); i++) {
+            if (jsonArray.getInt(i) == target) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private JSONObject parseJSON(@PathVariable String crossroadId, @PathVariable int time) {
