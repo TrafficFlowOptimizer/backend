@@ -95,7 +95,6 @@ public class CrossroadController {
             Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
             result = s.hasNext() ? s.next() : "";
 
-
             result = parseOutput(result, crossroadId);
 
         } catch (Exception e) {
@@ -161,7 +160,7 @@ public class CrossroadController {
                 JsonLight.put("lightId", light);
                 JSONArray sequence = map.get(light);
                 JsonLight.put("sequence", sequence);
-                JsonLight.put("direction", "forward");
+                JsonLight.put("direction", "forward"); // TODO
 
                 JsonLights.put(JsonLight);
 
@@ -277,12 +276,6 @@ public class CrossroadController {
             int numberOfLights = lights.size();
 
             json.put("number_of_lights", numberOfLights);
-
-            List<Integer> lights_IDs = new ArrayList<>();
-            for (int i = 1; i <= numberOfLights; i++){
-                lights_IDs.add(i);
-            }
-            json.put("lights_IDs", lights_IDs);
 
 //  -----------------------------  fixed values  -----------------------------
             json.put("time_units_in_minute", 60); // fixed for now
