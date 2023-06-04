@@ -12,8 +12,12 @@ public class Optimization {
     @Id
     private String id;
 
-    public Optimization() {
+    // TODO: dodac tutaj crossroadId czy w crossroads przechowywać listę wyników?
 
+    private List<List<Integer>> sequences;
+
+    public Optimization(List<List<Integer>> sequences) {
+        this.sequences = sequences;
     }
 
     public String getId() {
@@ -22,5 +26,13 @@ public class Optimization {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public List<List<Integer>> getSequences() {
+        return sequences;
+    }
+
+    public void setSequences(List<List<Integer>> sequences) {
+        this.sequences = sequences;
     }
 }
