@@ -114,7 +114,7 @@ public class CrossroadController {
         JSONArray arr = obj.getJSONArray("results");
 
         Map<Integer, JSONArray> map = new HashMap<>();
-        for(int i=0;i<arr.length();i++){
+        for(int i=0; i<arr.length(); i++){
             map.put(i+1, arr.getJSONArray(i));
         }
 
@@ -150,7 +150,7 @@ public class CrossroadController {
 
         JSONObject response = new JSONObject();
         JSONArray JsonConnections = new JSONArray();
-        for(int i=0;i<roadConnections.size();i++){
+        for(int i=0; i<roadConnections.size(); i++){
             JSONObject JsonConnection = new JSONObject();
 
             JSONArray JsonLights = new JSONArray();
@@ -164,7 +164,7 @@ public class CrossroadController {
 
                 JsonLights.put(JsonLight);
 
-                possibleFlow+=countOccurrences(sequence, 1);
+                possibleFlow += countOccurrences(sequence, 1);
             }
             float expectedFlow = flows.get(i);
             final DecimalFormat df = new DecimalFormat("0.00");

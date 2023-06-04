@@ -1,8 +1,7 @@
 package app.backend.service;
 
-import app.backend.document.TrafficLight;
-import app.backend.document.road.Road;
-import app.backend.document.road.RoadType;
+import app.backend.document.light.TrafficLight;
+import app.backend.document.light.TrafficLightType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import static app.backend.document.light.TrafficLightType.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
@@ -52,10 +52,11 @@ class TrafficLightServiceTest {
 
     @Test
     void getAndGetTrafficLightById_properTrafficLight_correctTrafficLight() {
-        trafficLightService.addTrafficLight(0);
+        trafficLightService.addTrafficLight(0, FORWARD);
         int index = 1;
-        TrafficLight trafficLight = trafficLightService.addTrafficLight(index);
-        trafficLightService.addTrafficLight(2);
+        TrafficLightType type = LEFT;
+        TrafficLight trafficLight = trafficLightService.addTrafficLight(index, type);
+        trafficLightService.addTrafficLight(2, RIGHT);
 
         String id = trafficLight.getId();
         TrafficLight found = null;
@@ -68,13 +69,14 @@ class TrafficLightServiceTest {
         assertEquals(3, trafficLightService.trafficLightRepository.count());
         assertEquals(id, found.getId());
         assertEquals(index, found.getIndex());
+        assertEquals(type, found.getType());
     }
 
     @Test
     void getAndGetTrafficLightById_improperTrafficLight_trafficLightNotFound() {
-        trafficLightService.addTrafficLight(0);
-        trafficLightService.addTrafficLight(1);
-        trafficLightService.addTrafficLight(2);
+        trafficLightService.addTrafficLight(0, LEFT);
+        trafficLightService.addTrafficLight(1, FORWARD);
+        trafficLightService.addTrafficLight(2, RIGHT);
 
 
         String id = "";
@@ -88,9 +90,9 @@ class TrafficLightServiceTest {
 
     @Test
     void deleteTrafficLightById_properTrafficLight_trafficLightDeleted() {
-        trafficLightService.addTrafficLight(0);
-        TrafficLight trafficLight = trafficLightService.addTrafficLight(1);
-        trafficLightService.addTrafficLight(2);
+        trafficLightService.addTrafficLight(0, LEFT);
+        TrafficLight trafficLight = trafficLightService.addTrafficLight(1, FORWARD);
+        trafficLightService.addTrafficLight(2, RIGHT);
 
         String id = trafficLight.getId();
         try {
@@ -109,9 +111,9 @@ class TrafficLightServiceTest {
 
     @Test
     void deleteTrafficLightById_improperTrafficLight_trafficLightNotFound() {
-        trafficLightService.addTrafficLight(0);
-        TrafficLight trafficLight = trafficLightService.addTrafficLight(1);
-        trafficLightService.addTrafficLight(2);
+        trafficLightService.addTrafficLight(0, LEFT);
+        TrafficLight trafficLight = trafficLightService.addTrafficLight(1, FORWARD);
+        trafficLightService.addTrafficLight(2, RIGHT);
 
         String id = "";
         Exception exception = assertThrows(Exception.class, () -> {
@@ -126,14 +128,14 @@ class TrafficLightServiceTest {
     void updateTrafficLightById_properTrafficLight_trafficLightUpdated() {
         int index = 0;
 
-        TrafficLight trafficLight = trafficLightService.addTrafficLight(index);
+        TrafficLight trafficLight = trafficLightService.addTrafficLight(index, LEFT);
 
         String id = trafficLight.getId();
         int indexUpdated = 1;
 
         TrafficLight updated = null;
         try {
-            trafficLightService.updateTrafficLight(id, indexUpdated);
+            trafficLightService.updateTrafficLight(id, indexUpdated, FORWARD);
             updated = trafficLightService.getTrafficLightById(id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,19 +144,22 @@ class TrafficLightServiceTest {
         assertEquals(1, trafficLightService.trafficLightRepository.count());
         assertNotNull(updated);
         assertEquals(indexUpdated, updated.getIndex());
+        assertEquals(FORWARD, updated.getType());
     }
 
     @Test
     void updateTrafficLightById_improperTrafficLight_trafficLightNotFound() {
         int index = 0;
+        TrafficLightType type = LEFT;
 
-        TrafficLight trafficLight = trafficLightService.addTrafficLight(index);
+        TrafficLight trafficLight = trafficLightService.addTrafficLight(index, type);
 
         String id = "";
         int indexUpdated = 1;
+        TrafficLightType typeUpdated = RIGHT;
 
         Exception exception = assertThrows(Exception.class, () -> {
-            trafficLightService.updateTrafficLight(id, indexUpdated);
+            trafficLightService.updateTrafficLight(id, indexUpdated, typeUpdated);
             trafficLightService.deleteTrafficLightById(id);
         });
 

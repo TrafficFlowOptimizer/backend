@@ -1,6 +1,7 @@
 package app.backend.service;
 
-import app.backend.document.TrafficLight;
+import app.backend.document.light.TrafficLight;
+import app.backend.document.light.TrafficLightType;
 import app.backend.repository.TrafficLightRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,8 @@ public class TrafficLightService {
         return trafficLight.get();
     }
 
-    public TrafficLight addTrafficLight(int index){
-        return trafficLightRepository.insert(new TrafficLight(index));
+    public TrafficLight addTrafficLight(int index, TrafficLightType type){
+        return trafficLightRepository.insert(new TrafficLight(index, type));
     }
 
     public TrafficLight deleteTrafficLightById(String id) throws Exception {
@@ -34,7 +35,7 @@ public class TrafficLightService {
         return trafficLight.get();
     }
 
-    public TrafficLight updateTrafficLight(String id, int index) throws Exception {
+    public TrafficLight updateTrafficLight(String id, int index, TrafficLightType type) throws Exception {
         Optional<TrafficLight> trafficLight = trafficLightRepository.findById(id);
         if (trafficLight.isEmpty()) {
             throw new Exception("Cannot update trafficLight with id: " + id + " because it does not exist.");
@@ -42,6 +43,7 @@ public class TrafficLightService {
         TrafficLight trafficLightToUpdate = trafficLight.get();
 
         trafficLightToUpdate.setIndex(index);
+        trafficLightToUpdate.setType(type);
 
         trafficLightRepository.save(trafficLightToUpdate);
 

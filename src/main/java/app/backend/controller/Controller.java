@@ -2,7 +2,7 @@ package app.backend.controller;
 
 import app.backend.document.CarFlow;
 import app.backend.document.Connection;
-import app.backend.document.TrafficLight;
+import app.backend.document.light.TrafficLight;
 import app.backend.document.collision.Collision;
 import app.backend.document.collision.CollisionType;
 import app.backend.document.crossroad.Crossroad;
@@ -11,17 +11,16 @@ import app.backend.document.road.Road;
 import app.backend.document.road.RoadType;
 import app.backend.service.*;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static app.backend.document.light.TrafficLightType.LEFT;
 
 @RestController
 public class Controller {
@@ -77,7 +76,7 @@ public class Controller {
     private ArrayList<String> populateLights() {
         ArrayList<String> lightsIDs = new ArrayList<>();
         for (int i = 0; i < numberOfLights; i++) {
-            TrafficLight trafficLight = trafficLightService.addTrafficLight(i+1);
+            TrafficLight trafficLight = trafficLightService.addTrafficLight(i+1, LEFT);
             lightsIDs.add(trafficLight.getId());
         }
         return lightsIDs;
