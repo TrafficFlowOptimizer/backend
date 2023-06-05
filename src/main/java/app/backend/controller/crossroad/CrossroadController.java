@@ -2,6 +2,7 @@ package app.backend.controller.crossroad;
 
 import app.backend.document.collision.CollisionType;
 import app.backend.document.crossroad.Crossroad;
+import app.backend.entity.Video;
 import app.backend.service.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,7 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -38,6 +42,12 @@ public class CrossroadController {
     ConnectionService connectionService;
     @Autowired
     CarFlowService carFlowService;
+
+    @Autowired
+    OptimizationService optimizationService;
+
+    @Autowired
+    VideoService videoService;
 
     @GetMapping(value="/crossroad")
     public List<Crossroad> getUserCrossroads(@RequestParam(required = false) String userId) {
@@ -84,6 +94,10 @@ public class CrossroadController {
 
     @GetMapping(value="/crossroad/{crossroadId}/optimization/{time}",  produces = MediaType.APPLICATION_JSON_VALUE)
     public String getOptimization(@PathVariable String crossroadId, @PathVariable int time) {
+
+        // TODO: analyse video
+        analyseVideo(crossroadId);
+
         int serverPort = 9091;
         String result = "{}";
         try (Socket socket = new Socket("localhost", serverPort)) {
@@ -102,11 +116,34 @@ public class CrossroadController {
                 sleep(3000);
                 result = parseOutput(Files.readString(Paths.get("templateOTResponse.json")), crossroadId);
 //                result = new String(Files.readAllBytes(Paths.get("templateOutput.json")));
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) {}
         }
         System.out.println(result);
+
+        // TODO: add to DB
+        addOptimizationResultsToDb(result);
+
         return result;
+    }
+
+    private void analyseVideo(String crossroadId) {
+        URL url = null;
+        try {
+            url = new URL("http://localhost:8081/optimization");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+
+            JSONObject body = new JSONObject();
+            body.put("videoId", "id");
+            body.put("size", 12);
+            body.put("extension", "png");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void addOptimizationResultsToDb(String results) {
+
     }
 
     private String parseOutput(String text, @PathVariable String crossroadId) throws Exception {
