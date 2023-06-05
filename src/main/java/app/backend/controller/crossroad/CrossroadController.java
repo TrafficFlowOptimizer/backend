@@ -110,19 +110,16 @@ public class CrossroadController {
             Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
             result = s.hasNext() ? s.next() : "";
 
+            addOptimizationResultsToDb(crossroadId, result);
             result = parseOutput(result, crossroadId);
 
         } catch (Exception e) {
             try {
                 sleep(3000);
                 result = parseOutput(Files.readString(Paths.get("templateOTResponse.json")), crossroadId);
-//                result = new String(Files.readAllBytes(Paths.get("templateOutput.json")));
             } catch (Exception ignored) {}
         }
         System.out.println(result);
-
-        // TODO: add to DB
-        addOptimizationResultsToDb(crossroadId, result);
 
         return result;
     }
@@ -155,7 +152,7 @@ public class CrossroadController {
 
     private void addOptimizationResultsToDb(String crossroadId, String results) {
         JSONObject res = new JSONObject(results);
-        JSONArray listOfLists = res.getJSONArray("result");
+        JSONArray listOfLists = res.getJSONArray("results");
         int len1 = listOfLists.length();
 
         List<List<Integer>> sequences = new ArrayList<>(len1);
@@ -173,7 +170,7 @@ public class CrossroadController {
                 crossroadId,
                 optimizationService.getFreeVersionNumber(crossroadId),
                 sequences
-                );
+        );
     }
 
     private String parseOutput(String text, @PathVariable String crossroadId) throws Exception {
