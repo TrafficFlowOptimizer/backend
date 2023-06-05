@@ -16,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -130,13 +131,22 @@ public class CrossroadController {
         URL url = null;
         try {
             url = new URL("http://localhost:8081/optimization");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type","application/json");
+            connection.setRequestProperty("Accept", "application/json");
 
             JSONObject body = new JSONObject();
-            body.put("videoId", "id");
-            body.put("size", 12);
-            body.put("extension", "png");
+            body.put("id", "a32352ed-e7bb-4c98-8142-8a53ae7b82c7");
+            body.put("size", 31754);
+            body.put("extension", "jpg");
+
+            byte[] out = body.toString().getBytes(StandardCharsets.UTF_8);
+            OutputStream stream = connection.getOutputStream();
+            stream.write(out);
+            System.out.println(connection.getResponseCode() + " " + connection.getResponseMessage()); // THis is optional
+            connection.disconnect();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
