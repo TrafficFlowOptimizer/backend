@@ -60,4 +60,16 @@ public class OptimizationService {
         }
         return optimizationsFound;
     }
+
+    public int getFreeVersionNumber(String crossroadId) {
+        Iterable<Optimization> optimizations = getOptimizationByCrossroadId(crossroadId);
+        int max = -1;
+        for(Optimization optimization : optimizations) {
+            int version = optimization.getVersion();
+            if(version > max) {
+                max = version;
+            }
+        }
+        return max+1;
+    }
 }

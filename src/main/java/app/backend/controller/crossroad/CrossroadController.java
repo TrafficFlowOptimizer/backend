@@ -122,7 +122,7 @@ public class CrossroadController {
         System.out.println(result);
 
         // TODO: add to DB
-        addOptimizationResultsToDb(result);
+        addOptimizationResultsToDb(crossroadId, result);
 
         return result;
     }
@@ -130,7 +130,7 @@ public class CrossroadController {
     private void analyseVideo(String crossroadId) {
         URL url = null;
         try {
-            url = new URL("http://localhost:8081/optimization");
+            url = new URL("http://localhost:8081/analysis");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
@@ -146,14 +146,34 @@ public class CrossroadController {
             OutputStream stream = connection.getOutputStream();
             stream.write(out);
             System.out.println(connection.getResponseCode() + " " + connection.getResponseMessage()); // THis is optional
+            System.out.println(new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
             connection.disconnect();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void addOptimizationResultsToDb(String results) {
+    private void addOptimizationResultsToDb(String crossroadId, String results) {
+        JSONObject res = new JSONObject(results);
+        JSONArray listOfLists = res.getJSONArray("result");
+        int len1 = listOfLists.length();
 
+        List<List<Integer>> sequences = new ArrayList<>(len1);
+
+        for(int i = 0; i<len1; i++) {
+            JSONArray list = listOfLists.getJSONArray(i);
+            int len2 = list.length();
+            sequences.add(new ArrayList<>(len2));
+            for(int j = 0; j<len2; j++) {
+                sequences.get(i).add(list.getInt(j));
+            }
+        }
+
+        optimizationService.addOptimization(
+                crossroadId,
+                optimizationService.getFreeVersionNumber(crossroadId),
+                sequences
+                );
     }
 
     private String parseOutput(String text, @PathVariable String crossroadId) throws Exception {
@@ -173,13 +193,11 @@ public class CrossroadController {
                 .map(connectionId -> {
                     try {
                         List<Integer> innerList = new ArrayList<>();
-                        for(int i=0;i<connectionService.getConnectionById(connectionId).getTrafficLightIds().size();i++){
+                        for(int i=0; i<connectionService.getConnectionById(connectionId).getTrafficLightIds().size(); i++) {
                             innerList.add(trafficLightService.getTrafficLightById(connectionService.getConnectionById(connectionId).getTrafficLightIds().get(i)).getIndex());
                         }
                         return innerList;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    } catch (Exception e) {e.printStackTrace();}
                     return new ArrayList<Integer>();
                 }).toList();
 
@@ -189,9 +207,7 @@ public class CrossroadController {
                     try {
                         String carFlowID = connectionService.getConnectionById(connectionId).getCarFlowIds().get(0);
                         return carFlowService.getCarFlowById(carFlowID).getCarFlow();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    } catch (Exception e) {e.printStackTrace();}
                     return 1;
                 }).toList();
 
@@ -202,7 +218,7 @@ public class CrossroadController {
 
             JSONArray JsonLights = new JSONArray();
             float possibleFlow = 0;
-            for(int light:roadConnections.get(i)){
+            for(int light:roadConnections.get(i)) {
                 JSONObject JsonLight = new JSONObject();
                 JsonLight.put("lightId", light);
                 JSONArray sequence = map.get(light);
@@ -216,7 +232,7 @@ public class CrossroadController {
             float expectedFlow = flows.get(i);
             final DecimalFormat df = new DecimalFormat("0.00");
             df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-            JsonConnection.put("flow", df.format(possibleFlow/expectedFlow));
+            JsonConnection.put("flow", df.format(possibleFlow / expectedFlow));
 
             JsonConnection.put("lights", JsonLights);
 

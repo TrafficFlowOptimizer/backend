@@ -12,6 +12,9 @@ public class Video {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
+//    TODO: zmiana bazy albo jakieś dodatkowe info
+//    private String crossroadId;
+
     private String name;
 
     private String type;
