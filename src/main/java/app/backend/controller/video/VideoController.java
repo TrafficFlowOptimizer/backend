@@ -25,10 +25,10 @@ public class VideoController {
     private VideoService videoService;
 
     @PostMapping(value="/videos/upload")
-    public ResponseEntity<VideoResponseMessage> upload(@RequestParam("file") MultipartFile video) {
+    public ResponseEntity<VideoResponseMessage> upload(@RequestParam("file") MultipartFile video, @RequestParam("crossroadId") String crossroadId) {
         String message;
         try {
-            videoService.store(video);
+            videoService.store(video, crossroadId);
 
             message = "Uploaded the video successfully: " + video.getOriginalFilename();
             return ResponseEntity.status(HttpStatus.OK).body(new VideoResponseMessage(message));

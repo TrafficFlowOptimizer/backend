@@ -1,6 +1,8 @@
 package app.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
@@ -12,19 +14,23 @@ public class Video {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
-//    TODO: zmiana bazy albo jakieś dodatkowe info
-//    private String crossroadId;
+    @NotBlank
+    private String crossroadId;
 
+    @NotBlank
     private String name;
 
+    @NotBlank
     private String type;
 
     @Lob
+    @Basic(fetch = FetchType.LAZY)
     private byte[] data;
 
     public Video() {}
 
-    public Video(String name, String type, byte[] data) {
+    public Video(String crossroadId, String name, String type, byte[] data) {
+        this.crossroadId = crossroadId;
         this.name = name;
         this.type = type;
         this.data = data;
@@ -32,6 +38,18 @@ public class Video {
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getCrossroadId() {
+        return crossroadId;
+    }
+
+    public void setCrossroadId(String crossroadId) {
+        this.crossroadId = crossroadId;
     }
 
     public String getName() {
@@ -57,5 +75,4 @@ public class Video {
     public void setData(byte[] data) {
         this.data = data;
     }
-
 }

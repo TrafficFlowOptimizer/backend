@@ -17,9 +17,9 @@ public class VideoService {
     @Autowired
     private VideoRepository videoRepository;
 
-    public void store(MultipartFile file) throws IOException {
+    public void store(MultipartFile file, String crossroadId) throws IOException {
         String name = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-        videoRepository.save( new Video(name, file.getContentType(), file.getBytes()) );
+        videoRepository.save( new Video(crossroadId, name, file.getContentType(), file.getBytes()) );
     }
 
     public Video getVideo(String id) {
