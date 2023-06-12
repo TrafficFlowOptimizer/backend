@@ -82,8 +82,8 @@ public class CrossroadController {
 
         } catch (Exception e) {
             try {
-                sleep(3000);
-                result = crossroadsUtils.parseOutput(Files.readString(Paths.get("templateOTResponse.json")), crossroadId);
+                sleep(time*1000L);
+                result = Files.readString(Paths.get("newTemplateOutput.json"));
             } catch (Exception ignored) {}
         }
         System.out.println(result);
