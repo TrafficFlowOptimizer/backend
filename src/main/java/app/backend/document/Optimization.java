@@ -1,6 +1,6 @@
 package app.backend.document;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,12 +17,16 @@ public class Optimization {
     @PositiveOrZero
     private int version;
 
-    private List<List<Integer>> sequences;
+    @NotNull
+    private TimeInterval timeIntervalId;
 
-    public Optimization(String crossroadId, int version, List<List<Integer>> sequences) {
+    private List<List<Integer>> results;
+
+    public Optimization(String crossroadId, int version, TimeInterval timeIntervalId, List<List<Integer>> results) {
         this.crossroadId = crossroadId;
         this.version = version;
-        this.sequences = sequences;
+        this.timeIntervalId = timeIntervalId;
+        this.results = results;
     }
 
     public String getId() {
@@ -49,11 +53,19 @@ public class Optimization {
         this.version = version;
     }
 
-    public List<List<Integer>> getSequences() {
-        return sequences;
+    public TimeInterval getTimeIntervalId() {
+        return timeIntervalId;
     }
 
-    public void setSequences(List<List<Integer>> sequences) {
-        this.sequences = sequences;
+    public void setTimeIntervalId(TimeInterval timeIntervalId) {
+        this.timeIntervalId = timeIntervalId;
+    }
+
+    public List<List<Integer>> getResults() {
+        return results;
+    }
+
+    public void setResults(List<List<Integer>> results) {
+        this.results = results;
     }
 }
