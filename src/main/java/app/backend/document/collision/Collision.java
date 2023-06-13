@@ -14,6 +14,10 @@ public class Collision {
     @PositiveOrZero
     private int index;
 
+
+    @NotBlank
+    private String name;
+
     @NotBlank
     private String trafficLight1Id;
 

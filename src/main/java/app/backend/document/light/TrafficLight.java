@@ -1,5 +1,6 @@
 package app.backend.document.light;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.data.annotation.Id;
@@ -12,6 +13,9 @@ public class TrafficLight {
 
     @PositiveOrZero
     private int index;
+
+    @NotBlank
+    private String name;
 
     @NotNull
     private TrafficLightType type;

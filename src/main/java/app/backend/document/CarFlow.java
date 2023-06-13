@@ -1,5 +1,6 @@
 package app.backend.document;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -7,24 +8,20 @@ import app.backend.validation.StartBeforeEndTime;
 
 import java.time.LocalTime;
 
-@StartBeforeEndTime
 @Document(collection = "carflows")
 public class CarFlow {
     @Id
     private String id;
 
     @PositiveOrZero
-    private int carFlow;
+    private double carFlow;
 
-    // TODO: is LocalTime the right type??
-    private LocalTime startTime;
+    @NotNull
+    private TimeInterval timeIntervalId;
 
-    private LocalTime endTime;
-
-    public CarFlow(int carFlow, LocalTime startTime, LocalTime endTime) {
+    public CarFlow(int carFlow, TimeInterval timeIntervalId) {
         this.carFlow = carFlow;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.timeIntervalId = timeIntervalId;
     }
 
     public String getId() {
@@ -35,27 +32,19 @@ public class CarFlow {
         this.id = id;
     }
 
-    public int getCarFlow() {
+    public double getCarFlow() {
         return carFlow;
     }
 
-    public void setCarFlow(int carFlowPm) {
+    public void setCarFlow(double carFlowPm) {
         this.carFlow = carFlowPm;
     }
 
-    public void setCarStartTime(LocalTime startTime) {
-        this.startTime = startTime;
+    public TimeInterval getTimeIntervalId() {
+        return timeIntervalId;
     }
 
-    public void setEndTime(LocalTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
+    public void setTimeIntervalId(TimeInterval timeIntervalId) {
+        this.timeIntervalId = timeIntervalId;
     }
 }

@@ -15,6 +15,9 @@ public class Connection {
     @PositiveOrZero
     private int index;
 
+    @NotBlank
+    private String name;
+
     //@NotEmpty?
     private List<String> trafficLightIds;
 
