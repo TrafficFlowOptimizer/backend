@@ -63,7 +63,7 @@ public class CrossroadController {
 
     @GetMapping(value="/crossroad/{crossroadId}/optimization/{videoId}/{time}",  produces = MediaType.APPLICATION_JSON_VALUE)
     public String getOptimization(@PathVariable String crossroadId, @PathVariable String videoId, @PathVariable int time) {
-        crossroadsUtils.analyseVideo(videoId);
+        String timeIntervalId = crossroadsUtils.analyseVideo(videoId);
 
         // TODO: lines below to be moved to utils??
         int serverPort = 9091;
@@ -77,7 +77,7 @@ public class CrossroadController {
             Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
             result = s.hasNext() ? s.next() : "";
 
-            crossroadsUtils.addOptimizationResultsToDb(crossroadId, result);
+            crossroadsUtils.addOptimizationResultsToDb(crossroadId, timeIntervalId, result);
             result = crossroadsUtils.parseOutput(result, crossroadId);
 
         } catch (Exception e) {

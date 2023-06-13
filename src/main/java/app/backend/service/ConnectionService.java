@@ -22,8 +22,8 @@ public class ConnectionService {
         return connection.get();
     }
 
-    public Connection addConnection(int index, List<String> trafficLightIDs, String sourceId, String targetId, List<String> carFlowIDs){
-        return connectionRepository.insert(new Connection(index, trafficLightIDs, sourceId, targetId, carFlowIDs));
+    public Connection addConnection(int index, String name, List<String> trafficLightIDs, String sourceId, String targetId, List<String> carFlowIDs){
+        return connectionRepository.insert(new Connection(index, name, trafficLightIDs, sourceId, targetId, carFlowIDs));
     }
 
     public Connection deleteConnectionById(String id) throws Exception {
@@ -35,7 +35,7 @@ public class ConnectionService {
         return connection.get();
     }
 
-    public Connection updateConnection(String id, int index, List<String> trafficLightIDs, String sourceId, String targetId, List<String> carFlowIDs) throws Exception {
+    public Connection updateConnection(String id, int index, String name, List<String> trafficLightIDs, String sourceId, String targetId, List<String> carFlowIDs) throws Exception {
         Optional<Connection> connection = connectionRepository.findById(id);
         if (connection.isEmpty()){
             throw new Exception("Cannot update connection with id: " + id + " because it does not exist.");
@@ -43,6 +43,7 @@ public class ConnectionService {
         Connection connectionToUpdate = connection.get();
 
         connectionToUpdate.setIndex(index);
+        connectionToUpdate.setName(name);
         connectionToUpdate.setTrafficLightIds(trafficLightIDs);
         connectionToUpdate.setSourceId(sourceId);
         connectionToUpdate.setTargetId(targetId);

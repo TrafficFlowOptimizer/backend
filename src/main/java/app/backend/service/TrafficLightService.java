@@ -22,8 +22,8 @@ public class TrafficLightService {
         return trafficLight.get();
     }
 
-    public TrafficLight addTrafficLight(int index, TrafficLightType type){
-        return trafficLightRepository.insert(new TrafficLight(index, type));
+    public TrafficLight addTrafficLight(int index, String name, TrafficLightType type){
+        return trafficLightRepository.insert(new TrafficLight(index, name, type));
     }
 
     public TrafficLight deleteTrafficLightById(String id) throws Exception {
@@ -35,7 +35,7 @@ public class TrafficLightService {
         return trafficLight.get();
     }
 
-    public TrafficLight updateTrafficLight(String id, int index, TrafficLightType type) throws Exception {
+    public TrafficLight updateTrafficLight(String id, int index, String name, TrafficLightType type) throws Exception {
         Optional<TrafficLight> trafficLight = trafficLightRepository.findById(id);
         if (trafficLight.isEmpty()) {
             throw new Exception("Cannot update trafficLight with id: " + id + " because it does not exist.");
@@ -43,6 +43,7 @@ public class TrafficLightService {
         TrafficLight trafficLightToUpdate = trafficLight.get();
 
         trafficLightToUpdate.setIndex(index);
+        trafficLightToUpdate.setName(name);
         trafficLightToUpdate.setType(type);
 
         trafficLightRepository.save(trafficLightToUpdate);

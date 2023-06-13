@@ -25,10 +25,10 @@ public class VideoController {
     private VideoService videoService;
 
     @PostMapping(value="/videos/upload")
-    public ResponseEntity<VideoResponseMessage> upload(@RequestParam("file") MultipartFile video, @RequestParam("crossroadId") String crossroadId) {
+    public ResponseEntity<VideoResponseMessage> upload(@RequestParam("file") MultipartFile video, @RequestParam("crossroadId") String crossroadId, @RequestParam("timeIntervalId") String timeIntervalId) {
         String message;
         try {
-            videoService.store(video, crossroadId);
+            videoService.store(video, crossroadId, timeIntervalId);
 
             message = "Uploaded the video successfully: " + video.getOriginalFilename();
             return ResponseEntity.status(HttpStatus.OK).body(new VideoResponseMessage(message));
@@ -65,5 +65,4 @@ public class VideoController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + video.getName() + "\"")
                 .body(video.getData());
     }
-
 }

@@ -63,12 +63,13 @@ class CollisionServiceTest {
     @Test
     public void getCollisionById_properCollision_correctCollision() {
         int index = 0;
+        String name = "name";
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
-        collisionService.addCollision(1, "sddas", "dsaadsds", CollisionType.LIGHT);
+        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
+        collisionService.addCollision(1, "nm", "sddas", "dsaadsds", CollisionType.LIGHT);
 
         Collision found = null;
         try {
@@ -80,6 +81,7 @@ class CollisionServiceTest {
         assertEquals(2, collisionService.collisionRepository.count());
         assertNotNull(found);
         assertEquals(index, found.getIndex());
+        assertEquals(name, found.getName());
         assertEquals(trafficLight1Id, found.getTrafficLight1Id());
         assertEquals(trafficLight2Id, found.getTrafficLight2Id());
         assertEquals(type, found.getType());
@@ -88,16 +90,18 @@ class CollisionServiceTest {
     @Test
     public void addCollision_properCollision_collisionAdded() {
         int index = 0;
+        String name = "name";
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
-        collisionService.addCollision(1, "sddas", "dsaadsds", CollisionType.LIGHT);
+        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
+        collisionService.addCollision(1, "nm", "sddas", "dsaadsds", CollisionType.LIGHT);
 
         assertEquals(2, collisionService.collisionRepository.count());
         assertNotNull(collision);
         assertEquals(index, collision.getIndex());
+        assertEquals(name, collision.getName());
         assertEquals(trafficLight1Id, collision.getTrafficLight1Id());
         assertEquals(trafficLight2Id, collision.getTrafficLight2Id());
         assertEquals(type, collision.getType());
@@ -106,11 +110,12 @@ class CollisionServiceTest {
     @Test
     public void deleteCollisionById_properCollision_collisionDeleted() {
         int index = 0;
+        String name = "name";
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
+        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
 
         String id = collision.getId();
         try {
@@ -130,11 +135,12 @@ class CollisionServiceTest {
     @Test
     public void deleteCollisionById_improperCollision_collisionNotFound() {
         int index = 0;
+        String name = "name";
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
+        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
         String id = "";
 
         Exception exception = assertThrows(Exception.class, () -> {
@@ -148,21 +154,23 @@ class CollisionServiceTest {
     @Test
     public void updateCollision_properCollision_collisionUpdated() {
         int index = 0;
+        String name = "name";
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
+        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
 
         String id = collision.getId();
         int indexUpdated = 1;
+        String nameUpdated = "updt";
         String trafficLight1IdUpdated = "dsadasasd";
         String trafficLight2IdUpdated = "fdsfds";
         CollisionType typeUpdated = CollisionType.LIGHT;
 
         Collision updated = null;
         try {
-            collisionService.updateCollision(id, indexUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated);
+            collisionService.updateCollision(id, indexUpdated, nameUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated);
             updated = collisionService.getCollisionById(id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -171,6 +179,7 @@ class CollisionServiceTest {
         assertEquals(1, collisionService.collisionRepository.count());
         assertNotNull(updated);
         assertEquals(indexUpdated, updated.getIndex());
+        assertEquals(nameUpdated, updated.getName());
         assertEquals(trafficLight1IdUpdated, updated.getTrafficLight1Id());
         assertEquals(trafficLight2IdUpdated, updated.getTrafficLight2Id());
         assertEquals(typeUpdated, updated.getType());
@@ -179,20 +188,22 @@ class CollisionServiceTest {
     @Test
     public void updateCollision_improperCollision_collisionNotFound() {
         int index = 0;
+        String name = "name";
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
+        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
 
         String id = "";
         int indexUpdated = 1;
+        String nameUpdated = "updt";
         String trafficLight1IdUpdated = "dsadasasd";
         String trafficLight2IdUpdated = "fdsfds";
         CollisionType typeUpdated = CollisionType.LIGHT;
 
         Exception exception = assertThrows(Exception.class, () -> {
-            collisionService.updateCollision(id, indexUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated);
+            collisionService.updateCollision(id, indexUpdated, nameUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated);
             collisionService.deleteCollisionById(id);
         });
 

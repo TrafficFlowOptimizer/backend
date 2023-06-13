@@ -5,7 +5,6 @@ import app.backend.repository.CarFlowRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
@@ -22,8 +21,8 @@ public class CarFlowService {
         return carFlow.get();
     }
 
-    public CarFlow addCarFlow(int carFlow, LocalTime startTime, LocalTime endTime){
-    return carFlowRepository.insert(new CarFlow(carFlow, startTime, endTime));
+    public CarFlow addCarFlow(double carFlow, String timeIntervalId){
+        return carFlowRepository.insert(new CarFlow(carFlow, timeIntervalId));
     }
 
     public CarFlow deleteCarFlowById(String id) throws Exception {
@@ -35,7 +34,7 @@ public class CarFlowService {
         return carFlow.get();
     }
 
-    public CarFlow updateCarFlow(String id, int carFlowPm, LocalTime startTime, LocalTime endTime) throws Exception {
+    public CarFlow updateCarFlow(String id, int carFlowPm, String timeIntervalId) throws Exception {
         Optional<CarFlow> carFlow = carFlowRepository.findById(id);
         if (carFlow.isEmpty()){
             throw new Exception("Cannot update carFlow with id: " + id + " because it does not exist.");
@@ -43,8 +42,7 @@ public class CarFlowService {
         CarFlow carFlowToUpdate = carFlow.get();
 
         carFlowToUpdate.setCarFlow(carFlowPm);
-        carFlowToUpdate.setCarStartTime(startTime);
-        carFlowToUpdate.setEndTime(endTime);
+        carFlowToUpdate.setTimeIntervalId(timeIntervalId);
 
         carFlowRepository.save(carFlowToUpdate);
 

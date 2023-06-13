@@ -22,8 +22,8 @@ public class OptimizationService {
         return optimization.get();
     }
 
-    public Optimization addOptimization(String crossroadId, int version, List<List<Integer>> sequences) {
-        return optimizationRepository.insert(new Optimization(crossroadId, version, sequences));
+    public Optimization addOptimization(String crossroadId, int version, String timeIntervalId, List<List<Integer>> results) {
+        return optimizationRepository.insert(new Optimization(crossroadId, version, timeIntervalId, results));
     }
 
     public Optimization deleteOptimizationById(String id) throws Exception {
@@ -36,7 +36,7 @@ public class OptimizationService {
         return optimization.get();
     }
 
-    public Optimization updateOptimization(String id, String crossroadId, int version, List<List<Integer>> sequences) throws Exception {
+    public Optimization updateOptimization(String id, String crossroadId, int version, String timeIntervalId, List<List<Integer>> results) throws Exception {
         Optional<Optimization> optimization = optimizationRepository.findById(id);
         if(optimization.isEmpty()) {
             throw new Exception("Cannot update optimization with id: " + id + " because it does not exist.");
@@ -45,7 +45,8 @@ public class OptimizationService {
 
         optimizationToUpdate.setCrossroadId(crossroadId);
         optimizationToUpdate.setVersion(version);
-        optimizationToUpdate.setSequences(sequences);
+        optimizationToUpdate.setTimeIntervalId(timeIntervalId);
+        optimizationToUpdate.setResults(results);
 
         optimizationRepository.save(optimizationToUpdate);
 

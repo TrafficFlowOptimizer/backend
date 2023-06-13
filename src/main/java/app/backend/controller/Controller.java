@@ -2,6 +2,7 @@ package app.backend.controller;
 
 import app.backend.document.CarFlow;
 import app.backend.document.Connection;
+import app.backend.document.TimeInterval;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.collision.Collision;
 import app.backend.document.collision.CollisionType;
@@ -39,6 +40,8 @@ public class Controller {
     ConnectionService connectionService;
     @Autowired
     CarFlowService carFlowService;
+    @Autowired
+    TimeIntervalService timeIntervalService;
 
     @ResponseBody
     @GetMapping(value = "/")
@@ -76,13 +79,13 @@ public class Controller {
     private ArrayList<String> populateLights() {
         ArrayList<String> lightsIDs = new ArrayList<>();
         for (int i = 0; i < numberOfLights; i++) {
-            TrafficLight trafficLight = trafficLightService.addTrafficLight(i+1, LEFT);
+            TrafficLight trafficLight = trafficLightService.addTrafficLight(i+1, "name", LEFT);
             lightsIDs.add(trafficLight.getId());
         }
         return lightsIDs;
     }
 
-    private ArrayList<String> populateCarFlows() {
+    private ArrayList<String> populateCarFlows(TimeInterval timeInterval) {
         ArrayList<String> carFlowsIDs = new ArrayList<>();
         for (int i = 0; i < numberOfConnections; i++) {
             int carFlowValue;
@@ -93,9 +96,7 @@ public class Controller {
             } else {
                 carFlowValue = 17+i;
             }
-            LocalTime start = LocalTime.ofSecondOfDay(0);
-            LocalTime end = LocalTime.ofSecondOfDay(1600);
-            CarFlow carFlow = carFlowService.addCarFlow(carFlowValue, start, end);
+            CarFlow carFlow = carFlowService.addCarFlow(carFlowValue, timeInterval.getId());
             carFlowsIDs.add(carFlow.getId());
         }
         return carFlowsIDs;
@@ -118,7 +119,7 @@ public class Controller {
         return roadsIDs;
     }
 
-    private String addCollision(int index, int light1, int light2, ArrayList<String> lightsType, ArrayList<String> lightsIDs){
+    private String addCollision(int index, String name, int light1, int light2, ArrayList<String> lightsType, ArrayList<String> lightsIDs){
         CollisionType type;
         if (Objects.equals(lightsType.get(light1), "heavy") ||
                 Objects.equals(lightsType.get(light2), "heavy")) {
@@ -129,7 +130,7 @@ public class Controller {
         }
         String trafficLight1Id = lightsIDs.get(light1);
         String trafficLight2Id = lightsIDs.get(light2);
-        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
+        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
         return collision.getId();
     }
 
@@ -153,7 +154,7 @@ public class Controller {
                             light2 == (light1 + 8) % numberOfLights ||
                             light2 == (light1 + 9) % numberOfLights ||
                             light2 == (light1 + 10) % numberOfLights) {
-                        collisionsIDs.add(addCollision(index, light1, light2, lightsType, lightsIDs));
+                        collisionsIDs.add(addCollision(index, "name", light1, light2, lightsType, lightsIDs));
                     }
                 }
                 if (light1 % 3 == 1) {
@@ -174,13 +175,13 @@ public class Controller {
                         }
                         String trafficLight1Id = lightsIDs.get(light1);
                         String trafficLight2Id = lightsIDs.get(light2);
-                        Collision collision = collisionService.addCollision(index, trafficLight1Id, trafficLight2Id, type);
+                        Collision collision = collisionService.addCollision(index, "name", trafficLight1Id, trafficLight2Id, type);
                         collisionsIDs.add(collision.getId());
                     }
                 }
                 if (light1 % 3 == 2) {
                     if (light2 == (light1 + 4) % numberOfLights || light2 == (light1 + 8) % numberOfLights) {
-                        collisionsIDs.add(addCollision(index, light1, light2, lightsType, lightsIDs));
+                        collisionsIDs.add(addCollision(index, "name", light1, light2, lightsType, lightsIDs));
                     }
                 }
                 index++;
@@ -206,7 +207,7 @@ public class Controller {
             targetId = roadsIDs.get(((i * 3 + 1) + 8) % numberOfRoads);
             lightsIDsTMP.add(lightsIDs.get(i * 3));
             carFlowsIDsTMP.add(carFlowsIDs.get(i));
-            connection = connectionService.addConnection(3*i+1, lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
+            connection = connectionService.addConnection(3*i+1, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
 
 
@@ -216,7 +217,7 @@ public class Controller {
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 1));
             carFlowsIDsTMP.clear();
             carFlowsIDsTMP.add(carFlowsIDs.get(i + 1));
-            connection = connectionService.addConnection(3*i + 2, lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
+            connection = connectionService.addConnection(3*i + 2, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
 
 
@@ -227,15 +228,20 @@ public class Controller {
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 2));
             carFlowsIDsTMP.clear();
             carFlowsIDsTMP.add(carFlowsIDs.get(i + 2));
-            connection = connectionService.addConnection(3*i + 3, lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
+            connection = connectionService.addConnection(3*i + 3, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
         }
         return collisionsIDs;
     }
 
+    private TimeInterval populateTimeIntervals() {
+        return timeIntervalService.addTimeInterval(LocalTime.ofSecondOfDay(0), LocalTime.ofSecondOfDay(1600));
+    }
+
     private String populateAll() {
+        TimeInterval timeInterval = populateTimeIntervals();
         ArrayList<String> lightsIDs = populateLights();
-        ArrayList<String> carFlowsIDs = populateCarFlows();
+        ArrayList<String> carFlowsIDs = populateCarFlows(timeInterval);
         ArrayList<String> roadsIDs = populateRoads();
         ArrayList<String> collisionsIDs = populateCollisions(lightsIDs);
         ArrayList<String> connectionsIDs = populateConnections(lightsIDs, carFlowsIDs, roadsIDs);
@@ -256,6 +262,6 @@ public class Controller {
             e.printStackTrace();
         }
 
-        return crossroad.getId();
+        return crossroad.getId() + ";" + timeInterval.getId();
     }
 }

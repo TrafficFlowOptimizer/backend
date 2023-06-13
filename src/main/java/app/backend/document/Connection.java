@@ -15,6 +15,9 @@ public class Connection {
     @PositiveOrZero
     private int index;
 
+    @NotBlank
+    private String name;
+
     //@NotEmpty?
     private List<String> trafficLightIds;
 
@@ -27,8 +30,9 @@ public class Connection {
     //@NotEmpty?
     private List<String> carFlowIds;
 
-    public Connection(int index, List<String> trafficLightIds, String sourceId, String targetId, List<String> carFlowIds) {
+    public Connection(int index, String name, List<String> trafficLightIds, String sourceId, String targetId, List<String> carFlowIds) {
         this.index = index;
+        this.name = name;
         this.trafficLightIds = trafficLightIds;
         this.sourceId = sourceId;
         this.targetId = targetId;
@@ -49,6 +53,14 @@ public class Connection {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<String> getTrafficLightIds() {

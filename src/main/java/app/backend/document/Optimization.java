@@ -17,12 +17,16 @@ public class Optimization {
     @PositiveOrZero
     private int version;
 
-    private List<List<Integer>> sequences;
+    @NotBlank
+    private String timeIntervalId;
 
-    public Optimization(String crossroadId, int version, List<List<Integer>> sequences) {
+    private List<List<Integer>> results;
+
+    public Optimization(String crossroadId, int version, String timeIntervalId, List<List<Integer>> results) {
         this.crossroadId = crossroadId;
         this.version = version;
-        this.sequences = sequences;
+        this.timeIntervalId = timeIntervalId;
+        this.results = results;
     }
 
     public String getId() {
@@ -49,11 +53,19 @@ public class Optimization {
         this.version = version;
     }
 
-    public List<List<Integer>> getSequences() {
-        return sequences;
+    public String getTimeIntervalId() {
+        return timeIntervalId;
     }
 
-    public void setSequences(List<List<Integer>> sequences) {
-        this.sequences = sequences;
+    public void setTimeIntervalId(String timeIntervalId) {
+        this.timeIntervalId = timeIntervalId;
+    }
+
+    public List<List<Integer>> getResults() {
+        return results;
+    }
+
+    public void setResults(List<List<Integer>> results) {
+        this.results = results;
     }
 }

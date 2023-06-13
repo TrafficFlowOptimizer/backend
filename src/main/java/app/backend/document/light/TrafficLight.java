@@ -1,5 +1,6 @@
 package app.backend.document.light;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.data.annotation.Id;
@@ -13,11 +14,15 @@ public class TrafficLight {
     @PositiveOrZero
     private int index;
 
+    @NotBlank
+    private String name;
+
     @NotNull
     private TrafficLightType type;
 
-    public TrafficLight(int index, TrafficLightType type) {
+    public TrafficLight(int index, String name, TrafficLightType type) {
         this.index = index;
+        this.name = name;
         this.type = type;
     }
 
@@ -35,6 +40,14 @@ public class TrafficLight {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public TrafficLightType getType() {

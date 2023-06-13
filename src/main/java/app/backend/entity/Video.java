@@ -23,16 +23,20 @@ public class Video {
     @NotBlank
     private String type;
 
+    @NotBlank
+    private String timeIntervalId;
+
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] data;
 
     public Video() {}
 
-    public Video(String crossroadId, String name, String type, byte[] data) {
+    public Video(String crossroadId, String name, String type, String timeIntervalId, byte[] data) {
         this.crossroadId = crossroadId;
         this.name = name;
         this.type = type;
+        this.timeIntervalId = timeIntervalId;
         this.data = data;
     }
 
@@ -66,6 +70,14 @@ public class Video {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getTimeIntervalId() {
+        return timeIntervalId;
+    }
+
+    public void setTimeIntervalId(String timeIntervalId) {
+        this.timeIntervalId = timeIntervalId;
     }
 
     public byte[] getData() {

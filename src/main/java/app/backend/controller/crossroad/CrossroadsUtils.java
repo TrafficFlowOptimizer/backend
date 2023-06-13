@@ -1,7 +1,9 @@
 package app.backend.controller.crossroad;
 
+import app.backend.document.TimeInterval;
 import app.backend.document.collision.CollisionType;
 import app.backend.document.crossroad.Crossroad;
+import app.backend.entity.Video;
 import app.backend.service.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,7 +34,7 @@ public class CrossroadsUtils {
     @Autowired OptimizationService optimizationService;
     @Autowired VideoService videoService;
 
-    public void analyseVideo(String videoId) {
+    public String analyseVideo(String videoId) {
         URL url;
         try {
             url = new URL("http://localhost:8081/analysis");
@@ -44,7 +46,8 @@ public class CrossroadsUtils {
 
             JSONObject body = new JSONObject();
             body.put("id", videoId);
-            body.put("extension", videoService.getVideo(videoId).getType().split("/")[1]); // hopefully Lob lazily loaded; TODO: check in the future
+            Video video = videoService.getVideo(videoId);
+            body.put("extension", video.getType().split("/")[1]); // hopefully Lob lazily loaded; TODO: check in the future
 
             System.out.println(body.toString(4));
             // XDDDD https://stackoverflow.com/questions/68089776/422-unprocessable-entity-error-when-posting-a-fastapi-docker-container-but-works
@@ -54,10 +57,11 @@ public class CrossroadsUtils {
             System.out.println(connection.getResponseCode() + " " + connection.getResponseMessage()); // 200 OK
             System.out.println(new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8)); // return value
             connection.disconnect();
+            return video.getTimeIntervalId();
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 
-    public void addOptimizationResultsToDb(String crossroadId, String results) {
+    public void addOptimizationResultsToDb(String crossroadId, String timeIntervalId, String results) {
         JSONObject res = new JSONObject(results);
         JSONArray listOfLists = res.getJSONArray("results");
         int len1 = listOfLists.length();
@@ -76,6 +80,7 @@ public class CrossroadsUtils {
         optimizationService.addOptimization(
                 crossroadId,
                 optimizationService.getFreeVersionNumber(crossroadId),
+                timeIntervalId,
                 sequences
         );
     }
@@ -105,14 +110,14 @@ public class CrossroadsUtils {
                     return new ArrayList<Integer>();
                 }).toList();
 
-        List<Integer> flows = connectionsDB
+        List<? extends Number> flows = connectionsDB
                 .stream()
                 .map(connectionId -> {
                     try {
                         String carFlowID = connectionService.getConnectionById(connectionId).getCarFlowIds().get(0);
                         return carFlowService.getCarFlowById(carFlowID).getCarFlow();
                     } catch (Exception e) {e.printStackTrace();}
-                    return 1;
+                    return 1; // TODO: ?
                 }).toList();
 
         JSONObject response = new JSONObject();
@@ -121,7 +126,7 @@ public class CrossroadsUtils {
             JSONObject JsonConnection = new JSONObject();
 
             JSONArray JsonLights = new JSONArray();
-            float possibleFlow = 0;
+            double possibleFlow = 0;
             for(int light:roadConnections.get(i)) {
                 JSONObject JsonLight = new JSONObject();
                 JsonLight.put("lightId", light);
@@ -133,7 +138,7 @@ public class CrossroadsUtils {
 
                 possibleFlow += countOccurrences(sequence, 1);
             }
-            float expectedFlow = flows.get(i);
+            double expectedFlow = (double) flows.get(i);
             final DecimalFormat df = new DecimalFormat("0.00");
             df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
             JsonConnection.put("flow", df.format(possibleFlow / expectedFlow));
@@ -224,7 +229,7 @@ public class CrossroadsUtils {
             json.put("number_of_connections", roadConnections.size());
 
 //  -----------------------------  car flow  -----------------------------
-            List<Integer> carFlows = connections
+            List<Double> carFlows = connections
                     .stream()
                     .map(connectionId -> {
                         try {
