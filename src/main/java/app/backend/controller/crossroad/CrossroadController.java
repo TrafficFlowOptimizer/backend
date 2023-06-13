@@ -77,7 +77,7 @@ public class CrossroadController {
             Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
             result = s.hasNext() ? s.next() : "";
 
-            crossroadsUtils.addOptimizationResultsToDb(crossroadId, result);
+            crossroadsUtils.addOptimizationResultsToDb(crossroadId, timeInterval, result);
             result = crossroadsUtils.parseOutput(result, crossroadId);
 
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 package app.backend.controller.crossroad;
 
+import app.backend.document.TimeInterval;
 import app.backend.document.collision.CollisionType;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.service.*;
@@ -57,7 +58,7 @@ public class CrossroadsUtils {
         } catch (IOException e) {throw new RuntimeException(e);}
     }
 
-    public void addOptimizationResultsToDb(String crossroadId, String results) {
+    public void addOptimizationResultsToDb(String crossroadId, TimeInterval timeInterval, String results) {
         JSONObject res = new JSONObject(results);
         JSONArray listOfLists = res.getJSONArray("results");
         int len1 = listOfLists.length();
@@ -76,6 +77,7 @@ public class CrossroadsUtils {
         optimizationService.addOptimization(
                 crossroadId,
                 optimizationService.getFreeVersionNumber(crossroadId),
+                timeInterval.getId(),
                 sequences
         );
     }

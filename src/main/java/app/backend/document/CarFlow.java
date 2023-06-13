@@ -1,12 +1,10 @@
 package app.backend.document;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import app.backend.validation.StartBeforeEndTime;
-
-import java.time.LocalTime;
 
 @Document(collection = "carflows")
 public class CarFlow {
@@ -16,10 +14,10 @@ public class CarFlow {
     @PositiveOrZero
     private double carFlow;
 
-    @NotNull
-    private TimeInterval timeIntervalId;
+    @NotBlank
+    private String timeIntervalId;
 
-    public CarFlow(int carFlow, TimeInterval timeIntervalId) {
+    public CarFlow(int carFlow, String timeIntervalId) {
         this.carFlow = carFlow;
         this.timeIntervalId = timeIntervalId;
     }
@@ -40,11 +38,11 @@ public class CarFlow {
         this.carFlow = carFlowPm;
     }
 
-    public TimeInterval getTimeIntervalId() {
+    public String getTimeIntervalId() {
         return timeIntervalId;
     }
 
-    public void setTimeIntervalId(TimeInterval timeIntervalId) {
+    public void setTimeIntervalId(String timeIntervalId) {
         this.timeIntervalId = timeIntervalId;
     }
 }

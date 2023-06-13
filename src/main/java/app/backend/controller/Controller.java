@@ -2,6 +2,7 @@ package app.backend.controller;
 
 import app.backend.document.CarFlow;
 import app.backend.document.Connection;
+import app.backend.document.TimeInterval;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.collision.Collision;
 import app.backend.document.collision.CollisionType;
@@ -82,7 +83,7 @@ public class Controller {
         return lightsIDs;
     }
 
-    private ArrayList<String> populateCarFlows() {
+    private ArrayList<String> populateCarFlows(TimeInterval timeInterval) {
         ArrayList<String> carFlowsIDs = new ArrayList<>();
         for (int i = 0; i < numberOfConnections; i++) {
             int carFlowValue;
@@ -93,9 +94,7 @@ public class Controller {
             } else {
                 carFlowValue = 17+i;
             }
-            LocalTime start = LocalTime.ofSecondOfDay(0);
-            LocalTime end = LocalTime.ofSecondOfDay(1600);
-            CarFlow carFlow = carFlowService.addCarFlow(carFlowValue, start, end);
+            CarFlow carFlow = carFlowService.addCarFlow(carFlowValue, timeInterval.getId());
             carFlowsIDs.add(carFlow.getId());
         }
         return carFlowsIDs;
@@ -234,8 +233,9 @@ public class Controller {
     }
 
     private String populateAll() {
+        TimeInterval timeInterval = new TimeInterval(LocalTime.ofSecondOfDay(0), LocalTime.ofSecondOfDay(1600));
         ArrayList<String> lightsIDs = populateLights();
-        ArrayList<String> carFlowsIDs = populateCarFlows();
+        ArrayList<String> carFlowsIDs = populateCarFlows(timeInterval);
         ArrayList<String> roadsIDs = populateRoads();
         ArrayList<String> collisionsIDs = populateCollisions(lightsIDs);
         ArrayList<String> connectionsIDs = populateConnections(lightsIDs, carFlowsIDs, roadsIDs);
