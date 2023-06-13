@@ -40,6 +40,8 @@ public class Controller {
     ConnectionService connectionService;
     @Autowired
     CarFlowService carFlowService;
+    @Autowired
+    TimeIntervalService timeIntervalService;
 
     @ResponseBody
     @GetMapping(value = "/")
@@ -232,8 +234,12 @@ public class Controller {
         return collisionsIDs;
     }
 
+    private TimeInterval populateTimeIntervals() {
+        return timeIntervalService.addTimeInterval(LocalTime.ofSecondOfDay(0), LocalTime.ofSecondOfDay(1600));
+    }
+
     private String populateAll() {
-        TimeInterval timeInterval = new TimeInterval(LocalTime.ofSecondOfDay(0), LocalTime.ofSecondOfDay(1600));
+        TimeInterval timeInterval = populateTimeIntervals();
         ArrayList<String> lightsIDs = populateLights();
         ArrayList<String> carFlowsIDs = populateCarFlows(timeInterval);
         ArrayList<String> roadsIDs = populateRoads();
@@ -256,6 +262,6 @@ public class Controller {
             e.printStackTrace();
         }
 
-        return crossroad.getId();
+        return crossroad.getId() + ";" + timeInterval.getId();
     }
 }
