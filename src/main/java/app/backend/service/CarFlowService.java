@@ -21,8 +21,8 @@ public class CarFlowService {
         return carFlow.get();
     }
 
-    public CarFlow addCarFlow(int carFlow, String timeInterval){
-        return carFlowRepository.insert(new CarFlow(carFlow, timeInterval));
+    public CarFlow addCarFlow(double carFlow, String timeIntervalId){
+        return carFlowRepository.insert(new CarFlow(carFlow, timeIntervalId));
     }
 
     public CarFlow deleteCarFlowById(String id) throws Exception {

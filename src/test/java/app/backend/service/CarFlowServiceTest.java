@@ -63,12 +63,11 @@ class CarFlowServiceTest {
 
     @Test
     public void getCarFlowById_properCarFlow_correctCarFlow() {
-        int flow = 7;
-        LocalTime start = LocalTime.ofSecondOfDay(0);
-        LocalTime end = LocalTime.ofSecondOfDay(1600);
+        double flow = 7.0;
+        String timeIntervalId = "timeIntervalId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, start, end);
-        carFlowService.addCarFlow(11, LocalTime.ofSecondOfDay(12), LocalTime.ofSecondOfDay(22));
+        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
+        carFlowService.addCarFlow(11, "asdsdaddsds");
 
         CarFlow found = null;
         try {
@@ -80,31 +79,27 @@ class CarFlowServiceTest {
         assertEquals(2, carFlowService.carFlowRepository.count());
         assertNotNull(found);
         assertEquals(flow, found.getCarFlow());
-        assertEquals(start, found.getStartTime());
-        assertEquals(end, found.getEndTime());
+        assertEquals(timeIntervalId, found.getTimeIntervalId());
     }
 
     @Test
     public void addCarFlow_properCarFlow_carFlowAdded() {
         int flow = 7;
-        LocalTime start = LocalTime.ofSecondOfDay(0);
-        LocalTime end = LocalTime.ofSecondOfDay(1600);
+        String timeIntervalId = "timeIntervalId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, start, end);
+        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
 
         assertEquals(1, carFlowService.carFlowRepository.count());
         assertEquals(flow, carFlow.getCarFlow());
-        assertEquals(start, carFlow.getStartTime());
-        assertEquals(end, carFlow.getEndTime());
+        assertEquals(timeIntervalId, carFlow.getTimeIntervalId());
     }
 
     @Test
     public void deleteCarFlowById_properCarFlow_carFlowDeleted() {
         int flow = 7;
-        LocalTime start = LocalTime.ofSecondOfDay(0);
-        LocalTime end = LocalTime.ofSecondOfDay(1600);
+        String timeIntervalId = "timeIntervalId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, start, end);
+        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
 
         String id = carFlow.getId();
         try {
@@ -124,10 +119,9 @@ class CarFlowServiceTest {
     @Test
     public void deleteCarFlowById_improperCarFlow_carFlowNotFound() {
         int flow = 7;
-        LocalTime start = LocalTime.ofSecondOfDay(0);
-        LocalTime end = LocalTime.ofSecondOfDay(1600);
+        String timeIntervalId = "timeIntervalId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, start, end);
+        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
         String id = "";
 
         Exception exception = assertThrows(Exception.class, () -> {
@@ -141,19 +135,17 @@ class CarFlowServiceTest {
     @Test
     public void updateCarFlow_properCarFlow_carFlowUpdated() {
         int flow = 7;
-        LocalTime start = LocalTime.ofSecondOfDay(0);
-        LocalTime end = LocalTime.ofSecondOfDay(1600);
+        String timeIntervalId = "timeIntervalId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, start, end);
+        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
 
         String id = carFlow.getId();
         int flowUpdated = 13;
-        LocalTime startUpdated = LocalTime.ofSecondOfDay(1800);
-        LocalTime endUpdated = LocalTime.ofSecondOfDay(2000);
+        String timeIntervalIdUpdated = "updt";
 
         CarFlow updated = null;
         try {
-            carFlowService.updateCarFlow(id, flowUpdated, startUpdated, endUpdated);
+            carFlowService.updateCarFlow(id, flowUpdated, timeIntervalIdUpdated);
             updated = carFlowService.getCarFlowById(id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -162,25 +154,22 @@ class CarFlowServiceTest {
         assertEquals(1, carFlowService.carFlowRepository.count());
         assertNotNull(updated);
         assertEquals(flowUpdated, updated.getCarFlow());
-        assertEquals(startUpdated, updated.getStartTime());
-        assertEquals(endUpdated, updated.getEndTime());
+        assertEquals(timeIntervalIdUpdated, updated.getTimeIntervalId());
     }
 
     @Test
     public void updateCarFlow_improperCarFlow_carFlowNotFound() {
         int flow = 7;
-        LocalTime start = LocalTime.ofSecondOfDay(0);
-        LocalTime end = LocalTime.ofSecondOfDay(1600);
+        String timeIntervalId = "timeIntervalId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, start, end);
+        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
 
         String id = "";
         int flowUpdated = 13;
-        LocalTime startUpdated = LocalTime.ofSecondOfDay(1800);
-        LocalTime endUpdated = LocalTime.ofSecondOfDay(2000);
+        String timeIntervalIdUpdated = "updt";
 
         Exception exception = assertThrows(Exception.class, () -> {
-            carFlowService.updateCarFlow(id, flowUpdated, startUpdated, endUpdated);
+            carFlowService.updateCarFlow(id, flowUpdated, timeIntervalIdUpdated);
             carFlowService.deleteCarFlowById(id);
         });
 

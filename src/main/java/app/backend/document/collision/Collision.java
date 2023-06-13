@@ -14,7 +14,6 @@ public class Collision {
     @PositiveOrZero
     private int index;
 
-
     @NotBlank
     private String name;
 
@@ -27,8 +26,9 @@ public class Collision {
     @NotNull
     private CollisionType type;
 
-    public Collision(int index, String trafficLight1Id, String trafficLight2Id, CollisionType type) {
+    public Collision(int index, String name, String trafficLight1Id, String trafficLight2Id, CollisionType type) {
         this.index = index;
+        this.name = name;
         this.trafficLight1Id = trafficLight1Id;
         this.trafficLight2Id = trafficLight2Id;
         this.type = type;
@@ -48,6 +48,14 @@ public class Collision {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getTrafficLight1Id() {
