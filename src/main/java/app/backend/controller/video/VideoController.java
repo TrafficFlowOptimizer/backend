@@ -41,7 +41,7 @@ public class VideoController {
         }
     }
 
-    @GetMapping(value="/videos/{id}/analyse")
+    @GetMapping(value="/videos/{id}/analysis")
     public String analyse(@PathVariable String id) {
         videoUtils.analyseVideo(id);
 
