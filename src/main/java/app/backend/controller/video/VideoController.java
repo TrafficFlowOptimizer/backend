@@ -1,5 +1,6 @@
 package app.backend.controller.video;
 
+import app.backend.controller.crossroad.CrossroadsUtils;
 import app.backend.entity.Video;
 import app.backend.response.VideoResponseFile;
 import app.backend.response.VideoResponseMessage;
@@ -23,6 +24,8 @@ public class VideoController {
 
     @Autowired
     private VideoService videoService;
+    @Autowired
+    VideoUtils videoUtils;
 
     @PostMapping(value="/videos/upload")
     public ResponseEntity<VideoResponseMessage> upload(@RequestParam("file") MultipartFile video, @RequestParam("crossroadId") String crossroadId, @RequestParam("timeIntervalId") String timeIntervalId) {
@@ -36,6 +39,13 @@ public class VideoController {
             message = "Could not upload the video: " + video.getOriginalFilename() + "!";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new VideoResponseMessage(message));
         }
+    }
+
+    @GetMapping(value="/videos/{id}/analyse")
+    public String analyse(@PathVariable String id) {
+        videoUtils.analyseVideo(id);
+
+        return "true";
     }
 
     @GetMapping(value="/videos")
