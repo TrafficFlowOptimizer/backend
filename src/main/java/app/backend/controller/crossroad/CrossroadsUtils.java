@@ -3,6 +3,8 @@ package app.backend.controller.crossroad;
 import app.backend.document.TimeInterval;
 import app.backend.document.collision.CollisionType;
 import app.backend.document.crossroad.Crossroad;
+import app.backend.document.light.TrafficLight;
+import app.backend.document.light.TrafficLightType;
 import app.backend.entity.Video;
 import app.backend.service.*;
 import org.json.JSONArray;
@@ -66,9 +68,23 @@ public class CrossroadsUtils {
         JSONObject obj = new JSONObject(text);
         JSONArray arr = obj.getJSONArray("results");
 
-        Map<Integer, JSONArray> map = new HashMap<>();
+        Map<Integer, JSONArray> resultsMap = new HashMap<>();
         for(int i=0; i<arr.length(); i++){
-            map.put(i+1, arr.getJSONArray(i));
+            resultsMap.put(i+1, arr.getJSONArray(i));
+        }
+
+        Map<Integer, TrafficLightType> lightDirectionMap = new HashMap<>();
+        for(int i=0; i<arr.length(); i++){
+            int finalI = i;
+            List<TrafficLightType> lightType = crossroadService.getCrossroadById(crossroadId).getTrafficLightIds().stream().map(lightID -> {
+                try {
+                    return trafficLightService.getTrafficLightById(lightID);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }).filter(light -> light.getIndex()== finalI +1).map(TrafficLight::getType).toList();
+            assert lightType.size() == 1;
+            lightDirectionMap.put(i+1, lightType.get(0));
         }
 
         Crossroad crossroadDB = crossroadService.getCrossroadById(crossroadId);
@@ -107,9 +123,9 @@ public class CrossroadsUtils {
             for(int light:roadConnections.get(i)) {
                 JSONObject JsonLight = new JSONObject();
                 JsonLight.put("lightId", light);
-                JSONArray sequence = map.get(light);
+                JSONArray sequence = resultsMap.get(light);
                 JsonLight.put("sequence", sequence);
-                JsonLight.put("direction", "forward"); // TODO
+                JsonLight.put("direction", lightDirectionMap.get(light));
 
                 JsonLights.put(JsonLight);
 
