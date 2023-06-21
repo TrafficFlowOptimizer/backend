@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalTime;
 import java.util.*;
 
-import static app.backend.document.light.TrafficLightType.LEFT;
+import static app.backend.document.light.TrafficLightType.*;
 
 @RestController
 public class Controller {
@@ -79,7 +79,16 @@ public class Controller {
     private ArrayList<String> populateLights() {
         ArrayList<String> lightsIDs = new ArrayList<>();
         for (int i = 0; i < numberOfLights; i++) {
-            TrafficLight trafficLight = trafficLightService.addTrafficLight(i+1, "name", LEFT);
+            TrafficLight trafficLight;
+            if(i%3==0) {
+                trafficLight = trafficLightService.addTrafficLight(i + 1, "name", LEFT);
+            }
+            else if(i%3==1) {
+                trafficLight = trafficLightService.addTrafficLight(i + 1, "name", FORWARD);
+            }
+            else{
+                trafficLight = trafficLightService.addTrafficLight(i + 1, "name", ARROW);
+            }
             lightsIDs.add(trafficLight.getId());
         }
         return lightsIDs;

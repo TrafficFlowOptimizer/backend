@@ -87,4 +87,29 @@ public class CrossroadController {
 
         return result;
     }
+    @GetMapping(value="/crossroad/{crossroadId}/optimization/{time}",  produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getOptimizationWithoutVideo(@PathVariable String crossroadId, @PathVariable int time) {
+        int serverPort = 9091;
+        String result = "{}";
+        try (Socket socket = new Socket("localhost", serverPort)) {
+            JSONObject jsonData = crossroadsUtils.parseJSON(crossroadId, time);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            out.println(jsonData);
+
+            InputStream optimizerResponse = socket.getInputStream();
+            Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
+            result = s.hasNext() ? s.next() : "";
+
+            result = crossroadsUtils.parseOutput(result, crossroadId);
+
+        } catch (Exception e) {
+            try {
+                sleep(time*1000L);
+                result = Files.readString(Paths.get("newTemplateOutput.json"));
+            } catch (Exception ignored) {}
+        }
+        System.out.println(result);
+
+        return result;
+    }
 }
