@@ -5,9 +5,8 @@ import app.backend.repository.OptimizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.StreamSupport;
 
 @Service
 public class OptimizationService {
@@ -23,6 +22,11 @@ public class OptimizationService {
     }
 
     public Optimization addOptimization(String crossroadId, int version, String timeIntervalId, List<List<Integer>> results) {
+        return optimizationRepository.insert(new Optimization(crossroadId, version, timeIntervalId, results));
+    }
+
+    public Optimization addOptimization(String crossroadId, String timeIntervalId, List<List<Integer>> results) {
+        int version = getFreeVersionNumber(crossroadId);
         return optimizationRepository.insert(new Optimization(crossroadId, version, timeIntervalId, results));
     }
 
@@ -53,8 +57,8 @@ public class OptimizationService {
         return optimizationToUpdate;
     }
 
-    public Iterable<Optimization> getOptimizationByCrossroadId(String id) {
-        Iterable<Optimization> optimizations = optimizationRepository.findAllByCrossroadId(id);
+    public Iterable<Optimization> getOptimizationsByCrossroadId(String crossroadId) {
+        Iterable<Optimization> optimizations = optimizationRepository.findAllByCrossroadId(crossroadId);
         List<Optimization> optimizationsFound = new LinkedList<>();
         for(Optimization optimization : optimizations) {
             optimizationsFound.add(optimization);
@@ -62,8 +66,19 @@ public class OptimizationService {
         return optimizationsFound;
     }
 
+    public Iterable<Optimization> getOptimizationsByCrossroadIdAndTimeInterval(String crossroadId, String timeIntervalID) {
+        Iterable<Optimization> optimizations = optimizationRepository.findAllByCrossroadId(crossroadId);
+        List<Optimization> optimizationsFound = new LinkedList<>();
+        for(Optimization optimization : optimizations) {
+            if(Objects.equals(optimization.getTimeIntervalId(), timeIntervalID)) {
+                optimizationsFound.add(optimization);
+            }
+        }
+        return optimizationsFound;
+    }
+
     public int getFreeVersionNumber(String crossroadId) {
-        Iterable<Optimization> optimizations = getOptimizationByCrossroadId(crossroadId);
+        Iterable<Optimization> optimizations = getOptimizationsByCrossroadId(crossroadId);
         int max = -1;
         for(Optimization optimization : optimizations) {
             int version = optimization.getVersion();
@@ -72,5 +87,23 @@ public class OptimizationService {
             }
         }
         return max+1;
+    }
+
+    public Optimization getNewestOptimizationByCrossroadId(String crossroadId, String timeIntervalID) {
+        Iterable<Optimization> optimizations = getOptimizationsByCrossroadIdAndTimeInterval(crossroadId, timeIntervalID);
+
+        List<Optimization> sorted = StreamSupport.stream(optimizations.spliterator(), false).sorted(Comparator.comparingInt(Optimization::getVersion)).toList();
+
+        return sorted.get(sorted.size()-1);
+    }
+
+    public Optimization getSecondNewestOptimizationByCrossroadId(String crossroadId, String timeIntervalID) {
+        Iterable<Optimization> optimizations = getOptimizationsByCrossroadIdAndTimeInterval(crossroadId, timeIntervalID);
+
+        List<Optimization> sorted = StreamSupport.stream(optimizations.spliterator(), false).sorted(Comparator.comparingInt(Optimization::getVersion)).toList();
+
+        if(sorted.size()>1)
+            return sorted.get(sorted.size()-2);
+        return sorted.get(sorted.size()-1);
     }
 }

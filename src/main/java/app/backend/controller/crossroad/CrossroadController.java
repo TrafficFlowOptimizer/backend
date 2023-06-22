@@ -2,6 +2,7 @@ package app.backend.controller.crossroad;
 
 import app.backend.document.crossroad.Crossroad;
 import app.backend.service.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import static java.lang.Thread.sleep;
 @RestController
 public class CrossroadController {
     @Autowired CrossroadService crossroadService;
+    @Autowired OptimizationService optimizationService;
     @Autowired CrossroadsUtils crossroadsUtils;
 
     @GetMapping(value="/crossroad")
@@ -75,7 +77,8 @@ public class CrossroadController {
             result = s.hasNext() ? s.next() : "";
 
             crossroadsUtils.addOptimizationResultsToDb(crossroadId, crossroadsUtils.getTimeIntervalId(videoId), result);
-            result = crossroadsUtils.parseOutput(result, crossroadId);
+            throw new RuntimeException(); //TODO: for now
+//            result = crossroadsUtils.parseOutput(result, crossroadId);
 
         } catch (Exception e) {
             try {
@@ -87,6 +90,21 @@ public class CrossroadController {
 
         return result;
     }
+
+    private List<List<Integer>> convertJSONArrayToArray(String jsonArray){
+        JSONObject obj = new JSONObject(jsonArray);
+        JSONArray arr = obj.getJSONArray("results");
+        List<List<Integer>> ar = new ArrayList<>();
+        for(int i=0;i<arr.length();i++){
+            List<Integer> row = new ArrayList<>();
+            for(int j=0;j<arr.getJSONArray(0).length();j++){
+                row.add((int) arr.getJSONArray(i).get(j));
+            }
+            ar.add(row);
+        }
+        return ar;
+    }
+
     @GetMapping(value="/crossroad/{crossroadId}/optimization/{time}",  produces = MediaType.APPLICATION_JSON_VALUE)
     public String getOptimizationWithoutVideo(@PathVariable String crossroadId, @PathVariable int time) {
         int serverPort = 9091;
@@ -99,8 +117,12 @@ public class CrossroadController {
             InputStream optimizerResponse = socket.getInputStream();
             Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
             result = s.hasNext() ? s.next() : "";
+            List<List<Integer>> resultArray = convertJSONArrayToArray(result);
+            //TODO: timeIntervalID powinno być jako argument
 
-            result = crossroadsUtils.parseOutput(result, crossroadId);
+            optimizationService.addOptimization(crossroadId, "0", resultArray);
+
+            result = getOptimizationResultsWithoutVideo(crossroadId, "0");
 
         } catch (Exception e) {
             try {
@@ -111,5 +133,11 @@ public class CrossroadController {
         System.out.println(result);
 
         return result;
+    }
+
+    public String getOptimizationResultsWithoutVideo(String crossroadId, String timeIntervalID) throws Exception {
+        List<List<Integer>> newestResult = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, timeIntervalID).getResults();
+        List<List<Integer>> secondNewestResult = optimizationService.getSecondNewestOptimizationByCrossroadId(crossroadId, timeIntervalID).getResults();
+        return crossroadsUtils.parseOutput(newestResult, secondNewestResult, crossroadId);
     }
 }

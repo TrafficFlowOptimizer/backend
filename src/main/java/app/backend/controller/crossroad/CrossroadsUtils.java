@@ -1,11 +1,9 @@
 package app.backend.controller.crossroad;
 
-import app.backend.document.TimeInterval;
 import app.backend.document.collision.CollisionType;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.light.TrafficLightType;
-import app.backend.entity.Video;
 import app.backend.service.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,11 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
@@ -64,17 +57,18 @@ public class CrossroadsUtils {
         );
     }
 
-    public String parseOutput(String text, @PathVariable String crossroadId) throws Exception {
-        JSONObject obj = new JSONObject(text);
-        JSONArray arr = obj.getJSONArray("results");
-
-        Map<Integer, JSONArray> resultsMap = new HashMap<>();
-        for(int i=0; i<arr.length(); i++){
-            resultsMap.put(i+1, arr.getJSONArray(i));
+    public String parseOutput(List<List<Integer>> newestResult, List<List<Integer>> secondNewestResult, @PathVariable String crossroadId) throws Exception {
+        Map<Integer, List<Integer>> resultsMap = new HashMap<>();
+        for(int i=0; i<newestResult.size(); i++){
+            resultsMap.put(i+1, newestResult.get(i));
+        }
+        Map<Integer, List<Integer>> previousResultsMap = new HashMap<>();
+        for(int i=0; i<secondNewestResult.size(); i++){
+            previousResultsMap.put(i+1, secondNewestResult.get(i));
         }
 
         Map<Integer, TrafficLightType> lightDirectionMap = new HashMap<>();
-        for(int i=0; i<arr.length(); i++){
+        for(int i=0; i<newestResult.size(); i++){
             int finalI = i;
             List<TrafficLightType> lightType = crossroadService.getCrossroadById(crossroadId).getTrafficLightIds().stream().map(lightID -> {
                 try {
@@ -90,13 +84,24 @@ public class CrossroadsUtils {
         Crossroad crossroadDB = crossroadService.getCrossroadById(crossroadId);
         List<String> connectionsDB = crossroadDB.getConnectionIds();
 
+        for(String connectionId : connectionsDB){
+            List<Integer> innerList = new ArrayList<>();
+            for(String trafficLightID : connectionService.getConnectionById(connectionId).getTrafficLightIds()) {
+                innerList.add(trafficLightService.getTrafficLightById(trafficLightID).getIndex());
+            }
+            System.out.println(innerList);
+
+            String carFlowID = connectionService.getConnectionById(connectionId).getCarFlowIds().get(0);
+            System.out.println(carFlowService.getCarFlowById(carFlowID).getCarFlow());
+        }
+
         List<List<Integer>> roadConnections = connectionsDB
                 .stream()
                 .map(connectionId -> {
                     try {
                         List<Integer> innerList = new ArrayList<>();
-                        for(int i=0; i<connectionService.getConnectionById(connectionId).getTrafficLightIds().size(); i++) {
-                            innerList.add(trafficLightService.getTrafficLightById(connectionService.getConnectionById(connectionId).getTrafficLightIds().get(i)).getIndex());
+                        for(String trafficLightID : connectionService.getConnectionById(connectionId).getTrafficLightIds()) {
+                            innerList.add(trafficLightService.getTrafficLightById(trafficLightID).getIndex());
                         }
                         return innerList;
                     } catch (Exception e) {e.printStackTrace();}
@@ -120,21 +125,25 @@ public class CrossroadsUtils {
 
             JSONArray JsonLights = new JSONArray();
             double possibleFlow = 0;
+            double previousPossibleFlow = 0;
             for(int light:roadConnections.get(i)) {
                 JSONObject JsonLight = new JSONObject();
                 JsonLight.put("lightId", light);
-                JSONArray sequence = resultsMap.get(light);
+                List<Integer> sequence = resultsMap.get(light);
                 JsonLight.put("sequence", sequence);
                 JsonLight.put("direction", lightDirectionMap.get(light));
 
                 JsonLights.put(JsonLight);
 
                 possibleFlow += countOccurrences(sequence, 1);
+                previousPossibleFlow += countOccurrences(previousResultsMap.get(light), 1);
             }
             double expectedFlow = (double) flows.get(i);
             final DecimalFormat df = new DecimalFormat("0.00");
             df.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-            JsonConnection.put("flow", df.format(possibleFlow / expectedFlow));
+            JsonConnection.put("currentFlow", df.format(possibleFlow / expectedFlow));
+
+            JsonConnection.put("previousFlow", df.format(previousPossibleFlow / expectedFlow));
 
             JsonConnection.put("lights", JsonLights);
 
@@ -145,10 +154,10 @@ public class CrossroadsUtils {
         return response.toString();
     }
 
-    public static int countOccurrences(JSONArray jsonArray, int target) throws JSONException {
+    public static int countOccurrences(List<Integer> list, int target) throws JSONException {
         int count = 0;
-        for (int i = 0; i < jsonArray.length(); i++) {
-            if (jsonArray.getInt(i) == target) {
+        for (Integer integer : list) {
+            if (integer == target) {
                 count++;
             }
         }

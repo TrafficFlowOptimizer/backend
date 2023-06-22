@@ -99,11 +99,11 @@ public class Controller {
         for (int i = 0; i < numberOfConnections; i++) {
             int carFlowValue;
             if (i % 3 == 0) {
-                carFlowValue = 7+i;
+                carFlowValue = 5;
             } else if (i % 3 == 1) {
-                carFlowValue = 12+i;
+                carFlowValue = 10;
             } else {
-                carFlowValue = 17+i;
+                carFlowValue = 12;
             }
             CarFlow carFlow = carFlowService.addCarFlow(carFlowValue, timeInterval.getId());
             carFlowsIDs.add(carFlow.getId());
@@ -215,7 +215,7 @@ public class Controller {
             sourceId = roadsIDs.get((i * 3 + 1) % numberOfRoads);
             targetId = roadsIDs.get(((i * 3 + 1) + 8) % numberOfRoads);
             lightsIDsTMP.add(lightsIDs.get(i * 3));
-            carFlowsIDsTMP.add(carFlowsIDs.get(i));
+            carFlowsIDsTMP.add(carFlowsIDs.get(i * 3));
             connection = connectionService.addConnection(3*i+1, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
 
@@ -225,7 +225,7 @@ public class Controller {
             lightsIDsTMP.clear();
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 1));
             carFlowsIDsTMP.clear();
-            carFlowsIDsTMP.add(carFlowsIDs.get(i + 1));
+            carFlowsIDsTMP.add(carFlowsIDs.get(i * 3 + 1));
             connection = connectionService.addConnection(3*i + 2, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
 
@@ -236,7 +236,7 @@ public class Controller {
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 1));
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 2));
             carFlowsIDsTMP.clear();
-            carFlowsIDsTMP.add(carFlowsIDs.get(i + 2));
+            carFlowsIDsTMP.add(carFlowsIDs.get(i * 3 + 2));
             connection = connectionService.addConnection(3*i + 3, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
         }
