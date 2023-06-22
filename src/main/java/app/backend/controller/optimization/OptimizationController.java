@@ -27,7 +27,7 @@ public class OptimizationController {
 
     @GetMapping(value="/optimizations/{crossroadId}")
     public List<Optimization> list(@PathVariable String crossroadId) {
-        Iterable<Optimization> optimizations =  optimizationService.getOptimizationByCrossroadId(crossroadId);
+        Iterable<Optimization> optimizations =  optimizationService.getOptimizationsByCrossroadId(crossroadId);
         List<Optimization> ret = new LinkedList<>();
         for(Optimization optimization : optimizations) {
             ret.add(optimization);
