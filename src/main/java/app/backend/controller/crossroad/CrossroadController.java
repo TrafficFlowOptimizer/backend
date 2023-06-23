@@ -108,7 +108,7 @@ public class CrossroadController {
     @GetMapping(value="/crossroad/{crossroadId}/optimization/{time}",  produces = MediaType.APPLICATION_JSON_VALUE)
     public String getOptimizationWithoutVideo(@PathVariable String crossroadId, @PathVariable int time) {
         int serverPort = 9091;
-        String result = "{}";
+        String result = "{results: \"ERROR\"}";
         try (Socket socket = new Socket("localhost", serverPort)) {
             JSONObject jsonData = crossroadsUtils.parseJSON(crossroadId, time);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -122,7 +122,7 @@ public class CrossroadController {
 
             optimizationService.addOptimization(crossroadId, "0", resultArray);
 
-            result = getOptimizationResultsWithoutVideo(crossroadId, "0");
+            result = getOptimizationResults(crossroadId, "0");
 
         } catch (Exception e) {
             try {
@@ -135,9 +135,18 @@ public class CrossroadController {
         return result;
     }
 
-    public String getOptimizationResultsWithoutVideo(String crossroadId, String timeIntervalID) throws Exception {
-        List<List<Integer>> newestResult = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, timeIntervalID).getResults();
-        List<List<Integer>> secondNewestResult = optimizationService.getSecondNewestOptimizationByCrossroadId(crossroadId, timeIntervalID).getResults();
-        return crossroadsUtils.parseOutput(newestResult, secondNewestResult, crossroadId);
+    @GetMapping(value="/crossroad/{crossroadId}/optimization_results",  produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getOptimizationResults( @PathVariable String crossroadId, String timeIntervalID){
+        try {
+            List<List<Integer>> newestResult = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, timeIntervalID).getResults();
+            List<List<Integer>> secondNewestResult = optimizationService.getSecondNewestOptimizationByCrossroadId(crossroadId, timeIntervalID).getResults();
+            return crossroadsUtils.parseOutput(newestResult, secondNewestResult, crossroadId);
+        } catch (Exception e) {
+            try {
+                return Files.readString(Paths.get("newTemplateOutput.json"));
+            } catch (Exception ignored) {
+                throw new RuntimeException("Error with reading template output.");
+            }
+        }
     }
 }
