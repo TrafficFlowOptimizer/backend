@@ -61,25 +61,20 @@ public class OptimizationService {
         return optimizationToUpdate;
     }
 
-    public List<Optimization> getOptimizationByCrossroadId(String id) {
-        Iterable<Optimization> optimizations = optimizationRepository.findAllByCrossroadId(id);
+    public List<Optimization> getOptimizationsByCrossroadId(String optimizationId) {
+        Iterable<Optimization> optimizations = optimizationRepository.findAllByCrossroadId(optimizationId);
         return StreamSupport.stream(optimizations.spliterator(), false)
                 .collect(Collectors.toList());
     }
 
     public Iterable<Optimization> getOptimizationsByCrossroadIdAndTimeInterval(String crossroadId, String timeIntervalID) {
-        Iterable<Optimization> optimizations = optimizationRepository.findAllByCrossroadId(crossroadId);
-        List<Optimization> optimizationsFound = new LinkedList<>();
-        for(Optimization optimization : optimizations) {
-            if(Objects.equals(optimization.getTimeIntervalId(), timeIntervalID)) {
-                optimizationsFound.add(optimization);
-            }
-        }
-        return optimizationsFound;
+        return StreamSupport.stream(optimizationRepository.findAllByCrossroadId(crossroadId).spliterator(), false)
+                .filter(optimization -> Objects.equals(optimization.getTimeIntervalId(), timeIntervalID))
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 
     public int getFreeVersionNumber(String crossroadId) {
-        Iterable<Optimization> optimizations = getOptimizationByCrossroadId(crossroadId);
+        Iterable<Optimization> optimizations = getOptimizationsByCrossroadId(crossroadId);
 
         Optional<Integer> maxVersion = StreamSupport.stream(optimizations.spliterator(), false)
                 .map(Optimization::getVersion)
