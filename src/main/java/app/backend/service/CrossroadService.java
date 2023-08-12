@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class CrossroadService {
@@ -26,32 +28,24 @@ public class CrossroadService {
 
     public List<Crossroad> getCrossroadByCreatorId(String creatorId) {
         Iterable<Crossroad> crossroads = crossroadRepository.findAllByCreatorId(creatorId);
-        List<Crossroad> intersections = new LinkedList<>();
-        for(Crossroad crossroad : crossroads) {
-            intersections.add(crossroad);
-        }
-
-        return intersections;
+        return StreamSupport.stream(crossroads.spliterator(), false)
+                .collect(Collectors.toList());
     }
 
+    /**
+     * @author Chat GPT4
+     */
     public List<Crossroad> getCrossroadsByCreatorIdOrPublic(String creatorId) {
-        Iterable<Crossroad> crossroads = crossroadRepository.findAll();
-        List<Crossroad> intersections = new LinkedList<>();
-        for(Crossroad crossroad : crossroads) {
-            if(crossroad.getType().equals(CrossroadType.PUBLIC) || crossroad.getCreatorId().equals(creatorId)) {
-                intersections.add(crossroad);
-            }
-        }
-        return intersections;
+        List<Crossroad> crossroads = crossroadRepository.findAll();
+        return crossroads.stream()
+                .filter(crossroad -> crossroad.getType().equals(CrossroadType.PUBLIC) || crossroad.getCreatorId().equals(creatorId))
+                .collect(Collectors.toList());
     }
 
-    public List<Crossroad> getCrossroadsPublic() {
+    public List<Crossroad> getPublicCrossroads() {
         Iterable<Crossroad> crossroads = crossroadRepository.findAllByType(CrossroadType.PUBLIC);
-        List<Crossroad> intersections = new LinkedList<>();
-        for(Crossroad crossroad : crossroads) {
-            intersections.add(crossroad);
-        }
-        return intersections;
+        return StreamSupport.stream(crossroads.spliterator(), false)
+                .collect(Collectors.toList());
     }
 
     public Crossroad addCrossroad(String name, String location, String ownerId, CrossroadType type, List<String> roadIDs, List<String> collisionIDs, List<String> connectionIds, List<String> trafficLightIds) {

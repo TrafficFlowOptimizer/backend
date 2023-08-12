@@ -68,7 +68,7 @@ public class VideoController {
     }
 
     @GetMapping(value="/videos/{id}")
-    public ResponseEntity<byte[]> get(@PathVariable String id) {
+    public ResponseEntity<byte[]> get(@PathVariable String id) throws Exception {
         Video video = videoService.getVideo(id);
 
         return ResponseEntity.ok()

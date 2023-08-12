@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.StreamSupport;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OptimizationService {
@@ -57,13 +61,10 @@ public class OptimizationService {
         return optimizationToUpdate;
     }
 
-    public Iterable<Optimization> getOptimizationsByCrossroadId(String crossroadId) {
-        Iterable<Optimization> optimizations = optimizationRepository.findAllByCrossroadId(crossroadId);
-        List<Optimization> optimizationsFound = new LinkedList<>();
-        for(Optimization optimization : optimizations) {
-            optimizationsFound.add(optimization);
-        }
-        return optimizationsFound;
+    public List<Optimization> getOptimizationByCrossroadId(String id) {
+        Iterable<Optimization> optimizations = optimizationRepository.findAllByCrossroadId(id);
+        return StreamSupport.stream(optimizations.spliterator(), false)
+                .collect(Collectors.toList());
     }
 
     public Iterable<Optimization> getOptimizationsByCrossroadIdAndTimeInterval(String crossroadId, String timeIntervalID) {
@@ -78,15 +79,13 @@ public class OptimizationService {
     }
 
     public int getFreeVersionNumber(String crossroadId) {
-        Iterable<Optimization> optimizations = getOptimizationsByCrossroadId(crossroadId);
-        int max = -1;
-        for(Optimization optimization : optimizations) {
-            int version = optimization.getVersion();
-            if(version > max) {
-                max = version;
-            }
-        }
-        return max+1;
+        Iterable<Optimization> optimizations = getOptimizationByCrossroadId(crossroadId);
+
+        Optional<Integer> maxVersion = StreamSupport.stream(optimizations.spliterator(), false)
+                .map(Optimization::getVersion)
+                .max(Integer::compareTo);
+
+        return maxVersion.orElse(-1) + 1;
     }
 
     public Optimization getNewestOptimizationByCrossroadId(String crossroadId, String timeIntervalID) {

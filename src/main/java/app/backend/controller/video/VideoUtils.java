@@ -37,6 +37,6 @@ public class VideoUtils {
             System.out.println(connection.getResponseCode() + " " + connection.getResponseMessage()); // 200 OK
             System.out.println(new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8)); // return value
             connection.disconnect();
-        } catch (IOException e) {throw new RuntimeException(e);}
+        } catch (Exception e) {throw new RuntimeException(e);}
     }
 }

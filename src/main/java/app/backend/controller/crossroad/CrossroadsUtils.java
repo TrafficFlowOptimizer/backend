@@ -29,7 +29,7 @@ public class CrossroadsUtils {
     @Autowired OptimizationService optimizationService;
     @Autowired VideoService videoService;
 
-    public String getTimeIntervalId(String videoId) {
+    public String getTimeIntervalId(String videoId) throws Exception {
         return videoService.getVideo(videoId).getTimeIntervalId();
     }
 
