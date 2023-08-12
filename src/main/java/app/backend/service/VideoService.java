@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
@@ -22,8 +23,13 @@ public class VideoService {
         videoRepository.save( new Video(crossroadId, name, file.getContentType(), timeIntervalId, file.getBytes()) );
     }
 
-    public Video getVideo(String id) {
-        return videoRepository.findById(id).get();
+    public Video getVideo(String id) throws Exception {
+        Optional<Video> video = videoRepository.findById(id);
+
+        if (video.isPresent()) {
+            return video.get();
+        }
+        throw new Exception("No video for id " + id + " found in database");
     }
 
     public Stream<Video> getAllVideos() {

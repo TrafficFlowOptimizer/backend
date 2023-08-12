@@ -30,7 +30,7 @@ public class CrossroadController {
             return crossroadService.getCrossroadsByCreatorIdOrPublic(userId);
         }
         else {
-            return crossroadService.getCrossroadsPublic();
+            return crossroadService.getPublicCrossroads();
         }
     }
 
