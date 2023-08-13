@@ -10,8 +10,14 @@ import java.util.Optional;
 
 @Service
 public class CollisionService {
+
+    //TODO change it to private (left for future because it collisionRepository is directly accessed in tests)
+    public final CollisionRepository collisionRepository;
+
     @Autowired
-    CollisionRepository collisionRepository;
+    public CollisionService(CollisionRepository collisionRepository) {
+        this.collisionRepository = collisionRepository;
+    }
 
     public Collision getCollisionById(String id) throws Exception {
         Optional<Collision> collision = collisionRepository.findById(id);

@@ -23,10 +23,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/videos")
 public class VideoController {
 
+    private final VideoService videoService;
+    private final VideoUtils videoUtils;
+
     @Autowired
-    private VideoService videoService;
-    @Autowired
-    VideoUtils videoUtils;
+    public VideoController(VideoService videoService, VideoUtils videoUtils) {
+        this.videoService = videoService;
+        this.videoUtils = videoUtils;
+    }
 
     @PostMapping(value="/upload")
     public ResponseEntity<VideoResponseMessage> upload(@RequestParam("file") MultipartFile video, @RequestParam("crossroadId") String crossroadId, @RequestParam("timeIntervalId") String timeIntervalId) {

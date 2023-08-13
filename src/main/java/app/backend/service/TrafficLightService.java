@@ -10,9 +10,14 @@ import java.util.Optional;
 
 @Service
 public class TrafficLightService {
-    @Autowired
-    TrafficLightRepository trafficLightRepository;
 
+    //TODO change it to private (left for future because it trafficLightRepository is directly accessed in tests)
+    public final TrafficLightRepository trafficLightRepository;
+
+    @Autowired
+    public TrafficLightService(TrafficLightRepository trafficLightRepository) {
+        this.trafficLightRepository = trafficLightRepository;
+    }
     public TrafficLight getTrafficLightById(String id) throws Exception {
         Optional<TrafficLight> trafficLight = trafficLightRepository.findById(id);
         if (trafficLight.isEmpty()){

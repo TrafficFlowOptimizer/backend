@@ -14,9 +14,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class OptimizationService {
-    @Autowired
-    OptimizationRepository optimizationRepository;
 
+    //TODO change it to private (left for future because it optimizationRepository is directly accessed in tests)
+    public final OptimizationRepository optimizationRepository;
+
+    @Autowired
+    public OptimizationService(OptimizationRepository optimizationRepository) {
+        this.optimizationRepository = optimizationRepository;
+    }
     public Optimization getOptimizationById(String id) throws Exception {
         Optional<Optimization> optimization = optimizationRepository.findById(id);
         if(optimization.isEmpty()) {
