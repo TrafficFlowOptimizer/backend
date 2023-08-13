@@ -9,8 +9,14 @@ import java.util.Optional;
 
 @Service
 public class CarFlowService {
+
+    //TODO change it to private (left for future because it carFlowRepository is directly accessed in tests)
+    public final CarFlowRepository carFlowRepository;
+
     @Autowired
-    CarFlowRepository carFlowRepository;
+    public CarFlowService(CarFlowRepository carFlowRepository){
+        this.carFlowRepository = carFlowRepository;
+    }
 
     public CarFlow getCarFlowById(String id) throws Exception {
         Optional<CarFlow> carFlow = carFlowRepository.findById(id);

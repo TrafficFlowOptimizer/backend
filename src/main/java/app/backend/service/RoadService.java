@@ -10,8 +10,15 @@ import java.util.Optional;
 
 @Service
 public class RoadService {
+
+
+    //TODO change it to private (left for future because it optimizationRepository is directly accessed in tests)
+    public final RoadRepository roadRepository;
+
     @Autowired
-    RoadRepository roadRepository;
+    public RoadService(RoadRepository roadRepository) {
+        this.roadRepository = roadRepository;
+    }
 
     public Road getRoadById(String id) throws Exception {
         Optional<Road> road = roadRepository.findById(id);

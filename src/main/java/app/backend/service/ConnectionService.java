@@ -10,8 +10,14 @@ import java.util.Optional;
 
 @Service
 public class ConnectionService {
+
+    //TODO change it to private (left for future because it connectionRepository is directly accessed in tests)
+    public final ConnectionRepository connectionRepository;
+
     @Autowired
-    ConnectionRepository connectionRepository;
+    public ConnectionService(ConnectionRepository connectionRepository) {
+        this.connectionRepository = connectionRepository;
+    }
 
     public Connection getConnectionById(String id) throws Exception {
         Optional<Connection> connection = connectionRepository.findById(id);

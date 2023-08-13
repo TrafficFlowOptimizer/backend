@@ -19,8 +19,7 @@ public class OptimizationServiceTestOnMocks {
     @BeforeAll
     public static void setUp() {
         optimizationRepository = mock(OptimizationRepository.class);
-        optimizationService = new OptimizationService();
-        optimizationService.optimizationRepository = optimizationRepository;
+        optimizationService = new OptimizationService(optimizationRepository);
     }
 
     @Test

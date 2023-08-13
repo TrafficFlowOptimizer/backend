@@ -15,9 +15,12 @@ import java.util.stream.Stream;
 @Service
 public class VideoService {
 
-    @Autowired
-    private VideoRepository videoRepository;
+    private final VideoRepository videoRepository;
 
+    @Autowired
+    public VideoService(VideoRepository videoRepository) {
+        this.videoRepository = videoRepository;
+    }
     public void store(MultipartFile file, String crossroadId, String timeIntervalId) throws IOException {
         String name = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         videoRepository.save( new Video(crossroadId, name, file.getContentType(), timeIntervalId, file.getBytes()) );

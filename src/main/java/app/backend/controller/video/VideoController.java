@@ -20,14 +20,19 @@ import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("http://localhost:8081")
+@RequestMapping("/videos")
 public class VideoController {
 
-    @Autowired
-    private VideoService videoService;
-    @Autowired
-    VideoUtils videoUtils;
+    private final VideoService videoService;
+    private final VideoUtils videoUtils;
 
-    @PostMapping(value="/videos/upload")
+    @Autowired
+    public VideoController(VideoService videoService, VideoUtils videoUtils) {
+        this.videoService = videoService;
+        this.videoUtils = videoUtils;
+    }
+
+    @PostMapping(value="/upload")
     public ResponseEntity<VideoResponseMessage> upload(@RequestParam("file") MultipartFile video, @RequestParam("crossroadId") String crossroadId, @RequestParam("timeIntervalId") String timeIntervalId) {
         String message;
         try {
@@ -41,14 +46,14 @@ public class VideoController {
         }
     }
 
-    @GetMapping(value="/videos/{id}/analysis")
+    @GetMapping(value="/{id}/analysis")
     public String analyse(@PathVariable String id) {
         videoUtils.analyseVideo(id);
 
         return "true";
     }
 
-    @GetMapping(value="/videos")
+    @GetMapping(value="")
     public ResponseEntity<List<VideoResponseFile>> list() {
             List<VideoResponseFile> videos = videoService.getAllVideos().map(video -> {
                 String fileDownloadUri = ServletUriComponentsBuilder
@@ -67,7 +72,7 @@ public class VideoController {
             return ResponseEntity.status(HttpStatus.OK).body(videos);
     }
 
-    @GetMapping(value="/videos/{id}")
+    @GetMapping(value="/{id}")
     public ResponseEntity<byte[]> get(@PathVariable String id) throws Exception {
         Video video = videoService.getVideo(id);
 

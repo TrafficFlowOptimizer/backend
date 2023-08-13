@@ -11,8 +11,12 @@ import java.util.Optional;
 
 @Service
 public class TimeIntervalService {
+    private final TimeIntervalRepository timeIntervalRepository;
+
     @Autowired
-    TimeIntervalRepository timeIntervalRepository;
+    public TimeIntervalService(TimeIntervalRepository timeIntervalRepository) {
+        this.timeIntervalRepository = timeIntervalRepository;
+    }
 
     public TimeInterval getTimeIntervalById(String id) throws Exception {
         Optional<TimeInterval> timeInterval = timeIntervalRepository.findById(id);
@@ -24,7 +28,7 @@ public class TimeIntervalService {
     }
 
     public TimeInterval addTimeInterval(LocalTime startTime, LocalTime endTime){
-        return timeIntervalRepository.insert(new TimeInterval(startTime, startTime));
+        return timeIntervalRepository.insert(new TimeInterval(startTime, endTime));
     }
 
     public TimeInterval deleteTimeIntervalById(String id) throws Exception {

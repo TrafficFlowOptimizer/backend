@@ -17,12 +17,24 @@ import java.util.*;
 import static java.lang.Thread.sleep;
 
 @RestController
+@RequestMapping(value = "/crossroad")
 public class CrossroadController {
-    @Autowired CrossroadService crossroadService;
-    @Autowired OptimizationService optimizationService;
-    @Autowired CrossroadsUtils crossroadsUtils;
 
-    @GetMapping(value="/crossroad")
+    private final CrossroadService crossroadService;
+    private final OptimizationService optimizationService;
+    private final CrossroadsUtils crossroadsUtils;
+
+    @Autowired
+    public CrossroadController(CrossroadService crossroadService,
+                               OptimizationService optimizationService,
+                               CrossroadsUtils crossroadsUtils) {
+        this.crossroadService = crossroadService;
+        this.optimizationService = optimizationService;
+        this.crossroadsUtils = crossroadsUtils;
+    }
+
+
+    @GetMapping(value = "")
     public List<Crossroad> getUserCrossroads(@RequestParam(required = false) String userId) {
         // for now if userId passed then returns PRIVATE for user and PUBLIC, else PUBLIC. In the future using session it will return PRIVATE for user and PUBLIC
         // maybe in the future option to get only privates or publics??
@@ -34,7 +46,7 @@ public class CrossroadController {
         }
     }
 
-    @GetMapping(value="/crossroad/{crossroadId}")
+    @GetMapping(value="/{crossroadId}")
     public Crossroad getCrossroad(@PathVariable String crossroadId) {
         Crossroad crossroad = null;
         try {
@@ -43,7 +55,7 @@ public class CrossroadController {
         return crossroad;
     }
 
-    @PostMapping(value="/crossroad")
+    @PostMapping()
     public String addCrossroad(@RequestBody Crossroad crossroad) {
         crossroadService.addCrossroad(
                 crossroad.getName(), crossroad.getLocation(), crossroad.getCreatorId(), crossroad.getType(),
@@ -52,7 +64,7 @@ public class CrossroadController {
         return "ok";
     }
 
-    @PutMapping(value="/crossroad")
+    @PutMapping()
     public String updateCrossroad(@RequestBody Crossroad crossroad) {
         try {
             crossroadService.updateCrossroad( crossroad.getId(),
@@ -63,7 +75,7 @@ public class CrossroadController {
         return "ok";
     }
 
-    @GetMapping(value="/crossroad/{crossroadId}/optimization/{videoId}/{time}",  produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value="/{crossroadId}/optimization/{videoId}/{time}",  produces = MediaType.APPLICATION_JSON_VALUE)
     public String getOptimization(@PathVariable String crossroadId, @PathVariable String videoId, @PathVariable int time) {
         int serverPort = 9091;
         String result = "{}";
@@ -105,7 +117,7 @@ public class CrossroadController {
         return ar;
     }
 
-    @GetMapping(value="/crossroad/{crossroadId}/optimization/{time}",  produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value="/{crossroadId}/optimization/{time}",  produces = MediaType.APPLICATION_JSON_VALUE)
     public String getOptimizationWithoutVideo(@PathVariable String crossroadId, @PathVariable int time) {
         int serverPort = 9091;
         String result = "{results: \"ERROR\"}";
@@ -135,7 +147,7 @@ public class CrossroadController {
         return result;
     }
 
-    @GetMapping(value="/crossroad/{crossroadId}/optimization_results",  produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value="/{crossroadId}/optimization_results",  produces = MediaType.APPLICATION_JSON_VALUE)
     public String getOptimizationResults( @PathVariable String crossroadId, String timeIntervalID){
         try {
             List<List<Integer>> newestResult = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, timeIntervalID).getResults();

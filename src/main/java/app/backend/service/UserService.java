@@ -9,9 +9,14 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-    @Autowired
-    UserRepository userRepository;
 
+    //TODO change it to private (left for future because it trafficLightRepository is directly accessed in tests)
+    public final UserRepository userRepository;
+
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
     public User getUserById(String id) throws Exception {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()){

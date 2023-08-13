@@ -12,10 +12,12 @@ import java.util.List;
 @RequestMapping("/intersections")
 public class IntersectionController {
 
+    private final CrossroadService crossroadService;
+
     @Autowired
-    private CrossroadService crossroadService;
-    @Autowired
-    private UserService userService;
+    public IntersectionController(CrossroadService crossroadService, UserService userService) {
+        this.crossroadService = crossroadService;
+    }
 
     @PostMapping(value="")
     public String upload() {

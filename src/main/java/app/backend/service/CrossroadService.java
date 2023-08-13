@@ -14,8 +14,14 @@ import java.util.stream.StreamSupport;
 
 @Service
 public class CrossroadService {
+
+    //TODO change it to private (left for future because it connectionRepository is directly accessed in tests)
+    public final CrossroadRepository crossroadRepository;
+
     @Autowired
-    CrossroadRepository crossroadRepository;
+    public CrossroadService(CrossroadRepository crossroadRepository) {
+        this.crossroadRepository = crossroadRepository;
+    }
 
     public Crossroad getCrossroadById(String id) throws Exception {
         Optional<Crossroad> crossroad = crossroadRepository.findById(id);
