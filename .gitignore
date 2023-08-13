@@ -45,3 +45,5 @@ hs_err_pid*
 # output
 target
 HELP.md
+
+application-local.properties

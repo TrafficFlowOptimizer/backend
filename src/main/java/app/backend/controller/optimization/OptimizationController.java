@@ -9,11 +9,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/optimization")
 public class OptimizationController {
     @Autowired
     OptimizationService optimizationService;
 
-    @GetMapping(value="/optimization/{optimizationId}")
+    @GetMapping(value="/{optimizationId}")
     public Optimization getOptimization(@PathVariable String optimizationId) {
         try {
             return optimizationService.getOptimizationById(optimizationId);
@@ -25,7 +26,7 @@ public class OptimizationController {
 //        optimizationService.addOptimization(optimization.getCrossroadId(), optimization.getVersion(), optimization.getSequences());
 //    }
 
-    @GetMapping(value="/optimizations/{crossroadId}")
+    @GetMapping(value="/{crossroadId}")
     public List<Optimization> list(@PathVariable String crossroadId) {
         Iterable<Optimization> optimizations =  optimizationService.getOptimizationsByCrossroadId(crossroadId);
         List<Optimization> ret = new LinkedList<>();

@@ -7,15 +7,17 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
     private UserService userService;
 
-    @PostMapping(value = "/auth/login")
+    @PostMapping(value = "/login")
     public String login(@RequestBody UserLogin user) {
         try {
             return String.valueOf(user.getPassword().equals(userService.getUserByNickname(user.getNickname()).getPassword()));
@@ -24,7 +26,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping(value="/auth/register")
+    @PostMapping(value="/register")
     public String register(@RequestBody @Valid User user) {
         userService.addUser(user.getFirstName(), user.getLastName(), user.getNickname(), user.getEmail(), user.getPassword());
         return "true";
