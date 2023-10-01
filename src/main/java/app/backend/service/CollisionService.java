@@ -11,8 +11,7 @@ import java.util.Optional;
 @Service
 public class CollisionService {
 
-    //TODO change it to private (left for future because it collisionRepository is directly accessed in tests)
-    public final CollisionRepository collisionRepository;
+    private final CollisionRepository collisionRepository;
 
     @Autowired
     public CollisionService(CollisionRepository collisionRepository) {
@@ -57,5 +56,9 @@ public class CollisionService {
         collisionRepository.save(collisionToUpdate);
 
         return collisionToUpdate;
+    }
+
+    public CollisionRepository getCollisionRepository() {
+        return collisionRepository;
     }
 }

@@ -10,8 +10,7 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    //TODO change it to private (left for future because it trafficLightRepository is directly accessed in tests)
-    public final UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public UserService(UserRepository userRepository) {
@@ -62,5 +61,9 @@ public class UserService {
         userRepository.save(userToUpdate);
 
         return userToUpdate;
+    }
+
+    public UserRepository getUserRepository() {
+        return userRepository;
     }
 }

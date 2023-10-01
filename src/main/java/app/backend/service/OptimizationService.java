@@ -15,8 +15,7 @@ import java.util.stream.Collectors;
 @Service
 public class OptimizationService {
 
-    //TODO change it to private (left for future because it optimizationRepository is directly accessed in tests)
-    public final OptimizationRepository optimizationRepository;
+    private final OptimizationRepository optimizationRepository;
 
     @Autowired
     public OptimizationService(OptimizationRepository optimizationRepository) {
@@ -104,5 +103,9 @@ public class OptimizationService {
         if(sorted.size()>1)
             return sorted.get(sorted.size()-2);
         return sorted.get(sorted.size()-1);
+    }
+
+    public OptimizationRepository getOptimizationRepository() {
+        return optimizationRepository;
     }
 }

@@ -15,12 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OptimizationServiceTest {
+
     @Autowired
     private OptimizationService optimizationService;
 
     @AfterEach
     public void cleanUpEach(){
-        optimizationService.optimizationRepository.deleteAll();
+        optimizationService.getOptimizationRepository().deleteAll();
     }
 
     @Test

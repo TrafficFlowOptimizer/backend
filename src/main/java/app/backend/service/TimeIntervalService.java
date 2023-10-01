@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Service
 public class TimeIntervalService {
+
     private final TimeIntervalRepository timeIntervalRepository;
 
     @Autowired

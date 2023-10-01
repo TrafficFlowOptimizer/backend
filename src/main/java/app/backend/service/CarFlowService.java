@@ -10,8 +10,7 @@ import java.util.Optional;
 @Service
 public class CarFlowService {
 
-    //TODO change it to private (left for future because it carFlowRepository is directly accessed in tests)
-    public final CarFlowRepository carFlowRepository;
+    private final CarFlowRepository carFlowRepository;
 
     @Autowired
     public CarFlowService(CarFlowRepository carFlowRepository){
@@ -53,5 +52,9 @@ public class CarFlowService {
         carFlowRepository.save(carFlowToUpdate);
 
         return carFlowToUpdate;
+    }
+
+    public CarFlowRepository getCarFlowRepository() {
+        return carFlowRepository;
     }
 }

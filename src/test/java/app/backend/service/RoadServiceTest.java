@@ -19,8 +19,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RoadServiceTest {
 
+    private final RoadService roadService;
+
     @Autowired
-    private RoadService roadService;
+    public RoadServiceTest(RoadService roadService) {
+        this.roadService = roadService;
+    }
 
     @Container
     private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
@@ -46,7 +50,7 @@ class RoadServiceTest {
 
     @AfterEach
     public void cleanUpEach(){
-            roadService.roadRepository.deleteAll();
+            roadService.getRoadRepository().deleteAll();
         }
 
     @Test
@@ -56,7 +60,7 @@ class RoadServiceTest {
             roadService.getRoadById(id);
         });
 
-        assertEquals(0, roadService.roadRepository.count());
+        assertEquals(0, roadService.getRoadRepository().count());
         assertEquals("Cannot get road with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -77,7 +81,7 @@ class RoadServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(2, roadService.roadRepository.count());
+        assertEquals(2, roadService.getRoadRepository().count());
         assertNotNull(found);
         assertEquals(index, found.getIndex());
         assertEquals(name, found.getName());
@@ -94,7 +98,7 @@ class RoadServiceTest {
 
         Road road = roadService.addRoad(index, name, type, capacity);
 
-        assertEquals(1, roadService.roadRepository.count());
+        assertEquals(1, roadService.getRoadRepository().count());
         assertEquals(index, road.getIndex());
         assertEquals(name, road.getName());
         assertEquals(type, road.getType());
@@ -121,7 +125,7 @@ class RoadServiceTest {
             roadService.getRoadById(id);
         });
 
-        assertEquals(0, roadService.roadRepository.count());
+        assertEquals(0, roadService.getRoadRepository().count());
         assertEquals("Cannot get road with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -139,7 +143,7 @@ class RoadServiceTest {
             roadService.deleteRoadById(id);
         });
 
-        assertEquals(1, roadService.roadRepository.count());
+        assertEquals(1, roadService.getRoadRepository().count());
         assertEquals("Cannot delete road with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -166,7 +170,7 @@ class RoadServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(1, roadService.roadRepository.count());
+        assertEquals(1, roadService.getRoadRepository().count());
         assertNotNull(updated);
         assertEquals(indexUpdated, updated.getIndex());
         assertEquals(nameUpdated, updated.getName());
@@ -194,7 +198,7 @@ class RoadServiceTest {
             roadService.deleteRoadById(id);
         });
 
-        assertEquals(1, roadService.roadRepository.count());
+        assertEquals(1, roadService.getRoadRepository().count());
         assertEquals("Cannot update road with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }

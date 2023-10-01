@@ -11,8 +11,7 @@ import java.util.Optional;
 @Service
 public class TrafficLightService {
 
-    //TODO change it to private (left for future because it trafficLightRepository is directly accessed in tests)
-    public final TrafficLightRepository trafficLightRepository;
+    private final TrafficLightRepository trafficLightRepository;
 
     @Autowired
     public TrafficLightService(TrafficLightRepository trafficLightRepository) {
@@ -54,5 +53,9 @@ public class TrafficLightService {
         trafficLightRepository.save(trafficLightToUpdate);
 
         return trafficLightToUpdate;
+    }
+
+    public TrafficLightRepository getTrafficLightRepository() {
+        return trafficLightRepository;
     }
 }

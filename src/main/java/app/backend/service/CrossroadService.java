@@ -15,8 +15,7 @@ import java.util.stream.StreamSupport;
 @Service
 public class CrossroadService {
 
-    //TODO change it to private (left for future because it connectionRepository is directly accessed in tests)
-    public final CrossroadRepository crossroadRepository;
+    private final CrossroadRepository crossroadRepository;
 
     @Autowired
     public CrossroadService(CrossroadRepository crossroadRepository) {
@@ -87,5 +86,9 @@ public class CrossroadService {
         crossroadRepository.save(crossroadToUpdate);
 
         return crossroadToUpdate;
+    }
+
+    public CrossroadRepository getCrossroadRepository() {
+        return crossroadRepository;
     }
 }

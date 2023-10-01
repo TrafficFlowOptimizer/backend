@@ -1,6 +1,7 @@
 package app.backend.service;
 
 import app.backend.document.CarFlow;
+import app.backend.repository.CarFlowRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CarFlowServiceTest {
 
+    private final CarFlowService carFlowService;
+
     @Autowired
-    private CarFlowService carFlowService;
+    public CarFlowServiceTest(CarFlowService carFlowService){
+        this.carFlowService = carFlowService;
+    }
 
     @Container
     private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
@@ -47,7 +52,7 @@ class CarFlowServiceTest {
 
     @AfterEach
     public void cleanUpEach(){
-        carFlowService.carFlowRepository.deleteAll();
+        carFlowService.getCarFlowRepository().deleteAll();
     }
 
     @Test
@@ -57,7 +62,7 @@ class CarFlowServiceTest {
             carFlowService.getCarFlowById(id);
         });
 
-        assertEquals(0, carFlowService.carFlowRepository.count());
+        assertEquals(0, carFlowService.getCarFlowRepository().count());
         assertEquals("Cannot get carFlow with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -76,7 +81,7 @@ class CarFlowServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(2, carFlowService.carFlowRepository.count());
+        assertEquals(2, carFlowService.getCarFlowRepository().count());
         assertNotNull(found);
         assertEquals(flow, found.getCarFlow());
         assertEquals(timeIntervalId, found.getTimeIntervalId());
@@ -89,7 +94,7 @@ class CarFlowServiceTest {
 
         CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
 
-        assertEquals(1, carFlowService.carFlowRepository.count());
+        assertEquals(1, carFlowService.getCarFlowRepository().count());
         assertEquals(flow, carFlow.getCarFlow());
         assertEquals(timeIntervalId, carFlow.getTimeIntervalId());
     }
@@ -112,7 +117,7 @@ class CarFlowServiceTest {
             carFlowService.getCarFlowById(id);
         });
 
-        assertEquals(0, carFlowService.carFlowRepository.count());
+        assertEquals(0, carFlowService.getCarFlowRepository().count());
         assertEquals("Cannot get carFlow with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -128,7 +133,7 @@ class CarFlowServiceTest {
             carFlowService.deleteCarFlowById(id);
         });
 
-        assertEquals(1, carFlowService.carFlowRepository.count());
+        assertEquals(1, carFlowService.getCarFlowRepository().count());
         assertEquals("Cannot delete carFlow with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -151,7 +156,7 @@ class CarFlowServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(1, carFlowService.carFlowRepository.count());
+        assertEquals(1, carFlowService.getCarFlowRepository().count());
         assertNotNull(updated);
         assertEquals(flowUpdated, updated.getCarFlow());
         assertEquals(timeIntervalIdUpdated, updated.getTimeIntervalId());
@@ -173,7 +178,7 @@ class CarFlowServiceTest {
             carFlowService.deleteCarFlowById(id);
         });
 
-        assertEquals(1, carFlowService.carFlowRepository.count());
+        assertEquals(1, carFlowService.getCarFlowRepository().count());
         assertEquals("Cannot update carFlow with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }

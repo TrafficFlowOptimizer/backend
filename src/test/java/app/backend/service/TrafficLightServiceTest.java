@@ -20,8 +20,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TrafficLightServiceTest {
 
+    private final TrafficLightService trafficLightService;
+
     @Autowired
-    private TrafficLightService trafficLightService;
+    public TrafficLightServiceTest(TrafficLightService trafficLightService) {
+        this.trafficLightService = trafficLightService;
+    }
 
     @Container
     private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
@@ -47,7 +51,7 @@ class TrafficLightServiceTest {
 
     @AfterEach
     public void cleanUpEach(){
-        trafficLightService.trafficLightRepository.deleteAll();
+        trafficLightService.getTrafficLightRepository().deleteAll();
         }
 
     @Test
@@ -67,7 +71,7 @@ class TrafficLightServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(3, trafficLightService.trafficLightRepository.count());
+        assertEquals(3, trafficLightService.getTrafficLightRepository().count());
         assertEquals(id, found.getId());
         assertEquals(index, found.getIndex());
         assertEquals(name, found.getName());
@@ -86,7 +90,7 @@ class TrafficLightServiceTest {
             trafficLightService.getTrafficLightById(id);
         });
 
-        assertEquals(3, trafficLightService.trafficLightRepository.count());
+        assertEquals(3, trafficLightService.getTrafficLightRepository().count());
         assertEquals("Cannot get trafficLight with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -107,7 +111,7 @@ class TrafficLightServiceTest {
             trafficLightService.getTrafficLightById(id);
         });
 
-        assertEquals(2, trafficLightService.trafficLightRepository.count());
+        assertEquals(2, trafficLightService.getTrafficLightRepository().count());
         assertEquals("Cannot get trafficLight with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -122,7 +126,7 @@ class TrafficLightServiceTest {
             trafficLightService.deleteTrafficLightById(id);
         });
 
-        assertEquals(3, trafficLightService.trafficLightRepository.count());
+        assertEquals(3, trafficLightService.getTrafficLightRepository().count());
         assertEquals("Cannot delete trafficLight with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -145,7 +149,7 @@ class TrafficLightServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(1, trafficLightService.trafficLightRepository.count());
+        assertEquals(1, trafficLightService.getTrafficLightRepository().count());
         assertNotNull(updated);
         assertEquals(indexUpdated, updated.getIndex());
         assertEquals(nameUpdated, updated.getName());
@@ -169,7 +173,7 @@ class TrafficLightServiceTest {
             trafficLightService.deleteTrafficLightById(id);
         });
 
-        assertEquals(1, trafficLightService.trafficLightRepository.count());
+        assertEquals(1, trafficLightService.getTrafficLightRepository().count());
         assertEquals("Cannot update trafficLight with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }

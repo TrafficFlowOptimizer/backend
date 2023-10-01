@@ -22,8 +22,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CrossroadServiceTest {
 
+    private final CrossroadService crossroadService;
+
     @Autowired
-    private CrossroadService crossroadService;
+    public CrossroadServiceTest(CrossroadService crossroadService) {
+        this.crossroadService = crossroadService;
+    }
 
     @Container
     private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
@@ -49,7 +53,7 @@ class CrossroadServiceTest {
 
     @AfterEach
     public void cleanUpEach(){
-        crossroadService.crossroadRepository.deleteAll();
+        crossroadService.getCrossroadRepository().deleteAll();
     }
 
     @Test
@@ -59,7 +63,7 @@ class CrossroadServiceTest {
             crossroadService.getCrossroadById(id);
         });
 
-        assertEquals(0, crossroadService.crossroadRepository.count());
+        assertEquals(0, crossroadService.getCrossroadRepository().count());
         assertEquals("Cannot get crossroad with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -92,7 +96,7 @@ class CrossroadServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(2, crossroadService.crossroadRepository.count());
+        assertEquals(2, crossroadService.getCrossroadRepository().count());
         assertNotNull(found);
         assertEquals(name, found.getName());
         assertEquals(location, found.getLocation());
@@ -125,7 +129,7 @@ class CrossroadServiceTest {
 
         Crossroad crossroad = crossroadService.addCrossroad(name, location, creatorId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
 
-        assertEquals(1, crossroadService.crossroadRepository.count());
+        assertEquals(1, crossroadService.getCrossroadRepository().count());
         assertEquals(name, crossroad.getName());
         assertEquals(location, crossroad.getLocation());
         assertEquals(creatorId, crossroad.getCreatorId());
@@ -168,7 +172,7 @@ class CrossroadServiceTest {
             crossroadService.getCrossroadById(id);
         });
 
-        assertEquals(0, crossroadService.crossroadRepository.count());
+        assertEquals(0, crossroadService.getCrossroadRepository().count());
         assertEquals("Cannot get crossroad with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -198,7 +202,7 @@ class CrossroadServiceTest {
             crossroadService.deleteCrossroadById(id);
         });
 
-        assertEquals(1, crossroadService.crossroadRepository.count());
+        assertEquals(1, crossroadService.getCrossroadRepository().count());
         assertEquals("Cannot delete crossroad with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -251,7 +255,7 @@ class CrossroadServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(1, crossroadService.crossroadRepository.count());
+        assertEquals(1, crossroadService.getCrossroadRepository().count());
         assertNotNull(updated);
         assertEquals(nameUpdated, updated.getName());
         assertEquals(locationUpdated, updated.getLocation());
@@ -309,7 +313,7 @@ class CrossroadServiceTest {
             crossroadService.deleteCrossroadById(id);
         });
 
-        assertEquals(1, crossroadService.crossroadRepository.count());
+        assertEquals(1, crossroadService.getCrossroadRepository().count());
         assertEquals("Cannot update crossroad with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }

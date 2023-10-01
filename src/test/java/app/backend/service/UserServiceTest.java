@@ -18,8 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserServiceTest {
 
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public UserServiceTest(UserService userService) {
+        this.userService = userService;
+    }
 
     @Container
     private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
@@ -45,7 +49,7 @@ class UserServiceTest {
 
     @AfterEach
     public void cleanUpEach(){
-        userService.userRepository.deleteAll();
+        userService.getUserRepository().deleteAll();
     }
 
     @Test
@@ -55,7 +59,7 @@ class UserServiceTest {
             userService.getUserById(id);
         });
 
-        assertEquals(0, userService.userRepository.count());
+        assertEquals(0, userService.getUserRepository().count());
         assertEquals("Cannot get user with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -77,7 +81,7 @@ class UserServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(2, userService.userRepository.count());
+        assertEquals(2, userService.getUserRepository().count());
         assertNotNull(found);
         assertEquals(firstName, found.getFirstName());
         assertEquals(lastName, found.getLastName());
@@ -96,7 +100,7 @@ class UserServiceTest {
 
         User user = userService.addUser(firstName, lastName, nickname, email, password);
 
-        assertEquals(1, userService.userRepository.count());
+        assertEquals(1, userService.getUserRepository().count());
         assertEquals(firstName, user.getFirstName());
         assertEquals(lastName, user.getLastName());
         assertEquals(nickname, user.getNickname());
@@ -125,7 +129,7 @@ class UserServiceTest {
             userService.getUserById(id);
         });
 
-        assertEquals(0, userService.userRepository.count());
+        assertEquals(0, userService.getUserRepository().count());
         assertEquals("Cannot get user with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -144,7 +148,7 @@ class UserServiceTest {
             userService.deleteUserById(id);
         });
 
-        assertEquals(1, userService.userRepository.count());
+        assertEquals(1, userService.getUserRepository().count());
         assertEquals("Cannot delete user with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -173,7 +177,7 @@ class UserServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(1, userService.userRepository.count());
+        assertEquals(1, userService.getUserRepository().count());
         assertNotNull(updated);
         assertEquals(firstNameUpdated, updated.getFirstName());
         assertEquals(lastNameUpdated, updated.getLastName());
@@ -204,7 +208,7 @@ class UserServiceTest {
             userService.deleteUserById(id);
         });
 
-        assertEquals(1, userService.userRepository.count());
+        assertEquals(1, userService.getUserRepository().count());
         assertEquals("Cannot update user with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }

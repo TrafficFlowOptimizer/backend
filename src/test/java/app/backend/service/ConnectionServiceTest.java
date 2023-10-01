@@ -21,8 +21,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ConnectionServiceTest {
 
+    private final ConnectionService connectionService;
+
     @Autowired
-    private ConnectionService connectionService;
+    public ConnectionServiceTest(ConnectionService connectionService) {
+        this.connectionService = connectionService;
+    }
 
     @Container
     private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
@@ -48,7 +52,7 @@ class ConnectionServiceTest {
 
     @AfterEach
     public void cleanUpEach(){
-        connectionService.connectionRepository.deleteAll();
+        connectionService.getConnectionRepository().deleteAll();
     }
 
     @Test
@@ -58,7 +62,7 @@ class ConnectionServiceTest {
             connectionService.getConnectionById(id);
         });
 
-        assertEquals(0, connectionService.connectionRepository.count());
+        assertEquals(0, connectionService.getConnectionRepository().count());
         assertEquals("Cannot get connection with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -85,7 +89,7 @@ class ConnectionServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(2, connectionService.connectionRepository.count());
+        assertEquals(2, connectionService.getConnectionRepository().count());
         assertNotNull(found);
         assertEquals(index, found.getIndex());
         assertEquals(name, found.getName());
@@ -111,7 +115,7 @@ class ConnectionServiceTest {
         Connection connection = connectionService.addConnection(index, name, trafficLightIDs, sourceId, targetId, carFlowIDs);
         connectionService.addConnection(1, "a", new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
 
-        assertEquals(2, connectionService.connectionRepository.count());
+        assertEquals(2, connectionService.getConnectionRepository().count());
         assertEquals(index, connection.getIndex());
         assertEquals(name, connection.getName());
         assertEquals(trafficLightIDs, connection.getTrafficLightIds());
@@ -147,7 +151,7 @@ class ConnectionServiceTest {
             connectionService.getConnectionById(id);
         });
 
-        assertEquals(1, connectionService.connectionRepository.count());
+        assertEquals(1, connectionService.getConnectionRepository().count());
         assertEquals("Cannot get connection with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -172,7 +176,7 @@ class ConnectionServiceTest {
             connectionService.deleteConnectionById(id);
         });
 
-        assertEquals(2, connectionService.connectionRepository.count());
+        assertEquals(2, connectionService.getConnectionRepository().count());
         assertEquals("Cannot delete connection with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -214,7 +218,7 @@ class ConnectionServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(2, connectionService.connectionRepository.count());
+        assertEquals(2, connectionService.getConnectionRepository().count());
         assertNotNull(updated);
         assertEquals(indexUpdated, updated.getIndex());
         assertEquals(nameUpdated, updated.getName());
@@ -258,7 +262,7 @@ class ConnectionServiceTest {
             connectionService.deleteConnectionById(id);
         });
 
-        assertEquals(1, connectionService.connectionRepository.count());
+        assertEquals(1, connectionService.getConnectionRepository().count());
         assertEquals("Cannot update connection with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }

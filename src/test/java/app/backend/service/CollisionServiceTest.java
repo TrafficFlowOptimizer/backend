@@ -19,8 +19,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CollisionServiceTest {
 
+    private final CollisionService collisionService;
+
     @Autowired
-    private CollisionService collisionService;
+    public CollisionServiceTest(CollisionService collisionService) {
+        this.collisionService = collisionService;
+    }
 
     @Container
     private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
@@ -46,7 +50,7 @@ class CollisionServiceTest {
 
     @AfterEach
     public void cleanUpEach(){
-        collisionService.collisionRepository.deleteAll();
+        collisionService.getCollisionRepository().deleteAll();
     }
 
     @Test
@@ -56,7 +60,7 @@ class CollisionServiceTest {
             collisionService.getCollisionById(id);
         });
 
-        assertEquals(0, collisionService.collisionRepository.count());
+        assertEquals(0, collisionService.getCollisionRepository().count());
         assertEquals("Cannot get collision with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -78,7 +82,7 @@ class CollisionServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(2, collisionService.collisionRepository.count());
+        assertEquals(2, collisionService.getCollisionRepository().count());
         assertNotNull(found);
         assertEquals(index, found.getIndex());
         assertEquals(name, found.getName());
@@ -98,7 +102,7 @@ class CollisionServiceTest {
         Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
         collisionService.addCollision(1, "nm", "sddas", "dsaadsds", CollisionType.LIGHT);
 
-        assertEquals(2, collisionService.collisionRepository.count());
+        assertEquals(2, collisionService.getCollisionRepository().count());
         assertNotNull(collision);
         assertEquals(index, collision.getIndex());
         assertEquals(name, collision.getName());
@@ -128,7 +132,7 @@ class CollisionServiceTest {
             collisionService.getCollisionById(id);
         });
 
-        assertEquals(0, collisionService.collisionRepository.count());
+        assertEquals(0, collisionService.getCollisionRepository().count());
         assertEquals("Cannot get collision with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -147,7 +151,7 @@ class CollisionServiceTest {
             collisionService.deleteCollisionById(id);
         });
 
-        assertEquals(1, collisionService.collisionRepository.count());
+        assertEquals(1, collisionService.getCollisionRepository().count());
         assertEquals("Cannot delete collision with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
@@ -176,7 +180,7 @@ class CollisionServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(1, collisionService.collisionRepository.count());
+        assertEquals(1, collisionService.getCollisionRepository().count());
         assertNotNull(updated);
         assertEquals(indexUpdated, updated.getIndex());
         assertEquals(nameUpdated, updated.getName());
@@ -207,7 +211,7 @@ class CollisionServiceTest {
             collisionService.deleteCollisionById(id);
         });
 
-        assertEquals(1, collisionService.collisionRepository.count());
+        assertEquals(1, collisionService.getCollisionRepository().count());
         assertEquals("Cannot update collision with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }

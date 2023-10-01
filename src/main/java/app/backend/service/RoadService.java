@@ -11,9 +11,7 @@ import java.util.Optional;
 @Service
 public class RoadService {
 
-
-    //TODO change it to private (left for future because it optimizationRepository is directly accessed in tests)
-    public final RoadRepository roadRepository;
+    private final RoadRepository roadRepository;
 
     @Autowired
     public RoadService(RoadRepository roadRepository) {
@@ -57,5 +55,9 @@ public class RoadService {
         roadRepository.save(roadToUpdate);
 
         return roadToUpdate;
+    }
+
+    public RoadRepository getRoadRepository() {
+        return roadRepository;
     }
 }

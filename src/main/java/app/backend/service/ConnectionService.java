@@ -11,8 +11,7 @@ import java.util.Optional;
 @Service
 public class ConnectionService {
 
-    //TODO change it to private (left for future because it connectionRepository is directly accessed in tests)
-    public final ConnectionRepository connectionRepository;
+    private final ConnectionRepository connectionRepository;
 
     @Autowired
     public ConnectionService(ConnectionRepository connectionRepository) {
@@ -58,5 +57,9 @@ public class ConnectionService {
         connectionRepository.save(connectionToUpdate);
 
         return connectionToUpdate;
+    }
+
+    public ConnectionRepository getConnectionRepository() {
+        return connectionRepository;
     }
 }
