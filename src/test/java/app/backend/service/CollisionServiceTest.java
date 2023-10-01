@@ -56,9 +56,7 @@ class CollisionServiceTest {
     @Test
     public void getCollisionById_improperCollision_crossroadNotFound() {
         String id = "";
-        Exception exception = assertThrows(Exception.class, () -> {
-            collisionService.getCollisionById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> collisionService.getCollisionById(id));
 
         assertEquals(0, collisionService.getCollisionRepository().count());
         assertEquals("Cannot get collision with id: " + id + " because it does not exist.", exception.getMessage());
@@ -128,9 +126,7 @@ class CollisionServiceTest {
             e.printStackTrace();
         }
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            collisionService.getCollisionById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> collisionService.getCollisionById(id));
 
         assertEquals(0, collisionService.getCollisionRepository().count());
         assertEquals("Cannot get collision with id: " + id + " because it does not exist.", exception.getMessage());
@@ -147,9 +143,7 @@ class CollisionServiceTest {
         Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
         String id = "";
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            collisionService.deleteCollisionById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> collisionService.deleteCollisionById(id));
 
         assertEquals(1, collisionService.getCollisionRepository().count());
         assertEquals("Cannot delete collision with id: " + id + " because it does not exist.", exception.getMessage());

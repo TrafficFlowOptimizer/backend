@@ -20,7 +20,7 @@ public class TrafficLight {
     @NotNull
     private TrafficLightType type;
 
-    public TrafficLight(int index, String name, TrafficLightType type) {
+    public TrafficLight(int index, String name, @NotNull TrafficLightType type) {
         this.index = index;
         this.name = name;
         this.type = type;
@@ -50,11 +50,11 @@ public class TrafficLight {
         this.name = name;
     }
 
-    public TrafficLightType getType() {
+    public @NotNull TrafficLightType getType() {
         return type;
     }
 
-    public void setType(TrafficLightType type) {
+    public void setType(@NotNull TrafficLightType type) {
         this.type = type;
     }
 }

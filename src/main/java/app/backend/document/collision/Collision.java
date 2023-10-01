@@ -26,7 +26,7 @@ public class Collision {
     @NotNull
     private CollisionType type;
 
-    public Collision(int index, String name, String trafficLight1Id, String trafficLight2Id, CollisionType type) {
+    public Collision(int index, String name, String trafficLight1Id, String trafficLight2Id, @NotNull CollisionType type) {
         this.index = index;
         this.name = name;
         this.trafficLight1Id = trafficLight1Id;
@@ -74,11 +74,11 @@ public class Collision {
         this.trafficLight2Id = trafficLight2Id;
     }
 
-    public CollisionType getType() {
+    public @NotNull CollisionType getType() {
         return type;
     }
 
-    public void setType(CollisionType type) {
+    public void setType(@NotNull CollisionType type) {
         this.type = type;
     }
 }

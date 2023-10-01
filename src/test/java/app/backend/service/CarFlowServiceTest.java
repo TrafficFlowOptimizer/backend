@@ -1,7 +1,6 @@
 package app.backend.service;
 
 import app.backend.document.CarFlow;
-import app.backend.repository.CarFlowRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,6 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,9 +55,7 @@ class CarFlowServiceTest {
     @Test
     public void getCarFlowById_improperCarFlow_carFlowNotFound() {
         String id = "";
-        Exception exception = assertThrows(Exception.class, () -> {
-            carFlowService.getCarFlowById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> carFlowService.getCarFlowById(id));
 
         assertEquals(0, carFlowService.getCarFlowRepository().count());
         assertEquals("Cannot get carFlow with id: " + id + " because it does not exist.", exception.getMessage());
@@ -113,9 +108,7 @@ class CarFlowServiceTest {
             e.printStackTrace();
         }
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            carFlowService.getCarFlowById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> carFlowService.getCarFlowById(id));
 
         assertEquals(0, carFlowService.getCarFlowRepository().count());
         assertEquals("Cannot get carFlow with id: " + id + " because it does not exist.", exception.getMessage());
@@ -129,9 +122,7 @@ class CarFlowServiceTest {
         CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
         String id = "";
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            carFlowService.deleteCarFlowById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> carFlowService.deleteCarFlowById(id));
 
         assertEquals(1, carFlowService.getCarFlowRepository().count());
         assertEquals("Cannot delete carFlow with id: " + id + " because it does not exist.", exception.getMessage());

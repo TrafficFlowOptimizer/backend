@@ -34,7 +34,7 @@ public class Crossroad {
     //@NotEmpty
     private List<String> trafficLightIds;
 
-    public Crossroad(String name, String location, String creatorId, CrossroadType type, List<String> roadIds, List<String> collisionIds, List<String> connectionIds, List<String> trafficLightIds) {
+    public Crossroad(String name, String location, String creatorId, @NotNull CrossroadType type, List<String> roadIds, List<String> collisionIds, List<String> connectionIds, List<String> trafficLightIds) {
         this.name = name;
         this.location = location;
         this.creatorId = creatorId;
@@ -77,11 +77,11 @@ public class Crossroad {
         this.creatorId = creatorId;
     }
 
-    public CrossroadType getType() {
+    public @NotNull CrossroadType getType() {
         return type;
     }
 
-    public void setType(CrossroadType type) {
+    public void setType(@NotNull CrossroadType type) {
         this.type = type;
     }
 

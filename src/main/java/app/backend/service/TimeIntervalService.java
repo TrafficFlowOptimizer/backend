@@ -1,6 +1,5 @@
 package app.backend.service;
 
-import app.backend.document.CarFlow;
 import app.backend.document.TimeInterval;
 import app.backend.repository.TimeIntervalRepository;
 import org.springframework.beans.factory.annotation.Autowired;

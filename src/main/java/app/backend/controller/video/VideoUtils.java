@@ -1,12 +1,10 @@
 package app.backend.controller.video;
 
-import app.backend.entity.Video;
 import app.backend.service.VideoService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;

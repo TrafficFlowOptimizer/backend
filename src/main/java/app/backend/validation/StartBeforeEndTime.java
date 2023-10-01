@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Documented
 @Constraint(validatedBy = StartBeforeEndTimeValidator.class)
 public @interface StartBeforeEndTime {
-    public String message() default "start time not before end time";
+    String message() default "start time not before end time";
     Class<?>[] groups() default { };
     Class<? extends Payload>[] payload() default { };
 }

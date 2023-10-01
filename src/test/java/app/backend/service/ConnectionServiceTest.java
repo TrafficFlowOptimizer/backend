@@ -58,9 +58,7 @@ class ConnectionServiceTest {
     @Test
     public void getConnectionById_improperConnection_connectionNotFound() {
         String id = "";
-        Exception exception = assertThrows(Exception.class, () -> {
-            connectionService.getConnectionById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> connectionService.getConnectionById(id));
 
         assertEquals(0, connectionService.getConnectionRepository().count());
         assertEquals("Cannot get connection with id: " + id + " because it does not exist.", exception.getMessage());
@@ -147,9 +145,7 @@ class ConnectionServiceTest {
             e.printStackTrace();
         }
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            connectionService.getConnectionById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> connectionService.getConnectionById(id));
 
         assertEquals(1, connectionService.getConnectionRepository().count());
         assertEquals("Cannot get connection with id: " + id + " because it does not exist.", exception.getMessage());
@@ -172,9 +168,7 @@ class ConnectionServiceTest {
         connectionService.addConnection(1, "a", new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
         String id = "";
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            connectionService.deleteConnectionById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> connectionService.deleteConnectionById(id));
 
         assertEquals(2, connectionService.getConnectionRepository().count());
         assertEquals("Cannot delete connection with id: " + id + " because it does not exist.", exception.getMessage());

@@ -23,7 +23,7 @@ public class Road {
     @PositiveOrZero
     private int capacity;
 
-    public Road(int index, String name, RoadType type, int capacity) {
+    public Road(int index, String name, @NotNull RoadType type, int capacity) {
         this.index = index;
         this.name = name;
         this.type = type;
@@ -54,11 +54,11 @@ public class Road {
         this.name = name;
     }
 
-    public RoadType getType() {
+    public @NotNull RoadType getType() {
         return type;
     }
 
-    public void setType(RoadType type) {
+    public void setType(@NotNull RoadType type) {
         this.type = type;
     }
 

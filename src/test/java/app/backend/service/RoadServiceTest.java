@@ -56,9 +56,7 @@ class RoadServiceTest {
     @Test
     public void getRoadById_improperRoad_roadNotFound() {
         String id = "";
-        Exception exception = assertThrows(Exception.class, () -> {
-            roadService.getRoadById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> roadService.getRoadById(id));
 
         assertEquals(0, roadService.getRoadRepository().count());
         assertEquals("Cannot get road with id: " + id + " because it does not exist.", exception.getMessage());
@@ -121,9 +119,7 @@ class RoadServiceTest {
             e.printStackTrace();
         }
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            roadService.getRoadById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> roadService.getRoadById(id));
 
         assertEquals(0, roadService.getRoadRepository().count());
         assertEquals("Cannot get road with id: " + id + " because it does not exist.", exception.getMessage());
@@ -139,9 +135,7 @@ class RoadServiceTest {
         Road road = roadService.addRoad(index, name, type, capacity);
         String id = "";
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            roadService.deleteRoadById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> roadService.deleteRoadById(id));
 
         assertEquals(1, roadService.getRoadRepository().count());
         assertEquals("Cannot delete road with id: " + id + " because it does not exist.", exception.getMessage());

@@ -86,9 +86,7 @@ class TrafficLightServiceTest {
 
 
         String id = "";
-        Exception exception = assertThrows(Exception.class, () -> {
-            trafficLightService.getTrafficLightById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> trafficLightService.getTrafficLightById(id));
 
         assertEquals(3, trafficLightService.getTrafficLightRepository().count());
         assertEquals("Cannot get trafficLight with id: " + id + " because it does not exist.", exception.getMessage());
@@ -107,9 +105,7 @@ class TrafficLightServiceTest {
             e.printStackTrace();
         }
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            trafficLightService.getTrafficLightById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> trafficLightService.getTrafficLightById(id));
 
         assertEquals(2, trafficLightService.getTrafficLightRepository().count());
         assertEquals("Cannot get trafficLight with id: " + id + " because it does not exist.", exception.getMessage());
@@ -122,9 +118,7 @@ class TrafficLightServiceTest {
         trafficLightService.addTrafficLight(2, "c", RIGHT);
 
         String id = "";
-        Exception exception = assertThrows(Exception.class, () -> {
-            trafficLightService.deleteTrafficLightById(id);
-        });
+        Exception exception = assertThrows(Exception.class, () -> trafficLightService.deleteTrafficLightById(id));
 
         assertEquals(3, trafficLightService.getTrafficLightRepository().count());
         assertEquals("Cannot delete trafficLight with id: " + id + " because it does not exist.", exception.getMessage());
