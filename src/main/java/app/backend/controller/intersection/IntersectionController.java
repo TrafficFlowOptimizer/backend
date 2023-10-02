@@ -43,5 +43,4 @@ public class IntersectionController {
     public String update() {
         return "update";
     }
-
 }

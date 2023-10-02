@@ -21,9 +21,10 @@ public class VideoService {
     public VideoService(VideoRepository videoRepository) {
         this.videoRepository = videoRepository;
     }
+
     public void store(MultipartFile file, String crossroadId, String timeIntervalId) throws IOException {
         String name = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-        videoRepository.save( new Video(crossroadId, name, file.getContentType(), timeIntervalId, file.getBytes()) );
+        videoRepository.save(new Video(crossroadId, name, file.getContentType(), timeIntervalId, file.getBytes()));
     }
 
     public Video getVideo(String id) throws Exception {
@@ -38,5 +39,4 @@ public class VideoService {
     public Stream<Video> getAllVideos() {
         return videoRepository.findAll().stream();
     }
-
 }
