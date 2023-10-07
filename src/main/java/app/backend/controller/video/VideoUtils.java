@@ -2,6 +2,10 @@ package app.backend.controller.video;
 
 import app.backend.service.VideoService;
 import org.json.JSONObject;
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +16,10 @@ import java.nio.charset.StandardCharsets;
 
 @Component
 public class VideoUtils {
+
     @Autowired
     VideoService videoService;
+
     public void analyseVideo(String videoId) {
         URL url;
         try {
@@ -36,5 +42,24 @@ public class VideoUtils {
             System.out.println(new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8)); // return value
             connection.disconnect();
         } catch (Exception e) {throw new RuntimeException(e);}
+    }
+
+    public void getSampleFrame(String videoId) {
+        VideoCapture cap = new VideoCapture();
+
+        String input = "temp/sample1.mp4";
+        String output = "temp/resimg.jpg";
+
+        cap.open(input);
+
+        Mat frame = new Mat();
+
+        if (cap.isOpened()) {
+            cap.read(frame);
+
+            Imgcodecs.imwrite(output, frame);
+        } else {
+            System.out.println("Fail");
+        }
     }
 }

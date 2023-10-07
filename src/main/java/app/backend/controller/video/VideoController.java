@@ -45,6 +45,13 @@ public class VideoController {
         }
     }
 
+    @GetMapping(value="/{id}/sample")
+    public String sample(@PathVariable String id) {
+        videoUtils.getSampleFrame(id);
+
+        return "true";
+    }
+
     @GetMapping(value="/{id}/analysis")
     public String analyse(@PathVariable String id) {
         videoUtils.analyseVideo(id);
