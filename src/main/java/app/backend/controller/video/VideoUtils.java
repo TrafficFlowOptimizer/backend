@@ -12,9 +12,17 @@ import java.nio.charset.StandardCharsets;
 
 @Component
 public class VideoUtils {
-    @Autowired
+    public static final String VIDEO_ID = "id";
+    public static final String EXTENSION = "extension";
+    public static final String SKIP_FRAMES = "skip_frames";
+    public static final String DETECTION_RECTANGLES = "detection_rectangles";
+
     VideoService videoService;
-    public void analyseVideo(String videoId) {
+    @Autowired
+    public VideoUtils(VideoService videoService){
+        this.videoService = videoService;
+    }
+    public void analyseVideo(String videoId, String skipFrames, String detectionRectangles) {
         URL url;
         try {
             url = new URL("http://localhost:8081/analysis");
@@ -25,8 +33,10 @@ public class VideoUtils {
             connection.setRequestProperty("Accept", "application/json");
 
             JSONObject body = new JSONObject();
-            body.put("id", videoId);
-            body.put("extension", videoService.getVideo(videoId).getType().split("/")[1]); // hopefully Lob lazily loaded; TODO: check in the future
+            body.put(VIDEO_ID, videoId);
+            body.put(EXTENSION, videoService.getVideo(videoId).getType().split("/")[1]); // hopefully Lob lazily loaded; TODO: check in the future
+            body.put(SKIP_FRAMES, skipFrames);
+            body.put(DETECTION_RECTANGLES, detectionRectangles);
 
             System.out.println(body.toString(4));
             byte[] out = body.toString(4).getBytes(StandardCharsets.UTF_8);
