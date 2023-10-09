@@ -3,6 +3,7 @@ package app.backend.service;
 import app.backend.document.User;
 import app.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -30,15 +31,19 @@ public class UserService {
     }
 
     public User addUser(String firstName, String lastName, String nickname, String email, String password) {
-        return userRepository.insert(
-                new User(
-                        firstName,
-                        lastName,
-                        nickname,
-                        email,
-                        password
-                )
-        );
+        try {
+            return userRepository.insert(
+                    new User(
+                            firstName,
+                            lastName,
+                            nickname,
+                            email,
+                            password
+                    )
+            );
+        } catch (DuplicateKeyException e) {
+            return null;
+        }
     }
 
     public User deleteUserById(String id) {
