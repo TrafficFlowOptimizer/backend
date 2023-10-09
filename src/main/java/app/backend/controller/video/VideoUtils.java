@@ -7,16 +7,24 @@ import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.UUID;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Component
 public class VideoUtils {
@@ -27,75 +35,147 @@ public class VideoUtils {
     public static final String TEMP_DIRECTORY_PATH = "temp/";
 
     VideoService videoService;
+
     @Autowired
     public VideoUtils(VideoService videoService){
         this.videoService = videoService;
     }
-    public void analyseVideo(String videoId, String skipFrames, String detectionRectangles) {
-        URL url;
+
+    public ResponseEntity<String> analyseVideo(String videoId, String skipFrames, String detectionRectangles) {
+        URL url; // TODO: get from variable from environment
         try {
-            url = new URL("http://localhost:8081/analysis");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            url = new URL("http://localhost:8081/analysis"); // TODO: get from variable from environment
+        } catch (MalformedURLException e) {
+            return ResponseEntity
+                    .status(INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+        HttpURLConnection connection;
+        try {
+            connection = (HttpURLConnection) url.openConnection();
+        } catch (IOException e) {
+            return ResponseEntity
+                    .status(INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+        try {
             connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type","application/json");
-            connection.setRequestProperty("Accept", "application/json");
+        } catch (ProtocolException e) {
+            return ResponseEntity
+                    .status(INTERNAL_SERVER_ERROR)
+                    .build(); // won't happen
+        }
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Content-Type","application/json");
+        connection.setRequestProperty("Accept", "application/json");
 
-            JSONObject body = new JSONObject();
-            body.put(VIDEO_ID, videoId);
-            body.put(EXTENSION, videoService.getVideo(videoId).getType().split("/")[1]); // hopefully Lob lazily loaded; TODO: check in the future
-            body.put(SKIP_FRAMES, skipFrames);
-            body.put(DETECTION_RECTANGLES, detectionRectangles);
+        Video video = videoService.getVideo(videoId);
+        if (video == null) {
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        }
 
-            System.out.println(body.toString(4));
-            byte[] out = body.toString(4).getBytes(StandardCharsets.UTF_8);
-            OutputStream stream = connection.getOutputStream();
-            stream.write(out);
-            System.out.println(connection.getResponseCode() + " " + connection.getResponseMessage()); // 200 OK
-            System.out.println(new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8)); // return value
-            connection.disconnect();
-        } catch (Exception e) {throw new RuntimeException(e);}
-    }
+        JSONObject body = new JSONObject();
+        body.put(VIDEO_ID, videoId);
+        body.put(EXTENSION, video.getType().split("/")[1]); // hopefully Lob lazily loaded; TODO: check in the future
+        body.put(SKIP_FRAMES, skipFrames);
+        body.put(DETECTION_RECTANGLES, detectionRectangles);
 
-    public String getSampleFrame(String videoId) {
+        System.out.println("INFO:\n" + body.toString(4));
+
+        byte[] out = body.toString(4).getBytes(StandardCharsets.UTF_8);
+        OutputStream stream;
         try {
-            Video vid = videoService.getVideo(videoId);
+            stream = connection.getOutputStream();
+        } catch (IOException e) {
+            return ResponseEntity
+                    .status(INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+        try {
+            stream.write(out);
+        } catch (IOException e) {
+            return ResponseEntity
+                    .status(INTERNAL_SERVER_ERROR)
+                    .build();
+        }
 
-            String uuid = UUID.randomUUID().toString();
-            String videoName = uuid + vid.getName();
-            String imageName = uuid + "img.jpg";
+        int responseCode;
+        String responseValue;
+        try {
+            responseCode = connection.getResponseCode();
+            responseValue = new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            connection.disconnect();
 
-            createTempVideoFile(vid.getData(), videoName);
+            System.out.println("INFO:\n" + responseCode + " " + responseValue);
 
-            VideoCapture cap = new VideoCapture();
-
-            String input = TEMP_DIRECTORY_PATH + videoName;
-            String output = TEMP_DIRECTORY_PATH + imageName;
-
-            cap.open(input);
-
-            Mat frame = new Mat();
-
-            if (cap.isOpened()) {
-                cap.read(frame);
-            } else {
-                throw new Exception("video capture closed");
-            }
-            cap.release();
-            Imgcodecs.imwrite(output, frame);
-
-            deleteFiles(TEMP_DIRECTORY_PATH + videoName);
-            return output;
-        } catch (Exception e) {
-            return "";
+            return ResponseEntity
+                    .status(responseCode)
+                    .body(responseValue);
+        } catch (IOException e) {
+            return ResponseEntity
+                    .status(INTERNAL_SERVER_ERROR)
+                    .build();
         }
     }
 
-    private void createTempVideoFile(byte[] bytes, String name) {
+    public ResponseEntity<InputStreamResource> getSampleFrame(String videoId) {
+        Video video = videoService.getVideo(videoId);
+        if (video == null) {
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        }
+
+        String uuid = UUID.randomUUID().toString();
+        String videoName = uuid + video.getName();
+        String imageName = uuid + "img.jpg";
+
+        if (!createTempVideoFile(video.getData(), videoName)) {
+            return ResponseEntity
+                    .status(INTERNAL_SERVER_ERROR)
+                    .build(); // Video data can't be saved to a temp file!
+        }
+
+        VideoCapture cap = new VideoCapture();
+        cap.open(TEMP_DIRECTORY_PATH + videoName);
+        Mat frame = new Mat();
+
+        if (cap.isOpened()) {
+            cap.read(frame);
+            cap.release();
+            Imgcodecs.imwrite(TEMP_DIRECTORY_PATH + imageName, frame);
+        } else {
+            return ResponseEntity
+                    .status(INTERNAL_SERVER_ERROR)
+                    .build(); // OpenCV doesn't capture the video
+        }
+
+        deleteFiles(TEMP_DIRECTORY_PATH + videoName);
+
+        Path imagePath = Paths.get(TEMP_DIRECTORY_PATH + imageName);
+        InputStream in;
+        try {
+            in = Files.newInputStream(imagePath, StandardOpenOption.DELETE_ON_CLOSE);
+
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(new InputStreamResource(in));
+        } catch (IOException e) {
+            return ResponseEntity
+                    .status(INTERNAL_SERVER_ERROR)
+                    .build(); // InputStream can't be created
+        }
+    }
+
+    private boolean createTempVideoFile(byte[] bytes, String name) {
         try (FileOutputStream stream = new FileOutputStream(TEMP_DIRECTORY_PATH + name)) {
             stream.write(bytes);
+            return true;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return false;
         }
     }
 
@@ -104,7 +184,7 @@ public class VideoUtils {
             File f = new File(name);
 
             if (!f.delete()) {
-                System.out.println("failed to delete file " + name);
+                System.out.println("WARN: Failed to delete temp file " + name);
             }
         }
     }

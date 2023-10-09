@@ -88,7 +88,11 @@ public class CrossroadController {
             Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
             result = s.hasNext() ? s.next() : "";
 
-            crossroadsUtils.addOptimizationResultsToDb(crossroadId, crossroadsUtils.getTimeIntervalId(videoId), result);
+            String timeIntervalId = crossroadsUtils.getTimeIntervalId(videoId);
+            if (timeIntervalId == null) {
+                // TODO: return 404 video not found
+            }
+            crossroadsUtils.addOptimizationResultsToDb(crossroadId, timeIntervalId, result);
             throw new RuntimeException(); //TODO: for now
 //            result = crossroadsUtils.parseOutput(result, crossroadId);
 

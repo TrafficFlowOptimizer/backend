@@ -4,12 +4,14 @@ import app.backend.document.collision.CollisionType;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.light.TrafficLightType;
+import app.backend.entity.Video;
 import app.backend.service.*;
 import app.backend.service.VideoService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -17,6 +19,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 public class CrossroadsUtils {
@@ -50,8 +54,13 @@ public class CrossroadsUtils {
         this.videoService = videoService;
     }
 
-    public String getTimeIntervalId(String videoId) throws Exception {
-        return videoService.getVideo(videoId).getTimeIntervalId();
+    public String getTimeIntervalId(String videoId) {
+        Video video = videoService.getVideo(videoId);
+        if (video == null) {
+            return null;
+        }
+
+        return video.getTimeIntervalId();
     }
 
     public void addOptimizationResultsToDb(String crossroadId, String timeIntervalId, String results) {

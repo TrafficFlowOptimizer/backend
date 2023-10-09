@@ -22,7 +22,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// https://www.bezkoder.com/spring-boot-upload-file-database/
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @CrossOrigin("http://localhost:8081")
@@ -39,57 +39,37 @@ public class VideoController {
     }
 
     @PostMapping(value="/upload")
-    public ResponseEntity<VideoResponseMessage> upload(@RequestParam("file") MultipartFile video,
-                                                       @RequestParam("crossroadId") String crossroadId,
-                                                       @RequestParam("timeIntervalId") String timeIntervalId) {
-        String message;
-        Video storedVideo = null;
-        try {
-            storedVideo = videoService.store(video, crossroadId, timeIntervalId);
-            message = "Uploaded the video successfully: " + video.getOriginalFilename();
+    public ResponseEntity<VideoResponseMessage> upload(
+            @RequestParam("file") MultipartFile video,
+            @RequestParam("crossroadId") String crossroadId,
+            @RequestParam("timeIntervalId") String timeIntervalId
+    ) {
+        Video vid = videoService.store(video, crossroadId, timeIntervalId);
 
-            return ResponseEntity.status(HttpStatus.OK).body(new VideoResponseMessage(message));
-        } catch (Exception e) {
-            message = "Could not upload the video: " + video.getOriginalFilename() + "!";
-            if (storedVideo != null) {
-                videoService.deleteVideoById(storedVideo.getId());
-            } // czy potrzebne teraz?
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new VideoResponseMessage(message));
+        if (vid != null) {
+            String message = "Video: " + vid.getName() + " uploaded successfully with id: " + vid.getId();
+            return ResponseEntity
+                    .ok()
+                    .body(new VideoResponseMessage(message));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.EXPECTATION_FAILED)
+                    .body(new VideoResponseMessage("Video upload failed!"));
         }
     }
 
     @GetMapping(value="/{id}/sample")
     public ResponseEntity<InputStreamResource> sample(@PathVariable String id) {
-        ResponseEntity<InputStreamResource> response;
-
-        String name = videoUtils.getSampleFrame(id);
-
-        if (name.length() == 0) {
-            response = ResponseEntity.unprocessableEntity().build();
-        } else {
-            InputStream in;
-            try {
-                Path img = Paths.get(name);
-                in = Files.newInputStream(img, StandardOpenOption.DELETE_ON_CLOSE);
-                response = ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG)
-                        .body(new InputStreamResource(in));
-            } catch (IOException e) {
-                response = ResponseEntity.unprocessableEntity().build();
-            }
-        }
-
-        VideoUtils.deleteFiles(name);
-        return response;
+        return videoUtils.getSampleFrame(id);
     }
 
     @GetMapping(value="/{id}/analysis")
-    public String analyse(@PathVariable String id,
-                          @RequestParam String skipFrames,
-                          @RequestParam String detectionRectangles) {
-        videoUtils.analyseVideo(id, skipFrames, detectionRectangles);
-
-        return "true";
+    public ResponseEntity<String> analyse(
+            @PathVariable String id,
+            @RequestParam String skipFrames,
+            @RequestParam String detectionRectangles
+    ) {
+        return videoUtils.analyseVideo(id, skipFrames, detectionRectangles);
     }
 
     @GetMapping(value="")
@@ -108,21 +88,33 @@ public class VideoController {
                         video.getData().length);
             }).collect(Collectors.toList());
 
-            return ResponseEntity.status(HttpStatus.OK).body(videos);
+            return ResponseEntity
+                    .ok()
+                    .body(videos);
     }
 
     @GetMapping(value="/{id}")
-    public ResponseEntity<byte[]> get(@PathVariable String id) throws Exception {
+    public ResponseEntity<byte[]> get(@PathVariable String id) {
         Video video = videoService.getVideo(id);
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + video.getName() + "\"")
-                .body(video.getData());
+        if (video != null) {
+            return ResponseEntity
+                    .ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + video.getName() + "\"")
+                    .body(video.getData());
+        } else {
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        }
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> delete(@PathVariable String id){
+    public ResponseEntity<String> delete(@PathVariable String id) {
         videoService.deleteVideoById(id);
-        return ResponseEntity.ok().body("Video id: " + id + "successfully deleted or was not even there");
+
+        return ResponseEntity
+                .ok()
+                .body("Video id: " + id + "no longer stored");
     }
 }

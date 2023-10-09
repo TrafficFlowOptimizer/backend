@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
@@ -22,35 +21,37 @@ public class VideoService {
         this.videoRepository = videoRepository;
     }
 
-    public Video store(MultipartFile file, String crossroadId, String timeIntervalId) throws IOException {
+    public Video store(MultipartFile file, String crossroadId, String timeIntervalId) {
         String name = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-        return videoRepository.save(new Video(crossroadId, name, file.getContentType(), timeIntervalId, file.getBytes()));
+
+        try {
+            return videoRepository.save(
+                    new Video(
+                            crossroadId,
+                            name,
+                            file.getContentType(),
+                            timeIntervalId,
+                            file.getBytes()
+                    )
+            );
+        } catch (IOException e) {
+            return null;
+        }
     }
 
-    public Video getVideo(String id) throws Exception {
-        Optional<Video> video = videoRepository.findById(id);
-
-        if (video.isPresent()) {
-            return video.get();
-        }
-        throw new Exception("No video for id " + id + " found in database");
+    public Video getVideo(String id) {
+        return videoRepository
+                .findById(id)
+                .orElse(null);
     }
 
     public Stream<Video> getAllVideos() {
-        return videoRepository.findAll().stream();
+        return videoRepository
+                .findAll()
+                .stream();
     }
 
     public void deleteVideoById(String id){
         videoRepository.deleteById(id);
     }
 }
-
-//    private void saveVideoInDirectory(MultipartFile video, String videoId, String videoType) {
-//        try {
-//            OutputStream out = new FileOutputStream(videoPath + "\\" + videoId + "." + videoType);
-//            out.write(video.getBytes());
-//            out.close();
-//        } catch (IOException ex){
-//            System.out.println(ex.getMessage());
-//        }
-//    }
