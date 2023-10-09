@@ -18,35 +18,38 @@ public class TimeIntervalService {
         this.timeIntervalRepository = timeIntervalRepository;
     }
 
-    public TimeInterval getTimeIntervalById(String id) throws Exception {
-        Optional<TimeInterval> timeInterval = timeIntervalRepository.findById(id);
-        if (timeInterval.isEmpty()){
-            throw new Exception("Cannot get timeInterval with id: " + id + " because it does not exist.");
-        }
-
-        return timeInterval.get();
+    public TimeInterval getTimeIntervalById(String id) {
+        return timeIntervalRepository
+                .findById(id)
+                .orElse(null);
     }
 
-    public TimeInterval addTimeInterval(LocalTime startTime, LocalTime endTime){
-        return timeIntervalRepository.insert(new TimeInterval(startTime, endTime));
+    public TimeInterval addTimeInterval(LocalTime startTime, LocalTime endTime) {
+        return timeIntervalRepository.insert(
+                new TimeInterval(
+                        startTime,
+                        endTime
+                )
+        );
     }
 
-    public TimeInterval deleteTimeIntervalById(String id) throws Exception {
+    public TimeInterval deleteTimeIntervalById(String id) {
         Optional<TimeInterval> timeInterval = timeIntervalRepository.findById(id);
         if (timeInterval.isEmpty()) {
-            throw new Exception("Cannot delete timeInterval with id: " + id + " because it does not exist.");
+            return null;
         }
+
         timeIntervalRepository.deleteById(id);
         return timeInterval.get();
     }
 
-    public TimeInterval updateTimeInterval(String id, LocalTime startTime, LocalTime endTime) throws Exception {
+    public TimeInterval updateTimeInterval(String id, LocalTime startTime, LocalTime endTime) {
         Optional<TimeInterval> timeInterval = timeIntervalRepository.findById(id);
         if (timeInterval.isEmpty()){
-            throw new Exception("Cannot update timeInterval with id: " + id + " because it does not exist.");
+            return null;
         }
-        TimeInterval timeIntervalToUpdate = timeInterval.get();
 
+        TimeInterval timeIntervalToUpdate = timeInterval.get();
         timeIntervalToUpdate.setStartTime(startTime);
         timeIntervalToUpdate.setEndTime(endTime);
 

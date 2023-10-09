@@ -59,10 +59,8 @@ class CrossroadServiceTest {
     @Test
     public void getCrossroadById_improperCrossroad_crossroadNotFound() {
         String id = "";
-        Exception exception = assertThrows(Exception.class, () -> crossroadService.getCrossroadById(id));
-
+        assertNull(crossroadService.getCrossroadById(id));
         assertEquals(0, crossroadService.getCrossroadRepository().count());
-        assertEquals("Cannot get crossroad with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -87,12 +85,7 @@ class CrossroadServiceTest {
         Crossroad crossroad = crossroadService.addCrossroad(name, location, creatorId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
         crossroadService.addCrossroad("Notjohn", "Notdoe", "sdf", CrossroadType.PUBLIC, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
-        Crossroad found = null;
-        try {
-            found = crossroadService.getCrossroadById(crossroad.getId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Crossroad found = crossroadService.getCrossroadById(crossroad.getId());
 
         assertEquals(2, crossroadService.getCrossroadRepository().count());
         assertNotNull(found);
@@ -160,16 +153,10 @@ class CrossroadServiceTest {
         Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
 
         String id = crossroad.getId();
-        try {
-            crossroadService.deleteCrossroadById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        crossroadService.deleteCrossroadById(id);
 
-        Exception exception = assertThrows(Exception.class, () -> crossroadService.getCrossroadById(id));
-
+        assertNull(crossroadService.getCrossroadById(id));
         assertEquals(0, crossroadService.getCrossroadRepository().count());
-        assertEquals("Cannot get crossroad with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -191,13 +178,11 @@ class CrossroadServiceTest {
         collisionIDs.add("s");
         collisionIDs.add("f");
 
-        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
+        crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
+
         String id = "";
-
-        Exception exception = assertThrows(Exception.class, () -> crossroadService.deleteCrossroadById(id));
-
+        assertNull(crossroadService.deleteCrossroadById(id));
         assertEquals(1, crossroadService.getCrossroadRepository().count());
-        assertEquals("Cannot delete crossroad with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -241,13 +226,8 @@ class CrossroadServiceTest {
         collisionIDs.add("iwopeq");
         collisionIDs.add("als");
 
-        Crossroad updated = null;
-        try {
-            crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, creatorIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated, connectionIdsUpdated, trafficLightIdsUpdated);
-            updated = crossroadService.getCrossroadById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, creatorIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated, connectionIdsUpdated, trafficLightIdsUpdated);
+        Crossroad updated = crossroadService.getCrossroadById(id);
 
         assertEquals(1, crossroadService.getCrossroadRepository().count());
         assertNotNull(updated);
@@ -302,12 +282,8 @@ class CrossroadServiceTest {
         collisionIDs.add("iwopeq");
         collisionIDs.add("als");
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, ownerIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated, connectionIdsUpdated, trafficLightIdsUpdated);
-            crossroadService.deleteCrossroadById(id);
-        });
-
+        assertNull(crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, ownerIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated, connectionIdsUpdated, trafficLightIdsUpdated));
+        assertNull(crossroadService.deleteCrossroadById(id));
         assertEquals(1, crossroadService.getCrossroadRepository().count());
-        assertEquals("Cannot update crossroad with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }

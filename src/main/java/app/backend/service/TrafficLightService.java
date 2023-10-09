@@ -17,35 +17,40 @@ public class TrafficLightService {
     public TrafficLightService(TrafficLightRepository trafficLightRepository) {
         this.trafficLightRepository = trafficLightRepository;
     }
-    public TrafficLight getTrafficLightById(String id) throws Exception {
-        Optional<TrafficLight> trafficLight = trafficLightRepository.findById(id);
-        if (trafficLight.isEmpty()){
-            throw new Exception("Cannot get trafficLight with id: " + id + " because it does not exist.");
-        }
 
-        return trafficLight.get();
+    public TrafficLight getTrafficLightById(String id) { // TODO: error handling albo integralność przy dodawaniu
+        return trafficLightRepository
+                .findById(id)
+                .orElse(null);
     }
 
     public TrafficLight addTrafficLight(int index, String name, TrafficLightType type){
-        return trafficLightRepository.insert(new TrafficLight(index, name, type));
+        return trafficLightRepository.insert(
+                new TrafficLight(
+                        index,
+                        name,
+                        type
+                )
+        );
     }
 
-    public TrafficLight deleteTrafficLightById(String id) throws Exception {
+    public TrafficLight deleteTrafficLightById(String id) {
         Optional<TrafficLight> trafficLight = trafficLightRepository.findById(id);
         if (trafficLight.isEmpty()) {
-            throw new Exception("Cannot delete trafficLight with id: " + id + " because it does not exist.");
+            return null;
         }
+
         trafficLightRepository.deleteById(id);
         return trafficLight.get();
     }
 
-    public TrafficLight updateTrafficLight(String id, int index, String name, TrafficLightType type) throws Exception {
+    public TrafficLight updateTrafficLight(String id, int index, String name, TrafficLightType type) {
         Optional<TrafficLight> trafficLight = trafficLightRepository.findById(id);
         if (trafficLight.isEmpty()) {
-            throw new Exception("Cannot update trafficLight with id: " + id + " because it does not exist.");
+            return null;
         }
-        TrafficLight trafficLightToUpdate = trafficLight.get();
 
+        TrafficLight trafficLightToUpdate = trafficLight.get();
         trafficLightToUpdate.setIndex(index);
         trafficLightToUpdate.setName(name);
         trafficLightToUpdate.setType(type);

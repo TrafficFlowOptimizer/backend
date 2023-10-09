@@ -3,10 +3,13 @@ package app.backend.controller.optimization;
 import app.backend.document.Optimization;
 import app.backend.service.OptimizationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @RequestMapping("/optimization")
@@ -19,10 +22,17 @@ public class OptimizationController {
     }
 
     @GetMapping(value="/{optimizationId}")
-    public Optimization getOptimization(@PathVariable String optimizationId) {
-        try {
-            return optimizationService.getOptimizationById(optimizationId);
-        } catch (Exception e) {throw new RuntimeException(e);}
+    public ResponseEntity<Optimization> getOptimization(@PathVariable String optimizationId) {
+        Optimization optimization = optimizationService.getOptimizationById(optimizationId);
+        if (optimization != null) {
+            return ResponseEntity
+                    .ok()
+                    .body(optimization);
+        } else {
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        }
     }
 
     @GetMapping(value="/{crossroadId}")

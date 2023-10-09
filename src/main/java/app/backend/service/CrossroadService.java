@@ -21,18 +21,17 @@ public class CrossroadService {
         this.crossroadRepository = crossroadRepository;
     }
 
-    public Crossroad getCrossroadById(String id) throws Exception {
-        Optional<Crossroad> crossroad = crossroadRepository.findById(id);
-        if (crossroad.isEmpty()){
-            throw new Exception("Cannot get crossroad with id: " + id + " because it does not exist.");
-        }
-
-        return crossroad.get();
+    public Crossroad getCrossroadById(String id) {
+        return crossroadRepository
+                .findById(id)
+                .orElse(null);
     }
 
     public List<Crossroad> getCrossroadByCreatorId(String creatorId) {
         Iterable<Crossroad> crossroads = crossroadRepository.findAllByCreatorId(creatorId);
-        return StreamSupport.stream(crossroads.spliterator(), false)
+
+        return StreamSupport
+                .stream(crossroads.spliterator(), false)
                 .collect(Collectors.toList());
     }
 
@@ -41,6 +40,7 @@ public class CrossroadService {
      */
     public List<Crossroad> getCrossroadsByCreatorIdOrPublic(String creatorId) {
         List<Crossroad> crossroads = crossroadRepository.findAll();
+
         return crossroads.stream()
                 .filter(crossroad -> crossroad.getType().equals(CrossroadType.PUBLIC) || crossroad.getCreatorId().equals(creatorId))
                 .collect(Collectors.toList());
@@ -48,31 +48,54 @@ public class CrossroadService {
 
     public List<Crossroad> getPublicCrossroads() {
         Iterable<Crossroad> crossroads = crossroadRepository.findAllByType(CrossroadType.PUBLIC);
-        return StreamSupport.stream(crossroads.spliterator(), false)
+
+        return StreamSupport
+                .stream(crossroads.spliterator(), false)
                 .collect(Collectors.toList());
     }
 
     public Crossroad addCrossroad(String name, String location, String ownerId, CrossroadType type, List<String> roadIDs, List<String> collisionIDs, List<String> connectionIds, List<String> trafficLightIds) {
-        return crossroadRepository.insert(new Crossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds));
+        return crossroadRepository.insert(
+                new Crossroad(
+                        name,
+                        location,
+                        ownerId,
+                        type,
+                        roadIDs,
+                        collisionIDs,
+                        connectionIds,
+                        trafficLightIds
+                )
+        );
     }
 
-    public Crossroad deleteCrossroadById(String id) throws Exception {
+    public Crossroad deleteCrossroadById(String id) {
         Optional<Crossroad> crossroad = crossroadRepository.findById(id);
         if (crossroad.isEmpty()) {
-            throw new Exception("Cannot delete crossroad with id: " + id + " because it does not exist.");
+            return null;
         }
-        crossroadRepository.deleteById(id);
 
+        crossroadRepository.deleteById(id);
         return crossroad.get();
     }
 
-    public Crossroad updateCrossroad(String id, String name, String location, String creatorId, CrossroadType type, List<String> roadIDs, List<String> collisionIDs, List<String> connectionIds, List<String> trafficLightIds) throws Exception {
+    public Crossroad updateCrossroad(
+            String id,
+            String name,
+            String location,
+            String creatorId,
+            CrossroadType type,
+            List<String> roadIDs,
+            List<String> collisionIDs,
+            List<String> connectionIds,
+            List<String> trafficLightIds
+    ) {
         Optional<Crossroad> crossroad = crossroadRepository.findById(id);
         if (crossroad.isEmpty()){
-            throw new Exception("Cannot update crossroad with id: " + id + " because it does not exist.");
+            return null;
         }
-        Crossroad crossroadToUpdate = crossroad.get();
 
+        Crossroad crossroadToUpdate = crossroad.get();
         crossroadToUpdate.setName(name);
         crossroadToUpdate.setLocation(location);
         crossroadToUpdate.setCreatorId(creatorId);

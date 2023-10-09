@@ -18,35 +18,40 @@ public class RoadService {
         this.roadRepository = roadRepository;
     }
 
-    public Road getRoadById(String id) throws Exception {
-        Optional<Road> road = roadRepository.findById(id);
-        if (road.isEmpty()){
-            throw new Exception("Cannot get road with id: " + id + " because it does not exist.");
-        }
-
-        return road.get();
+    public Road getRoadById(String id) {
+        return roadRepository
+                .findById(id)
+                .orElse(null);
     }
 
     public Road addRoad(int index, String name, RoadType type, int capacity){
-        return roadRepository.insert(new Road(index, name, type, capacity));
+        return roadRepository.insert(
+                new Road(
+                        index,
+                        name,
+                        type,
+                        capacity
+                )
+        );
     }
 
-    public Road deleteRoadById(String id) throws Exception {
+    public Road deleteRoadById(String id) {
         Optional<Road> road = roadRepository.findById(id);
         if (road.isEmpty()) {
-            throw new Exception("Cannot delete road with id: " + id + " because it does not exist.");
+            return null;
         }
+
         roadRepository.deleteById(id);
         return road.get();
     }
 
-    public Road updateRoad(String id, int index, String name, RoadType type, int capacity) throws Exception {
+    public Road updateRoad(String id, int index, String name, RoadType type, int capacity) {
         Optional<Road> road = roadRepository.findById(id);
         if (road.isEmpty()){
-            throw new Exception("Cannot update road with id: " + id + " because it does not exist.");
+            return null;
         }
-        Road roadToUpdate = road.get();
 
+        Road roadToUpdate = road.get();
         roadToUpdate.setIndex(index);
         roadToUpdate.setName(name);
         roadToUpdate.setType(type);

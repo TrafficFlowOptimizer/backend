@@ -264,12 +264,7 @@ public class Controller {
         Crossroad crossroad = crossroadService.addCrossroad(name, location, creatorId, type, roadsIDs,
                 collisionsIDs, connectionsIDs, lightsIDs);
 
-        Crossroad found = null;
-        try {
-            found = crossroadService.getCrossroadById(crossroad.getId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        crossroadService.getCrossroadById(crossroad.getId());
 
         return crossroad.getId() + ";" + timeInterval.getId();
     }

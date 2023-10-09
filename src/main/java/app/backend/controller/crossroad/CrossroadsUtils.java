@@ -100,13 +100,14 @@ public class CrossroadsUtils {
         Map<Integer, TrafficLightType> lightDirectionMap = new HashMap<>();
         for(int i=0; i<newestResult.size(); i++){
             int finalI = i;
-            List<TrafficLightType> lightType = crossroadService.getCrossroadById(crossroadId).getTrafficLightIds().stream().map(lightID -> {
-                try {
-                    return trafficLightService.getTrafficLightById(lightID);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }).filter(light -> light.getIndex()== finalI +1).map(TrafficLight::getType).toList();
+            List<TrafficLightType> lightType = crossroadService
+                    .getCrossroadById(crossroadId)
+                    .getTrafficLightIds()
+                    .stream()
+                    .map(trafficLightService::getTrafficLightById)
+                    .filter(light -> light.getIndex() == finalI + 1)
+                    .map(TrafficLight::getType)
+                    .toList();
             assert lightType.size() == 1;
             lightDirectionMap.put(i+1, lightType.get(0));
         }

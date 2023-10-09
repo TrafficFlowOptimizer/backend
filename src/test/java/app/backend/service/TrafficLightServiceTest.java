@@ -64,12 +64,7 @@ class TrafficLightServiceTest {
         trafficLightService.addTrafficLight(2, "ndsam", RIGHT);
 
         String id = trafficLight.getId();
-        TrafficLight found = null;
-        try {
-            found = trafficLightService.getTrafficLightById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        TrafficLight found = trafficLightService.getTrafficLightById(id);
 
         assertEquals(3, trafficLightService.getTrafficLightRepository().count());
         assertEquals(id, found.getId());
@@ -84,12 +79,9 @@ class TrafficLightServiceTest {
         trafficLightService.addTrafficLight(1, "b", FORWARD);
         trafficLightService.addTrafficLight(2, "c", RIGHT);
 
-
         String id = "";
-        Exception exception = assertThrows(Exception.class, () -> trafficLightService.getTrafficLightById(id));
-
+        assertNull(trafficLightService.getTrafficLightById(id));
         assertEquals(3, trafficLightService.getTrafficLightRepository().count());
-        assertEquals("Cannot get trafficLight with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -99,29 +91,21 @@ class TrafficLightServiceTest {
         trafficLightService.addTrafficLight(2, "c", RIGHT);
 
         String id = trafficLight.getId();
-        try {
-            trafficLightService.deleteTrafficLightById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        trafficLightService.deleteTrafficLightById(id);
 
-        Exception exception = assertThrows(Exception.class, () -> trafficLightService.getTrafficLightById(id));
-
+        assertNull(trafficLightService.getTrafficLightById(id));
         assertEquals(2, trafficLightService.getTrafficLightRepository().count());
-        assertEquals("Cannot get trafficLight with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
     void deleteTrafficLightById_improperTrafficLight_trafficLightNotFound() {
         trafficLightService.addTrafficLight(0, "a", LEFT);
-        TrafficLight trafficLight = trafficLightService.addTrafficLight(1, "name", FORWARD);
+        trafficLightService.addTrafficLight(1, "name", FORWARD);
         trafficLightService.addTrafficLight(2, "c", RIGHT);
 
         String id = "";
-        Exception exception = assertThrows(Exception.class, () -> trafficLightService.deleteTrafficLightById(id));
-
+        assertNull(trafficLightService.deleteTrafficLightById(id));
         assertEquals(3, trafficLightService.getTrafficLightRepository().count());
-        assertEquals("Cannot delete trafficLight with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -135,13 +119,9 @@ class TrafficLightServiceTest {
         int indexUpdated = 1;
         String nameUpdated = "names";
 
-        TrafficLight updated = null;
-        try {
-            trafficLightService.updateTrafficLight(id, indexUpdated, nameUpdated, FORWARD);
-            updated = trafficLightService.getTrafficLightById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        trafficLightService.updateTrafficLight(id, indexUpdated, nameUpdated, FORWARD);
+
+        TrafficLight updated = trafficLightService.getTrafficLightById(id);
 
         assertEquals(1, trafficLightService.getTrafficLightRepository().count());
         assertNotNull(updated);
@@ -155,19 +135,16 @@ class TrafficLightServiceTest {
         int index = 0;
         TrafficLightType type = LEFT;
 
-        TrafficLight trafficLight = trafficLightService.addTrafficLight(index, "n", type);
+        trafficLightService.addTrafficLight(index, "n", type);
 
         String id = "";
         int indexUpdated = 1;
         String nameUpdated = "name";
-        TrafficLightType typeUpdated = RIGHT;
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            trafficLightService.updateTrafficLight(id, indexUpdated, nameUpdated, typeUpdated);
-            trafficLightService.deleteTrafficLightById(id);
-        });
+        assertNull(trafficLightService.updateTrafficLight(id, indexUpdated, nameUpdated, RIGHT));
+
+        trafficLightService.deleteTrafficLightById(id);
 
         assertEquals(1, trafficLightService.getTrafficLightRepository().count());
-        assertEquals("Cannot update trafficLight with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }

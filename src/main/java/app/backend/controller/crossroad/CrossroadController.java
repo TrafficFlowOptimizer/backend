@@ -1,11 +1,13 @@
 package app.backend.controller.crossroad;
 
 import app.backend.document.crossroad.Crossroad;
+import app.backend.document.crossroad.CrossroadType;
 import app.backend.service.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
@@ -15,6 +17,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static java.lang.Thread.sleep;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @RequestMapping(value = "/crossroad")
@@ -47,12 +50,18 @@ public class CrossroadController {
     }
 
     @GetMapping(value="/{crossroadId}")
-    public Crossroad getCrossroad(@PathVariable String crossroadId) {
-        Crossroad crossroad = null;
-        try {
-            crossroad = crossroadService.getCrossroadById(crossroadId);
-        } catch (Exception e) {e.printStackTrace();}
-        return crossroad;
+    public ResponseEntity<Crossroad> getCrossroad(@PathVariable String crossroadId) {
+        Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
+
+        if (crossroad != null) {
+            return ResponseEntity
+                    .ok()
+                    .body(crossroad);
+        } else {
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        }
     }
 
     @PostMapping()
@@ -65,14 +74,28 @@ public class CrossroadController {
     }
 
     @PutMapping()
-    public String updateCrossroad(@RequestBody Crossroad crossroad) {
-        try {
-            crossroadService.updateCrossroad( crossroad.getId(),
-                    crossroad.getName(), crossroad.getLocation(), crossroad.getCreatorId(), crossroad.getType(),
-                    crossroad.getRoadIds(), crossroad.getCollisionIds(), crossroad.getConnectionIds(), crossroad.getTrafficLightIds()
-            );
-        } catch (Exception e) {e.printStackTrace();}
-        return "ok";
+    public ResponseEntity<Crossroad> updateCrossroad(@RequestBody Crossroad crossroad) {
+        Crossroad updatedCrossroad = crossroadService.updateCrossroad(
+                crossroad.getId(),
+                crossroad.getName(),
+                crossroad.getLocation(),
+                crossroad.getCreatorId(),
+                crossroad.getType(),
+                crossroad.getRoadIds(),
+                crossroad.getCollisionIds(),
+                crossroad.getConnectionIds(),
+                crossroad.getTrafficLightIds()
+        );
+
+        if (updatedCrossroad != null) {
+            return ResponseEntity
+                    .ok()
+                    .body(updatedCrossroad);
+        } else {
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        }
     }
 
     @GetMapping(value="/{crossroadId}/optimization/{videoId}/{time}",  produces = MediaType.APPLICATION_JSON_VALUE)
