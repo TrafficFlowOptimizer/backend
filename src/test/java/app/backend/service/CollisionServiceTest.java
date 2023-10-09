@@ -56,10 +56,8 @@ class CollisionServiceTest {
     @Test
     public void getCollisionById_improperCollision_crossroadNotFound() {
         String id = "";
-        Exception exception = assertThrows(Exception.class, () -> collisionService.getCollisionById(id));
-
+        assertNull(collisionService.getCollisionById(id));
         assertEquals(0, collisionService.getCollisionRepository().count());
-        assertEquals("Cannot get collision with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -73,12 +71,7 @@ class CollisionServiceTest {
         Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
         collisionService.addCollision(1, "nm", "sddas", "dsaadsds", CollisionType.LIGHT);
 
-        Collision found = null;
-        try {
-            found = collisionService.getCollisionById(collision.getId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Collision found = collisionService.getCollisionById(collision.getId());
 
         assertEquals(2, collisionService.getCollisionRepository().count());
         assertNotNull(found);
@@ -120,16 +113,10 @@ class CollisionServiceTest {
         Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
 
         String id = collision.getId();
-        try {
-            collisionService.deleteCollisionById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        collisionService.deleteCollisionById(id);
 
-        Exception exception = assertThrows(Exception.class, () -> collisionService.getCollisionById(id));
-
+        assertNull(collisionService.getCollisionById(id));
         assertEquals(0, collisionService.getCollisionRepository().count());
-        assertEquals("Cannot get collision with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -140,13 +127,11 @@ class CollisionServiceTest {
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
+        collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
         String id = "";
 
-        Exception exception = assertThrows(Exception.class, () -> collisionService.deleteCollisionById(id));
-
+        assertNull(collisionService.deleteCollisionById(id));
         assertEquals(1, collisionService.getCollisionRepository().count());
-        assertEquals("Cannot delete collision with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -166,13 +151,8 @@ class CollisionServiceTest {
         String trafficLight2IdUpdated = "fdsfds";
         CollisionType typeUpdated = CollisionType.LIGHT;
 
-        Collision updated = null;
-        try {
-            collisionService.updateCollision(id, indexUpdated, nameUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated);
-            updated = collisionService.getCollisionById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        collisionService.updateCollision(id, indexUpdated, nameUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated);
+        Collision updated = collisionService.getCollisionById(id);
 
         assertEquals(1, collisionService.getCollisionRepository().count());
         assertNotNull(updated);
@@ -191,7 +171,7 @@ class CollisionServiceTest {
         String trafficLight2Id = "ced";
         CollisionType type = CollisionType.HEAVY;
 
-        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
+        collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
 
         String id = "";
         int indexUpdated = 1;
@@ -200,12 +180,8 @@ class CollisionServiceTest {
         String trafficLight2IdUpdated = "fdsfds";
         CollisionType typeUpdated = CollisionType.LIGHT;
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            collisionService.updateCollision(id, indexUpdated, nameUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated);
-            collisionService.deleteCollisionById(id);
-        });
-
+        assertNull(collisionService.updateCollision(id, indexUpdated, nameUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated));
+        assertNull(collisionService.deleteCollisionById(id));
         assertEquals(1, collisionService.getCollisionRepository().count());
-        assertEquals("Cannot update collision with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }

@@ -55,10 +55,8 @@ class CarFlowServiceTest {
     @Test
     public void getCarFlowById_improperCarFlow_carFlowNotFound() {
         String id = "";
-        Exception exception = assertThrows(Exception.class, () -> carFlowService.getCarFlowById(id));
-
+        assertNull(carFlowService.getCarFlowById(id));
         assertEquals(0, carFlowService.getCarFlowRepository().count());
-        assertEquals("Cannot get carFlow with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -69,12 +67,7 @@ class CarFlowServiceTest {
         CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
         carFlowService.addCarFlow(11, "asdsdaddsds");
 
-        CarFlow found = null;
-        try {
-            found = carFlowService.getCarFlowById(carFlow.getId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        CarFlow found = carFlowService.getCarFlowById(carFlow.getId());
 
         assertEquals(2, carFlowService.getCarFlowRepository().count());
         assertNotNull(found);
@@ -102,16 +95,10 @@ class CarFlowServiceTest {
         CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
 
         String id = carFlow.getId();
-        try {
-            carFlowService.deleteCarFlowById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        carFlowService.deleteCarFlowById(id);
 
-        Exception exception = assertThrows(Exception.class, () -> carFlowService.getCarFlowById(id));
-
+        assertNull(carFlowService.getCarFlowById(id));
         assertEquals(0, carFlowService.getCarFlowRepository().count());
-        assertEquals("Cannot get carFlow with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -119,13 +106,11 @@ class CarFlowServiceTest {
         int flow = 7;
         String timeIntervalId = "timeIntervalId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
+        carFlowService.addCarFlow(flow, timeIntervalId);
         String id = "";
 
-        Exception exception = assertThrows(Exception.class, () -> carFlowService.deleteCarFlowById(id));
-
+        assertNull(carFlowService.deleteCarFlowById(id));
         assertEquals(1, carFlowService.getCarFlowRepository().count());
-        assertEquals("Cannot delete carFlow with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -139,13 +124,8 @@ class CarFlowServiceTest {
         int flowUpdated = 13;
         String timeIntervalIdUpdated = "updt";
 
-        CarFlow updated = null;
-        try {
-            carFlowService.updateCarFlow(id, flowUpdated, timeIntervalIdUpdated);
-            updated = carFlowService.getCarFlowById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        carFlowService.updateCarFlow(id, flowUpdated, timeIntervalIdUpdated);
+        CarFlow updated = carFlowService.getCarFlowById(id);
 
         assertEquals(1, carFlowService.getCarFlowRepository().count());
         assertNotNull(updated);
@@ -158,18 +138,14 @@ class CarFlowServiceTest {
         int flow = 7;
         String timeIntervalId = "timeIntervalId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
+        carFlowService.addCarFlow(flow, timeIntervalId);
 
         String id = "";
         int flowUpdated = 13;
         String timeIntervalIdUpdated = "updt";
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            carFlowService.updateCarFlow(id, flowUpdated, timeIntervalIdUpdated);
-            carFlowService.deleteCarFlowById(id);
-        });
-
+        assertNull(carFlowService.updateCarFlow(id, flowUpdated, timeIntervalIdUpdated));
+        assertNull(carFlowService.deleteCarFlowById(id));
         assertEquals(1, carFlowService.getCarFlowRepository().count());
-        assertEquals("Cannot update carFlow with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }

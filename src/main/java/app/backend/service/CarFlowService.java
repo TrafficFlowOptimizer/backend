@@ -17,35 +17,38 @@ public class CarFlowService {
         this.carFlowRepository = carFlowRepository;
     }
 
-    public CarFlow getCarFlowById(String id) throws Exception {
-        Optional<CarFlow> carFlow = carFlowRepository.findById(id);
-        if (carFlow.isEmpty()){
-            throw new Exception("Cannot get carFlow with id: " + id + " because it does not exist.");
-        }
-
-        return carFlow.get();
+    public CarFlow getCarFlowById(String id) {
+        return carFlowRepository
+                .findById(id)
+                .orElse(null);
     }
 
-    public CarFlow addCarFlow(double carFlow, String timeIntervalId){
-        return carFlowRepository.insert(new CarFlow(carFlow, timeIntervalId));
+    public CarFlow addCarFlow(double carFlow, String timeIntervalId) {
+        return carFlowRepository.insert(
+                new CarFlow(
+                        carFlow,
+                        timeIntervalId
+                )
+        );
     }
 
-    public CarFlow deleteCarFlowById(String id) throws Exception {
+    public CarFlow deleteCarFlowById(String id) {
         Optional<CarFlow> carFlow = carFlowRepository.findById(id);
         if (carFlow.isEmpty()) {
-            throw new Exception("Cannot delete carFlow with id: " + id + " because it does not exist.");
+            return null;
         }
+
         carFlowRepository.deleteById(id);
         return carFlow.get();
     }
 
-    public CarFlow updateCarFlow(String id, int carFlowPm, String timeIntervalId) throws Exception {
+    public CarFlow updateCarFlow(String id, int carFlowPm, String timeIntervalId) {
         Optional<CarFlow> carFlow = carFlowRepository.findById(id);
         if (carFlow.isEmpty()){
-            throw new Exception("Cannot update carFlow with id: " + id + " because it does not exist.");
+            return null;
         }
-        CarFlow carFlowToUpdate = carFlow.get();
 
+        CarFlow carFlowToUpdate = carFlow.get();
         carFlowToUpdate.setCarFlow(carFlowPm);
         carFlowToUpdate.setTimeIntervalId(timeIntervalId);
 

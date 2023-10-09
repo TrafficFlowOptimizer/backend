@@ -18,35 +18,57 @@ public class ConnectionService {
         this.connectionRepository = connectionRepository;
     }
 
-    public Connection getConnectionById(String id) throws Exception {
-        Optional<Connection> connection = connectionRepository.findById(id);
-        if (connection.isEmpty()){
-            throw new Exception("Cannot get connection with id: " + id + " because it does not exist.");
-        }
-
-        return connection.get();
+    public Connection getConnectionById(String id) {
+        return connectionRepository
+                .findById(id)
+                .orElse(null);
     }
 
-    public Connection addConnection(int index, String name, List<String> trafficLightIDs, String sourceId, String targetId, List<String> carFlowIDs){
-        return connectionRepository.insert(new Connection(index, name, trafficLightIDs, sourceId, targetId, carFlowIDs));
+    public Connection addConnection(
+            int index,
+            String name,
+            List<String> trafficLightIDs,
+            String sourceId,
+            String targetId,
+            List<String> carFlowIDs
+    ) {
+        return connectionRepository.insert(
+                new Connection(
+                        index,
+                        name,
+                        trafficLightIDs,
+                        sourceId,
+                        targetId,
+                        carFlowIDs
+                )
+        );
     }
 
-    public Connection deleteConnectionById(String id) throws Exception {
+    public Connection deleteConnectionById(String id) {
         Optional<Connection> connection = connectionRepository.findById(id);
         if (connection.isEmpty()) {
-            throw new Exception("Cannot delete connection with id: " + id + " because it does not exist.");
+            return null;
         }
+
         connectionRepository.deleteById(id);
         return connection.get();
     }
 
-    public Connection updateConnection(String id, int index, String name, List<String> trafficLightIDs, String sourceId, String targetId, List<String> carFlowIDs) throws Exception {
+    public Connection updateConnection(
+            String id,
+            int index,
+            String name,
+            List<String> trafficLightIDs,
+            String sourceId,
+            String targetId,
+            List<String> carFlowIDs
+    ) {
         Optional<Connection> connection = connectionRepository.findById(id);
         if (connection.isEmpty()){
-            throw new Exception("Cannot update connection with id: " + id + " because it does not exist.");
+            return null;
         }
-        Connection connectionToUpdate = connection.get();
 
+        Connection connectionToUpdate = connection.get();
         connectionToUpdate.setIndex(index);
         connectionToUpdate.setName(name);
         connectionToUpdate.setTrafficLightIds(trafficLightIDs);

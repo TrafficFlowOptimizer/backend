@@ -212,14 +212,9 @@ public class CrossroadsUtils {
             List<String> collisions = crossroad.getCollisionIds();
             Map<Boolean, List<String>> collisionsDivided = collisions
                     .stream()
-                    .collect(Collectors.partitioningBy(collisionId -> {
-                        try {
-                            return collisionService.getCollisionById(collisionId).getType().equals(CollisionType.LIGHT);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        return false;
-                    }));
+                    .collect(Collectors.partitioningBy(collisionId ->
+                            collisionService.getCollisionById(collisionId).getType().equals(CollisionType.LIGHT)
+                    ));
 
             List<String> lightCollisions = collisionsDivided.get(true);
             List<JSONArray> lightsLightCollisions = mapCollisions(lightCollisions);

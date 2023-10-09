@@ -58,10 +58,8 @@ class ConnectionServiceTest {
     @Test
     public void getConnectionById_improperConnection_connectionNotFound() {
         String id = "";
-        Exception exception = assertThrows(Exception.class, () -> connectionService.getConnectionById(id));
-
+        assertNull(connectionService.getConnectionById(id));
         assertEquals(0, connectionService.getConnectionRepository().count());
-        assertEquals("Cannot get connection with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -80,12 +78,7 @@ class ConnectionServiceTest {
         Connection connection = connectionService.addConnection(index, name, trafficLightIDs, sourceId, targetId, carFlowIDs);
         connectionService.addConnection(1, "a", new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
 
-        Connection found = null;
-        try {
-            found = connectionService.getConnectionById(connection.getId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Connection found = connectionService.getConnectionById(connection.getId());
 
         assertEquals(2, connectionService.getConnectionRepository().count());
         assertNotNull(found);
@@ -139,16 +132,10 @@ class ConnectionServiceTest {
         connectionService.addConnection(1, "a", new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
 
         String id = connection.getId();
-        try {
-            connectionService.deleteConnectionById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        connectionService.deleteConnectionById(id);
 
-        Exception exception = assertThrows(Exception.class, () -> connectionService.getConnectionById(id));
-
+        assertNull(connectionService.getConnectionById(id));
         assertEquals(1, connectionService.getConnectionRepository().count());
-        assertEquals("Cannot get connection with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -164,14 +151,12 @@ class ConnectionServiceTest {
         carFlowIDs.add("dfg");
         carFlowIDs.add("gfd");
 
-        Connection connection = connectionService.addConnection(index, name, trafficLightIDs, sourceId, targetId, carFlowIDs);
+        connectionService.addConnection(index, name, trafficLightIDs, sourceId, targetId, carFlowIDs);
         connectionService.addConnection(1, "a", new ArrayList<>(), "Notdoe", "sdf", new ArrayList<>());
+
         String id = "";
-
-        Exception exception = assertThrows(Exception.class, () -> connectionService.deleteConnectionById(id));
-
+        assertNull(connectionService.deleteConnectionById(id));
         assertEquals(2, connectionService.getConnectionRepository().count());
-        assertEquals("Cannot delete connection with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -204,13 +189,8 @@ class ConnectionServiceTest {
         carFlowIDsUpdated.add("gfd");
         carFlowIDsUpdated.add("gfd");
 
-        Connection updated = null;
-        try {
-            connectionService.updateConnection(id, indexUpdated, nameUpdated, trafficLightIDsUpdated, sourceIdUpdated, targetIdUpdated, carFlowIDsUpdated);
-            updated = connectionService.getConnectionById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        connectionService.updateConnection(id, indexUpdated, nameUpdated, trafficLightIDsUpdated, sourceIdUpdated, targetIdUpdated, carFlowIDsUpdated);
+        Connection updated = connectionService.getConnectionById(id);
 
         assertEquals(2, connectionService.getConnectionRepository().count());
         assertNotNull(updated);
@@ -251,12 +231,8 @@ class ConnectionServiceTest {
         carFlowIDsUpdated.add("gfd");
         carFlowIDsUpdated.add("gfd");
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            connectionService.updateConnection(id, indexUpdated, nameUpdated, trafficLightIDsUpdated, sourceIdUpdated, targetIdUpdated, carFlowIDsUpdated);
-            connectionService.deleteConnectionById(id);
-        });
-
+        assertNull(connectionService.updateConnection(id, indexUpdated, nameUpdated, trafficLightIDsUpdated, sourceIdUpdated, targetIdUpdated, carFlowIDsUpdated));
+        assertNull(connectionService.deleteConnectionById(id));
         assertEquals(1, connectionService.getConnectionRepository().count());
-        assertEquals("Cannot update connection with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }
