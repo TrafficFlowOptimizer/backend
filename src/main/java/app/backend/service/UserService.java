@@ -16,42 +16,48 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-    public User getUserById(String id) throws Exception {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()){
-            throw new Exception("Cannot get user with id: " + id + " because it does not exist.");
-        }
 
-        return user.get();
+    public User getUserById(String id) {
+        return userRepository
+                .findById(id)
+                .orElse(null);
     }
 
-    public User getUserByNickname(String nickname) throws Exception {
-        Optional<User> user = userRepository.findByNickname(nickname);
-        if (user.isEmpty()){
-            throw new Exception("Cannot get user with nickname: " + nickname + " because it does not exist.");
-        }
-
-        return user.get();
+    public User getUserByNickname(String nickname) {
+        return userRepository
+                .findByNickname(nickname)
+                .orElse(null);
     }
 
-    public User addUser(String firstName, String lastName, String nickname, String email, String password){
-        return userRepository.insert(new User(firstName, lastName, nickname, email, password));
+    public User addUser(String firstName, String lastName, String nickname, String email, String password) {
+        return userRepository.insert(
+                new User(
+                        firstName,
+                        lastName,
+                        nickname,
+                        email,
+                        password
+                )
+        );
     }
 
-    public User deleteUserById(String id) throws Exception {
+    public User deleteUserById(String id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) {
-            throw new Exception("Cannot delete user with id: " + id + " because it does not exist.");
+            return null;
         }
+
         userRepository.deleteById(id);
         return user.get();
     }
 
-    public User updateUser(String id, String firstName, String lastName, String nickname, String email, String password) throws Exception {
+    public User updateUser(String id, String firstName, String lastName, String nickname, String email, String password) {
         Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()){throw new Exception("Cannot update user with id: " + id + " because it does not exist.");}
-        User userToUpdate = user.get();
+        if (user.isEmpty()) {
+            return null;
+        }
 
+        User userToUpdate = user.get();
         userToUpdate.setFirstName(firstName);
         userToUpdate.setLastName(lastName);
         userToUpdate.setNickname(nickname);

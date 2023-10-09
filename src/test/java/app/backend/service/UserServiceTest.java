@@ -55,10 +55,8 @@ class UserServiceTest {
     @Test
     public void getUserById_improperUser_userNotFound() {
         String id = "";
-        Exception exception = assertThrows(Exception.class, () -> userService.getUserById(id));
-
+        assertNull(userService.getUserById(id));
         assertEquals(0, userService.getUserRepository().count());
-        assertEquals("Cannot get user with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -72,12 +70,7 @@ class UserServiceTest {
         User user = userService.addUser(firstName, lastName, nickname, email, password);
         userService.addUser("Notjohn", "Notdoe", "stillnotJD", "email@email.pl", "password@123");
 
-        User found = null;
-        try {
-            found = userService.getUserById(user.getId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        User found = userService.getUserById(user.getId());
 
         assertEquals(2, userService.getUserRepository().count());
         assertNotNull(found);
@@ -117,16 +110,10 @@ class UserServiceTest {
         User user = userService.addUser(firstName, lastName, nickname, email, password);
         String id = user.getId();
 
-        try {
-            userService.deleteUserById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        userService.deleteUserById(id);
 
-        Exception exception = assertThrows(Exception.class, () -> userService.getUserById(id));
-
+        assertNull(userService.getUserById(id));
         assertEquals(0, userService.getUserRepository().count());
-        assertEquals("Cannot get user with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -140,10 +127,9 @@ class UserServiceTest {
         User user = userService.addUser(firstName, lastName, nickname, email, password);
         String id = "";
 
-        Exception exception = assertThrows(Exception.class, () -> userService.deleteUserById(id));
-
+        assertNull(userService.deleteUserById(id));
+        assertNotNull(userService.getUserById(user.getId()));
         assertEquals(1, userService.getUserRepository().count());
-        assertEquals("Cannot delete user with id: " + id + " because it does not exist.", exception.getMessage());
     }
 
     @Test
@@ -163,13 +149,13 @@ class UserServiceTest {
         String emailUpdated = "j.dup@gmail.com";
         String passwordUpdated = "password@234";
 
-        User updated = null;
         try {
             userService.updateUser(id, firstNameUpdated, lastNameUpdated, nicknameUpdated, emailUpdated, passwordUpdated);
-            updated = userService.getUserById(id);
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        User updated = userService.getUserById(id);
 
         assertEquals(1, userService.getUserRepository().count());
         assertNotNull(updated);
@@ -197,12 +183,9 @@ class UserServiceTest {
         String emailUpdated = "j.dup@gmail.com";
         String passwordUpdated = "password@234";
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            userService.updateUser(id, firstNameUpdated, lastNameUpdated, nicknameUpdated, emailUpdated, passwordUpdated);
-            userService.deleteUserById(id);
-        });
+        assertNull(userService.updateUser(id, firstNameUpdated, lastNameUpdated, nicknameUpdated, emailUpdated, passwordUpdated));
 
+        userService.deleteUserById(id);
         assertEquals(1, userService.getUserRepository().count());
-        assertEquals("Cannot update user with id: " + id + " because it does not exist.", exception.getMessage());
     }
 }
