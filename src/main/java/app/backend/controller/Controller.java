@@ -53,18 +53,20 @@ public class Controller {
         return collisions
                 .stream()
                 .map(collisionId -> {
-                    try {
-                        return new JSONArray(
-                                Arrays.asList(
-                                        collisionService.getCollisionById(collisionId).getTrafficLight1Id(),
-                                        collisionService.getCollisionById(collisionId).getTrafficLight2Id()
-                                )
-                        );
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    Collision collision = collisionService.getCollisionById(collisionId);
+                    if (collision == null) {
+                        System.out.println("WARN: collision not found");
+                        return new JSONArray();
                     }
-                    return new JSONArray();
-                }).toList();
+
+                    return new JSONArray(
+                            Arrays.asList(
+                                    collision.getTrafficLight1Id(),
+                                    collision.getTrafficLight2Id()
+                            )
+                    );
+                })
+                .toList();
     }
 
     @GetMapping(value = "/sample-data")
@@ -199,9 +201,11 @@ public class Controller {
         return collisionsIDs;
     }
 
-    private ArrayList<String> populateConnections(ArrayList<String> lightsIDs,
-                                                  ArrayList<String> carFlowsIDs,
-                                                  ArrayList<String> roadsIDs) {
+    private ArrayList<String> populateConnections(
+            ArrayList<String> lightsIDs,
+            ArrayList<String> carFlowsIDs,
+            ArrayList<String> roadsIDs
+    ) {
         ArrayList<String> collisionsIDs = new ArrayList<>();
 
         for (int i = 0; i < 4; i++) {
@@ -261,8 +265,16 @@ public class Controller {
         String creatorId = "NK";
         CrossroadType type = CrossroadType.PUBLIC;
 
-        Crossroad crossroad = crossroadService.addCrossroad(name, location, creatorId, type, roadsIDs,
-                collisionsIDs, connectionsIDs, lightsIDs);
+        Crossroad crossroad = crossroadService.addCrossroad(
+                name,
+                location,
+                creatorId,
+                type,
+                roadsIDs,
+                collisionsIDs,
+                connectionsIDs,
+                lightsIDs
+        );
 
         crossroadService.getCrossroadById(crossroad.getId());
 

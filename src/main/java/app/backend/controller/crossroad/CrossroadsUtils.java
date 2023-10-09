@@ -11,7 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -20,7 +19,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 public class CrossroadsUtils {

@@ -77,8 +77,8 @@ public class OptimizationService {
         return optimizationToUpdate;
     }
 
-    public List<Optimization> getOptimizationsByCrossroadId(String optimizationId) {
-        Iterable<Optimization> optimizations = optimizationRepository.findAllByCrossroadId(optimizationId);
+    public List<Optimization> getOptimizationsByCrossroadId(String crossroadId) {
+        Iterable<Optimization> optimizations = optimizationRepository.findAllByCrossroadId(crossroadId);
 
         return StreamSupport
                 .stream(optimizations.spliterator(), false)

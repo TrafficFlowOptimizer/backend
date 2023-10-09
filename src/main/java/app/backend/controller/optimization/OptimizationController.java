@@ -24,6 +24,7 @@ public class OptimizationController {
     @GetMapping(value="/{optimizationId}")
     public ResponseEntity<Optimization> getOptimization(@PathVariable String optimizationId) {
         Optimization optimization = optimizationService.getOptimizationById(optimizationId);
+
         if (optimization != null) {
             return ResponseEntity
                     .ok()
@@ -36,12 +37,16 @@ public class OptimizationController {
     }
 
     @GetMapping(value="/{crossroadId}")
-    public List<Optimization> list(@PathVariable String crossroadId) {
+    public ResponseEntity<List<Optimization>> list(@PathVariable String crossroadId) {
         Iterable<Optimization> optimizations =  optimizationService.getOptimizationsByCrossroadId(crossroadId);
+
         List<Optimization> ret = new LinkedList<>();
         for(Optimization optimization : optimizations) {
             ret.add(optimization);
         }
-        return ret;
+
+        return ResponseEntity
+                .ok()
+                .body(ret);
     }
 }

@@ -1,7 +1,6 @@
 package app.backend.controller.crossroad;
 
 import app.backend.document.crossroad.Crossroad;
-import app.backend.document.crossroad.CrossroadType;
 import app.backend.service.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,31 +27,35 @@ public class CrossroadController {
     private final CrossroadsUtils crossroadsUtils;
 
     @Autowired
-    public CrossroadController(CrossroadService crossroadService,
-                               OptimizationService optimizationService,
-                               CrossroadsUtils crossroadsUtils) {
+    public CrossroadController(
+            CrossroadService crossroadService,
+            OptimizationService optimizationService,
+            CrossroadsUtils crossroadsUtils
+    ) {
         this.crossroadService = crossroadService;
         this.optimizationService = optimizationService;
         this.crossroadsUtils = crossroadsUtils;
     }
 
-
     @GetMapping(value = "")
-    public List<Crossroad> getUserCrossroads(@RequestParam(required = false) String userId) {
+    public ResponseEntity<List<Crossroad>> getUserCrossroads(@RequestParam(required = false) String userId) {
         // for now if userId passed then returns PRIVATE for user and PUBLIC, else PUBLIC. In the future using session it will return PRIVATE for user and PUBLIC
         // maybe in the future option to get only privates or publics??
         if(userId != null) {
-            return crossroadService.getCrossroadsByCreatorIdOrPublic(userId);
+            return ResponseEntity
+                    .ok()
+                    .body(crossroadService.getCrossroadsByCreatorIdOrPublic(userId));
         }
         else {
-            return crossroadService.getPublicCrossroads();
+            return ResponseEntity
+                    .ok()
+                    .body(crossroadService.getPublicCrossroads());
         }
     }
 
     @GetMapping(value="/{crossroadId}")
     public ResponseEntity<Crossroad> getCrossroad(@PathVariable String crossroadId) {
         Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
-
         if (crossroad != null) {
             return ResponseEntity
                     .ok()
@@ -65,12 +68,20 @@ public class CrossroadController {
     }
 
     @PostMapping()
-    public String addCrossroad(@RequestBody Crossroad crossroad) {
+    public ResponseEntity<Boolean> addCrossroad(@RequestBody Crossroad crossroad) {
         crossroadService.addCrossroad(
-                crossroad.getName(), crossroad.getLocation(), crossroad.getCreatorId(), crossroad.getType(),
-                crossroad.getRoadIds(), crossroad.getCollisionIds(), crossroad.getConnectionIds(), crossroad.getTrafficLightIds()
+                crossroad.getName(),
+                crossroad.getLocation(),
+                crossroad.getCreatorId(),
+                crossroad.getType(),
+                crossroad.getRoadIds(),
+                crossroad.getCollisionIds(),
+                crossroad.getConnectionIds(),
+                crossroad.getTrafficLightIds()
         );
-        return "ok";
+        return ResponseEntity
+                .ok()
+                .body(true); // TODO: czy użytkownik może dodać 2 skrzyżowania o tej samej nazwie?
     }
 
     @PutMapping()
@@ -98,9 +109,13 @@ public class CrossroadController {
         }
     }
 
-    @GetMapping(value="/{crossroadId}/optimization/{videoId}/{time}",  produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getOptimization(@PathVariable String crossroadId, @PathVariable String videoId, @PathVariable int time) {
-        int serverPort = 9091;
+    @GetMapping(value="/{crossroadId}/optimization/{videoId}/{time}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getOptimization( // TODO: change to JSONObject
+            @PathVariable String crossroadId,
+            @PathVariable String videoId,
+            @PathVariable int time
+    ) {
+        int serverPort = 9091; // TODO: get from variable from environment
         String result = "{}";
         try (Socket socket = new Socket("localhost", serverPort)) {
             JSONObject jsonData = crossroadsUtils.parseJSON(crossroadId, time);
@@ -113,7 +128,9 @@ public class CrossroadController {
 
             String timeIntervalId = crossroadsUtils.getTimeIntervalId(videoId);
             if (timeIntervalId == null) {
-                // TODO: return 404 video not found
+                return ResponseEntity
+                        .status(NOT_FOUND)
+                        .build();
             }
             crossroadsUtils.addOptimizationResultsToDb(crossroadId, timeIntervalId, result);
             throw new RuntimeException(); //TODO: for now
@@ -127,7 +144,9 @@ public class CrossroadController {
         }
         System.out.println(result);
 
-        return result;
+        return ResponseEntity
+                .ok()
+                .body(result);
     }
 
     private List<List<Integer>> convertJSONArrayToArray(String jsonArray){
@@ -144,7 +163,7 @@ public class CrossroadController {
         return ar;
     }
 
-    @GetMapping(value="/{crossroadId}/optimization/{time}",  produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value="/{crossroadId}/optimization/{time}",  produces = MediaType.APPLICATION_JSON_VALUE) // TODO
     public String getOptimizationWithoutVideo(@PathVariable String crossroadId, @PathVariable int time) {
         int serverPort = 9091;
         String result = "{results: \"ERROR\"}";
@@ -174,7 +193,7 @@ public class CrossroadController {
         return result;
     }
 
-    @GetMapping(value="/{crossroadId}/optimization_results",  produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value="/{crossroadId}/optimization_results",  produces = MediaType.APPLICATION_JSON_VALUE) // TODO
     public String getOptimizationResults( @PathVariable String crossroadId, String timeIntervalID){
         try {
             List<List<Integer>> newestResult = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, timeIntervalID).getResults();
