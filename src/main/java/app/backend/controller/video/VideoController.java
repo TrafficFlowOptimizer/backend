@@ -22,6 +22,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static app.backend.controller.video.VideoUtils.DETECTION_RECTANGLES;
+import static app.backend.controller.video.VideoUtils.SKIP_FRAMES;
+
 // https://www.bezkoder.com/spring-boot-upload-file-database/
 
 @RestController
@@ -39,15 +42,23 @@ public class VideoController {
     }
 
     @PostMapping(value="/upload")
-    public ResponseEntity<VideoResponseMessage> upload(@RequestParam("file") MultipartFile video, @RequestParam("crossroadId") String crossroadId, @RequestParam("timeIntervalId") String timeIntervalId) {
+    public ResponseEntity<VideoResponseMessage> upload(@RequestParam("file") MultipartFile video,
+                                                       @RequestParam("crossroadId") String crossroadId,
+                                                       @RequestParam("timeIntervalId") String timeIntervalId,
+                                                       @RequestParam("skipFrames") String skipFrames,
+                                                       @RequestParam("detectionRectangles") String detectionRectangles) {
         String message;
+        Video storedVideo = null;
         try {
-            videoService.store(video, crossroadId, timeIntervalId);
-
+            storedVideo = videoService.store(video, crossroadId, timeIntervalId);
             message = "Uploaded the video successfully: " + video.getOriginalFilename();
+
             return ResponseEntity.status(HttpStatus.OK).body(new VideoResponseMessage(message));
         } catch (Exception e) {
             message = "Could not upload the video: " + video.getOriginalFilename() + "!";
+            if (storedVideo != null) {
+                videoService.deleteVideoById(storedVideo.getId());
+            } // czy potrzebne teraz?
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new VideoResponseMessage(message));
         }
     }
@@ -78,8 +89,10 @@ public class VideoController {
     }
 
     @GetMapping(value="/{id}/analysis")
-    public String analyse(@PathVariable String id) {
-        videoUtils.analyseVideo(id);
+    public String analyse(@PathVariable String id,
+                          @RequestParam String skipFrames,
+                          @RequestParam String detectionRectangles) {
+        videoUtils.analyseVideo(id, skipFrames, detectionRectangles);
 
         return "true";
     }
@@ -110,5 +123,11 @@ public class VideoController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + video.getName() + "\"")
                 .body(video.getData());
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<String> delete(@PathVariable String id){
+        videoService.deleteVideoById(id);
+        return ResponseEntity.ok().body("Video id: " + id + "successfully deleted or was not even there");
     }
 }

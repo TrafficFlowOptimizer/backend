@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -22,9 +22,10 @@ public class VideoService {
         this.videoRepository = videoRepository;
     }
 
-    public void store(MultipartFile file, String crossroadId, String timeIntervalId) throws IOException {
+    public Video store(MultipartFile file, String crossroadId, String timeIntervalId) throws IOException {
         String name = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-        videoRepository.save(new Video(crossroadId, name, file.getContentType(), timeIntervalId, file.getBytes()));
+        return videoRepository.save(new Video(crossroadId, name, file.getContentType(), timeIntervalId, file.getBytes()));
+
     }
 
     public Video getVideo(String id) throws Exception {
@@ -39,4 +40,17 @@ public class VideoService {
     public Stream<Video> getAllVideos() {
         return videoRepository.findAll().stream();
     }
+
+    public void deleteVideoById(String id){
+        videoRepository.deleteById(id);
+    }
+//    private void saveVideoInDirectory(MultipartFile video, String videoId, String videoType) {
+//        try {
+//            OutputStream out = new FileOutputStream(videoPath + "\\" + videoId + "." + videoType);
+//            out.write(video.getBytes());
+//            out.close();
+//        } catch (IOException ex){
+//            System.out.println(ex.getMessage());
+//        }
+//    }
 }
