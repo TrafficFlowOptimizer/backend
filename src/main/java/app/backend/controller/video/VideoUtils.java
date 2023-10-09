@@ -24,6 +24,7 @@ public class VideoUtils {
     public static final String EXTENSION = "extension";
     public static final String SKIP_FRAMES = "skip_frames";
     public static final String DETECTION_RECTANGLES = "detection_rectangles";
+    public static final String TEMP_DIRECTORY_PATH = "temp/";
 
     VideoService videoService;
     @Autowired
@@ -68,8 +69,8 @@ public class VideoUtils {
 
             VideoCapture cap = new VideoCapture();
 
-            String input = "temp/" + videoName;
-            String output = "temp/" + imageName;
+            String input = TEMP_DIRECTORY_PATH + videoName;
+            String output = TEMP_DIRECTORY_PATH + imageName;
 
             cap.open(input);
 
@@ -83,7 +84,7 @@ public class VideoUtils {
             cap.release();
             Imgcodecs.imwrite(output, frame);
 
-            deleteFiles("temp/" + videoName);
+            deleteFiles(TEMP_DIRECTORY_PATH + videoName);
             return output;
         } catch (Exception e) {
             return "";
@@ -91,7 +92,7 @@ public class VideoUtils {
     }
 
     private void createTempVideoFile(byte[] bytes, String name) {
-        try (FileOutputStream stream = new FileOutputStream("temp/" + name)) {
+        try (FileOutputStream stream = new FileOutputStream(TEMP_DIRECTORY_PATH + name)) {
             stream.write(bytes);
         } catch (IOException e) {
             throw new RuntimeException(e);

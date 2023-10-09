@@ -22,9 +22,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static app.backend.controller.video.VideoUtils.DETECTION_RECTANGLES;
-import static app.backend.controller.video.VideoUtils.SKIP_FRAMES;
-
 // https://www.bezkoder.com/spring-boot-upload-file-database/
 
 @RestController

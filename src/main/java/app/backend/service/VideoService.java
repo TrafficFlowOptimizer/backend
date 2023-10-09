@@ -25,7 +25,6 @@ public class VideoService {
     public Video store(MultipartFile file, String crossroadId, String timeIntervalId) throws IOException {
         String name = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         return videoRepository.save(new Video(crossroadId, name, file.getContentType(), timeIntervalId, file.getBytes()));
-
     }
 
     public Video getVideo(String id) throws Exception {
@@ -44,6 +43,8 @@ public class VideoService {
     public void deleteVideoById(String id){
         videoRepository.deleteById(id);
     }
+}
+
 //    private void saveVideoInDirectory(MultipartFile video, String videoId, String videoType) {
 //        try {
 //            OutputStream out = new FileOutputStream(videoPath + "\\" + videoId + "." + videoType);
@@ -53,4 +54,3 @@ public class VideoService {
 //            System.out.println(ex.getMessage());
 //        }
 //    }
-}

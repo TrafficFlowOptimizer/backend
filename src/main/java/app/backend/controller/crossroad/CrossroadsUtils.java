@@ -38,7 +38,8 @@ public class CrossroadsUtils {
                      ConnectionService connectionService,
                      CarFlowService carFlowService,
                      OptimizationService optimizationService,
-                     VideoService videoService) {
+                     VideoService videoService
+    ) {
         this.crossroadService = crossroadService;
         this.roadService = roadService;
         this.collisionService = collisionService;
