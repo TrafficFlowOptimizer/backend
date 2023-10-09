@@ -44,9 +44,7 @@ public class VideoController {
     @PostMapping(value="/upload")
     public ResponseEntity<VideoResponseMessage> upload(@RequestParam("file") MultipartFile video,
                                                        @RequestParam("crossroadId") String crossroadId,
-                                                       @RequestParam("timeIntervalId") String timeIntervalId,
-                                                       @RequestParam("skipFrames") String skipFrames,
-                                                       @RequestParam("detectionRectangles") String detectionRectangles) {
+                                                       @RequestParam("timeIntervalId") String timeIntervalId) {
         String message;
         Video storedVideo = null;
         try {
