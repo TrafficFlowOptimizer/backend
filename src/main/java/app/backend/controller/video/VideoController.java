@@ -46,18 +46,16 @@ public class VideoController {
             storedVideo = videoService.store(video, crossroadId, timeIntervalId);
             message = "Uploaded the video successfully: " + video.getOriginalFilename();
 
-            videoUtils.analyseVideo(storedVideo.getId(), skipFrames, detectionRectangles);
             return ResponseEntity.status(HttpStatus.OK).body(new VideoResponseMessage(message));
         } catch (Exception e) {
             message = "Could not upload the video: " + video.getOriginalFilename() + "!";
             if (storedVideo != null) {
                 videoService.deleteVideoById(storedVideo.getId());
-            }
+            } // czy potrzebne teraz?
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new VideoResponseMessage(message));
         }
     }
 
-    //MW jak dla mnie do usunięcia zostawiam bo nie chce żeby aplikcja wybuchła
     @GetMapping(value="/{id}/analysis")
     public String analyse(@PathVariable String id,
                           @RequestParam String skipFrames,
