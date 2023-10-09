@@ -6,11 +6,13 @@ import org.json.JSONObject;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
-import org.opencv.videoio.Videoio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -70,14 +72,14 @@ public class VideoUtils {
             } else {
                 throw new Exception("video capture closed");
             }
+            cap.release();
+            Imgcodecs.imwrite(output, frame);
 
-            deleteTempFiles(videoName);
-
-            return imageName;
+            deleteFiles("temp/" + videoName);
+            return output;
         } catch (Exception e) {
             return "";
         }
-
     }
 
     private void createTempVideoFile(byte[] bytes, String name) {
@@ -88,12 +90,12 @@ public class VideoUtils {
         }
     }
 
-    public void deleteTempFiles(String... names) {
+    public static void deleteFiles(String... names) {
         for (String name : names) {
-            File f = new File("temp/" + name);
+            File f = new File(name);
 
             if (!f.delete()) {
-                System.out.println("failed to delete file temp/" + name);
+                System.out.println("failed to delete file " + name);
             }
         }
     }
