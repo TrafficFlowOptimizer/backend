@@ -5,13 +5,20 @@ import app.backend.response.VideoResponseFile;
 import app.backend.response.VideoResponseMessage;
 import app.backend.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,6 +63,31 @@ public class VideoController {
         }
     }
 
+    @GetMapping(value="/{id}/sample")
+    public ResponseEntity<InputStreamResource> sample(@PathVariable String id) {
+        ResponseEntity<InputStreamResource> response;
+
+        String name = videoUtils.getSampleFrame(id);
+
+        if (name.length() == 0) {
+            response = ResponseEntity.unprocessableEntity().build();
+        } else {
+            InputStream in;
+            try {
+                Path img = Paths.get(name);
+                in = Files.newInputStream(img, StandardOpenOption.DELETE_ON_CLOSE);
+                response = ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(new InputStreamResource(in));
+            } catch (IOException e) {
+                response = ResponseEntity.unprocessableEntity().build();
+            }
+        }
+
+        VideoUtils.deleteFiles(name);
+        return response;
+    }
+
     @GetMapping(value="/{id}/analysis")
     public String analyse(@PathVariable String id,
                           @RequestParam String skipFrames,
@@ -98,6 +130,4 @@ public class VideoController {
         videoService.deleteVideoById(id);
         return ResponseEntity.ok().body("Video id: " + id + "successfully deleted or was not even there");
     }
-
-
 }

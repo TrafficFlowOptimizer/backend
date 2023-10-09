@@ -34,5 +34,4 @@ public class AuthController {
         userService.addUser(user.getFirstName(), user.getLastName(), user.getNickname(), user.getEmail(), user.getPassword());
         return "true";
     }
-
 }

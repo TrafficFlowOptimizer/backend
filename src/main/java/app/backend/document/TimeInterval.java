@@ -12,7 +12,6 @@ public class TimeInterval {
     @Id
     private String id;
 
-    // TODO: is LocalTime the right type??
     private LocalTime startTime;
 
     private LocalTime endTime;

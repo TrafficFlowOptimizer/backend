@@ -1,14 +1,22 @@
 package app.backend.controller.video;
 
+import app.backend.entity.Video;
 import app.backend.service.VideoService;
 import org.json.JSONObject;
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.videoio.VideoCapture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 @Component
 public class VideoUtils {
@@ -46,5 +54,57 @@ public class VideoUtils {
             System.out.println(new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8)); // return value
             connection.disconnect();
         } catch (Exception e) {throw new RuntimeException(e);}
+    }
+
+    public String getSampleFrame(String videoId) {
+        try {
+            Video vid = videoService.getVideo(videoId);
+
+            String uuid = UUID.randomUUID().toString();
+            String videoName = uuid + vid.getName();
+            String imageName = uuid + "img.jpg";
+
+            createTempVideoFile(vid.getData(), videoName);
+
+            VideoCapture cap = new VideoCapture();
+
+            String input = "temp/" + videoName;
+            String output = "temp/" + imageName;
+
+            cap.open(input);
+
+            Mat frame = new Mat();
+
+            if (cap.isOpened()) {
+                cap.read(frame);
+            } else {
+                throw new Exception("video capture closed");
+            }
+            cap.release();
+            Imgcodecs.imwrite(output, frame);
+
+            deleteFiles("temp/" + videoName);
+            return output;
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private void createTempVideoFile(byte[] bytes, String name) {
+        try (FileOutputStream stream = new FileOutputStream("temp/" + name)) {
+            stream.write(bytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void deleteFiles(String... names) {
+        for (String name : names) {
+            File f = new File(name);
+
+            if (!f.delete()) {
+                System.out.println("failed to delete file " + name);
+            }
+        }
     }
 }
