@@ -1,6 +1,7 @@
 package app.backend.controller.video;
 
 import app.backend.entity.Video;
+import app.backend.request.DetectionRectangle;
 import app.backend.service.VideoService;
 import org.json.JSONObject;
 import org.opencv.core.Mat;
@@ -22,45 +23,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.UUID;
-import java.util.Vector;
 
 import static org.springframework.http.HttpStatus.*;
-
-class DetectionRectangle {
-    private String id;
-    private Vector<Integer> lowerLeft;
-    private Vector<Integer> upperRight;
-
-    public DetectionRectangle(String id, Vector<Integer> lowerLeft, Vector<Integer> upperRight) {
-        this.id = id;
-        this.lowerLeft = lowerLeft;
-        this.upperRight = upperRight;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Vector<Integer> getLowerLeft() {
-        return lowerLeft;
-    }
-
-    public void setLowerLeft(Vector<Integer> lowerLeft) {
-        this.lowerLeft = lowerLeft;
-    }
-
-    public Vector<Integer> getUpperRight() {
-        return upperRight;
-    }
-
-    public void setUpperRight(Vector<Integer> upperRight) {
-        this.upperRight = upperRight;
-    }
-}
 
 @Component
 public class VideoUtils {

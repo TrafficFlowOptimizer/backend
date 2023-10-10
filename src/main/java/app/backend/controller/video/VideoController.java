@@ -1,6 +1,7 @@
 package app.backend.controller.video;
 
 import app.backend.entity.Video;
+import app.backend.request.DetectionRectangle;
 import app.backend.response.VideoResponseFile;
 import app.backend.response.VideoResponseMessage;
 import app.backend.service.VideoService;
