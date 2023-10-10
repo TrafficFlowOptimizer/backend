@@ -60,8 +60,8 @@ public class VideoController {
     @GetMapping(value="/{id}/analysis")
     public ResponseEntity<String> analyse(
             @PathVariable String id,
-            @RequestParam String skipFrames,
-            @RequestParam String detectionRectangles
+            @RequestParam int skipFrames,
+            @RequestParam List<DetectionRectangle> detectionRectangles
     ) {
         return videoUtils.analyseVideo(id, skipFrames, detectionRectangles);
     }
