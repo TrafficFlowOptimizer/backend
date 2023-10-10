@@ -42,28 +42,15 @@ public class VideoUtils {
     }
 
     public ResponseEntity<String> analyseVideo(String videoId, String skipFrames, String detectionRectangles) {
-        URL url; // TODO: get from variable from environment
-        try {
-            url = new URL("http://localhost:8081/analysis"); // TODO: get from variable from environment
-        } catch (MalformedURLException e) {
-            return ResponseEntity
-                    .status(INTERNAL_SERVER_ERROR)
-                    .build();
-        }
         HttpURLConnection connection;
         try {
+            URL url = new URL("http://localhost:8081/analysis"); // TODO: get from variable from environment
             connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
         } catch (IOException e) {
             return ResponseEntity
                     .status(INTERNAL_SERVER_ERROR)
                     .build();
-        }
-        try {
-            connection.setRequestMethod("POST");
-        } catch (ProtocolException e) {
-            return ResponseEntity
-                    .status(INTERNAL_SERVER_ERROR)
-                    .build(); // won't happen
         }
         connection.setDoOutput(true);
         connection.setRequestProperty("Content-Type","application/json");
@@ -88,24 +75,10 @@ public class VideoUtils {
         OutputStream stream;
         try {
             stream = connection.getOutputStream();
-        } catch (IOException e) {
-            return ResponseEntity
-                    .status(INTERNAL_SERVER_ERROR)
-                    .build();
-        }
-        try {
             stream.write(out);
-        } catch (IOException e) {
-            return ResponseEntity
-                    .status(INTERNAL_SERVER_ERROR)
-                    .build();
-        }
 
-        int responseCode;
-        String responseValue;
-        try {
-            responseCode = connection.getResponseCode();
-            responseValue = new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            int responseCode = connection.getResponseCode();
+            String responseValue = new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             connection.disconnect();
 
             System.out.println("INFO:\n" + responseCode + " " + responseValue);
@@ -179,7 +152,7 @@ public class VideoUtils {
         }
     }
 
-    public static void deleteFiles(String... names) {
+    private static void deleteFiles(String... names) {
         for (String name : names) {
             File f = new File(name);
 
