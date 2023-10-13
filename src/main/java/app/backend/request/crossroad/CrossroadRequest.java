@@ -7,6 +7,7 @@ import java.util.List;
 public class CrossroadRequest {
     private String name;
     private String location;
+    private String creatorId;
     private CrossroadType type;
     private List<Integer> roadIds;
     private List<Integer> collisionIds;
@@ -16,6 +17,7 @@ public class CrossroadRequest {
     public CrossroadRequest(
             String name,
             String location,
+            String creatorId,
             CrossroadType type,
             List<Integer> roadIds,
             List<Integer> collisionIds,
@@ -24,6 +26,7 @@ public class CrossroadRequest {
     ) {
         this.name = name;
         this.location = location;
+        this.creatorId = creatorId;
         this.type = type;
         this.roadIds = roadIds;
         this.collisionIds = collisionIds;
@@ -45,6 +48,14 @@ public class CrossroadRequest {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
     }
 
     public CrossroadType getType() {

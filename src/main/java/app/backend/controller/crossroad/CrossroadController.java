@@ -33,6 +33,7 @@ public class CrossroadController {
     private final CollisionService collisionService;
     private final ConnectionService connectionService;
     private final TrafficLightService trafficLightService;
+    private final UserService userService;
     private final OptimizationService optimizationService;
     private final CrossroadsUtils crossroadsUtils;
 
@@ -43,6 +44,7 @@ public class CrossroadController {
             CollisionService collisionService,
             ConnectionService connectionService,
             TrafficLightService trafficLightService,
+            UserService userService,
             OptimizationService optimizationService,
             CrossroadsUtils crossroadsUtils
     ) {
@@ -51,6 +53,7 @@ public class CrossroadController {
         this.collisionService = collisionService;
         this.connectionService = connectionService;
         this.trafficLightService = trafficLightService;
+        this.userService = userService;
         this.optimizationService = optimizationService;
         this.crossroadsUtils = crossroadsUtils;
     }
@@ -137,7 +140,7 @@ public class CrossroadController {
                         connectionRequest.getName(),
                         trafficLightsIds
                                 .stream()
-                                .filter( trafficLightId -> connectionRequest.getTrafficLightIds().contains(trafficLightService.getTrafficLightById(trafficLightId).getIndex()))
+                                .filter( trafficLightId -> connectionRequest.getTrafficLightIds() != null && connectionRequest.getTrafficLightIds().contains(trafficLightService.getTrafficLightById(trafficLightId).getIndex()))
                                 .collect(Collectors.toList()),
                         roadIds.stream()
                                 .filter( roadId -> roadService.getRoadById(roadId).getIndex() == connectionRequest.getSourceId())
@@ -154,7 +157,7 @@ public class CrossroadController {
         crossroadService.addCrossroad(
                 crossroadDescription.getCrossroad().getName(),
                 crossroadDescription.getCrossroad().getLocation(),
-                crossroadDescription.getNickname(),
+                crossroadDescription.getCrossroad().getCreatorId(),
                 crossroadDescription.getCrossroad().getType(),
                 roadIds,
                 collisionIds,
