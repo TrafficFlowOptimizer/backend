@@ -85,7 +85,7 @@ public class CrossroadsUtils {
         );
     }
 
-    public String parseOutput(List<List<Integer>> newestResult, List<List<Integer>> secondNewestResult, @PathVariable String crossroadId) throws Exception {
+    public String parseOutput(List<List<Integer>> newestResult, List<List<Integer>> secondNewestResult, @PathVariable String crossroadId) {
         Map<Integer, List<Integer>> resultsMap = new HashMap<>();
         for(int i=0; i<newestResult.size(); i++){
             resultsMap.put(i+1, newestResult.get(i));
