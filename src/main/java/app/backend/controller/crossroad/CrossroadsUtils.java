@@ -192,12 +192,11 @@ public class CrossroadsUtils {
         return count;
     }
 
-    public JSONObject parseJSON(@PathVariable String crossroadId, @PathVariable int time) {
+    public JSONObject parseJSON(String crossroadId, int time) {
         JSONObject jsonBase = new JSONObject();
         jsonBase.put("time", time);
 
         JSONObject json = new JSONObject();
-
         try {
             Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
 
@@ -206,10 +205,11 @@ public class CrossroadsUtils {
             json.put("number_of_roads", roads.size());
 
 //  -----------------------------  collisions  -----------------------------
+            // TODO: UPDATE DO ZGODNOŚCI Z NOWĄ WERSJĄ DB
             List<String> collisions = crossroad.getCollisionIds();
             Map<Boolean, List<String>> collisionsDivided = collisions
                     .stream()
-                    .collect(Collectors.partitioningBy(collisionId ->
+                    .collect(Collectors.partitioningBy( collisionId ->
                             collisionService.getCollisionById(collisionId).getBothCanBeOn()
                     ));
 
