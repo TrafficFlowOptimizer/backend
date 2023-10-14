@@ -26,16 +26,16 @@ public class CollisionService {
     public Collision addCollision(
             int index,
             String name,
-            String trafficLight1Id,
-            String trafficLight2Id,
+            String connection1Id,
+            String connection2Id,
             boolean bothCanBeOn
     ){
         return collisionRepository.insert(
                 new Collision(
                         index,
                         name,
-                        trafficLight1Id,
-                        trafficLight2Id,
+                        connection1Id,
+                        connection2Id,
                         bothCanBeOn
                 )
         );
@@ -55,8 +55,8 @@ public class CollisionService {
             String id,
             int index,
             String name,
-            String trafficLight1Id,
-            String trafficLight2Id,
+            String connection1Id,
+            String connection2Id,
             boolean bothCanBeOn
     ) {
         Optional<Collision> collision = collisionRepository.findById(id);
@@ -67,8 +67,8 @@ public class CollisionService {
         Collision collisionToUpdate = collision.get();
         collisionToUpdate.setIndex(index);
         collisionToUpdate.setName(name);
-        collisionToUpdate.setTrafficLight1Id(trafficLight1Id);
-        collisionToUpdate.setTrafficLight2Id(trafficLight2Id);
+        collisionToUpdate.setConnection1Id(connection1Id);
+        collisionToUpdate.setConnection2Id(connection2Id);
         collisionToUpdate.setBothCanBeOn(bothCanBeOn);
 
         collisionRepository.save(collisionToUpdate);

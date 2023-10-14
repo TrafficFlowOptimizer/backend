@@ -297,8 +297,8 @@ public class CrossroadsUtils {
                     try {
                         return new JSONArray(
                                 Arrays.asList(
-                                        trafficLightService.getTrafficLightById(collisionService.getCollisionById(collisionId).getTrafficLight1Id()).getIndex(),
-                                        trafficLightService.getTrafficLightById(collisionService.getCollisionById(collisionId).getTrafficLight2Id()).getIndex()
+                                        trafficLightService.getTrafficLightById(collisionService.getCollisionById(collisionId).getConnection1Id()).getIndex(),
+                                        trafficLightService.getTrafficLightById(collisionService.getCollisionById(collisionId).getConnection2Id()).getIndex()
                                 )
                         );
                     } catch (Exception e) {

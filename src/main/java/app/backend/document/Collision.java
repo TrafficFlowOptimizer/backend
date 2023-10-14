@@ -18,18 +18,18 @@ public class Collision {
     private String name;
 
     @NotBlank
-    private String trafficLight1Id;
+    private String connection1Id;
 
     @NotBlank
-    private String trafficLight2Id;
+    private String connection2Id;
 
     private boolean bothCanBeOn;
 
-    public Collision(int index, String name, String trafficLight1Id, String trafficLight2Id, boolean bothCanBeOn) {
+    public Collision(int index, String name, String connection1Id, String connection2Id, boolean bothCanBeOn) {
         this.index = index;
         this.name = name;
-        this.trafficLight1Id = trafficLight1Id;
-        this.trafficLight2Id = trafficLight2Id;
+        this.connection1Id = connection1Id;
+        this.connection2Id = connection2Id;
         this.bothCanBeOn = bothCanBeOn;
     }
 
@@ -57,20 +57,20 @@ public class Collision {
         this.name = name;
     }
 
-    public String getTrafficLight1Id() {
-        return trafficLight1Id;
+    public String getConnection1Id() {
+        return connection1Id;
     }
 
-    public void setTrafficLight1Id(String trafficLight1Id) {
-        this.trafficLight1Id = trafficLight1Id;
+    public void setConnection1Id(String connection1Id) {
+        this.connection1Id = connection1Id;
     }
 
-    public String getTrafficLight2Id() {
-        return trafficLight2Id;
+    public String getConnection2Id() {
+        return connection2Id;
     }
 
-    public void setTrafficLight2Id(String trafficLight2Id) {
-        this.trafficLight2Id = trafficLight2Id;
+    public void setConnection2Id(String connection2Id) {
+        this.connection2Id = connection2Id;
     }
 
     public boolean getBothCanBeOn() {

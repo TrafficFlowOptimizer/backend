@@ -119,12 +119,12 @@ public class CrossroadController {
                         collisionRequest.getName(),
                         trafficLightsIds
                                 .stream()
-                                .filter( trafficLightId -> trafficLightService.getTrafficLightById(trafficLightId).getIndex() == collisionRequest.getTrafficLight1Id())
+                                .filter( trafficLightId -> trafficLightService.getTrafficLightById(trafficLightId).getIndex() == collisionRequest.getConnection1Id())
                                 .findAny()
                                 .orElseThrow(),
                         trafficLightsIds
                                 .stream()
-                                .filter( trafficLightId -> trafficLightService.getTrafficLightById(trafficLightId).getIndex() == collisionRequest.getTrafficLight2Id())
+                                .filter( trafficLightId -> trafficLightService.getTrafficLightById(trafficLightId).getIndex() == collisionRequest.getConnection2Id())
                                 .findAny()
                                 .orElseThrow(),
                         collisionRequest.getBothCanBeOn()

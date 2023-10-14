@@ -63,11 +63,11 @@ class CollisionServiceTest {
     public void getCollisionById_properCollision_correctCollision() {
         int index = 0;
         String name = "name";
-        String trafficLight1Id = "abc";
-        String trafficLight2Id = "ced";
+        String connection1Id = "abc";
+        String connection2Id = "ced";
         boolean bothCanBeOn = false;
 
-        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
+        Collision collision = collisionService.addCollision(index, name, connection1Id, connection2Id, bothCanBeOn);
         collisionService.addCollision(1, "nm", "sddas", "dsaadsds", true);
 
         Collision found = collisionService.getCollisionById(collision.getId());
@@ -76,8 +76,8 @@ class CollisionServiceTest {
         assertNotNull(found);
         assertEquals(index, found.getIndex());
         assertEquals(name, found.getName());
-        assertEquals(trafficLight1Id, found.getTrafficLight1Id());
-        assertEquals(trafficLight2Id, found.getTrafficLight2Id());
+        assertEquals(connection1Id, found.getConnection1Id());
+        assertEquals(connection2Id, found.getConnection2Id());
         assertEquals(bothCanBeOn, found.getBothCanBeOn());
     }
 
@@ -85,19 +85,19 @@ class CollisionServiceTest {
     public void addCollision_properCollision_collisionAdded() {
         int index = 0;
         String name = "name";
-        String trafficLight1Id = "abc";
-        String trafficLight2Id = "ced";
+        String connection1Id = "abc";
+        String connection2Id = "ced";
         boolean bothCanBeOn = false;
 
-        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
+        Collision collision = collisionService.addCollision(index, name, connection1Id, connection2Id, bothCanBeOn);
         collisionService.addCollision(1, "nm", "sddas", "dsaadsds", true);
 
         assertEquals(2, collisionService.getCollisionRepository().count());
         assertNotNull(collision);
         assertEquals(index, collision.getIndex());
         assertEquals(name, collision.getName());
-        assertEquals(trafficLight1Id, collision.getTrafficLight1Id());
-        assertEquals(trafficLight2Id, collision.getTrafficLight2Id());
+        assertEquals(connection1Id, collision.getConnection1Id());
+        assertEquals(connection2Id, collision.getConnection2Id());
         assertEquals(bothCanBeOn, collision.getBothCanBeOn());
     }
 
@@ -105,11 +105,11 @@ class CollisionServiceTest {
     public void deleteCollisionById_properCollision_collisionDeleted() {
         int index = 0;
         String name = "name";
-        String trafficLight1Id = "abc";
-        String trafficLight2Id = "ced";
+        String connection1Id = "abc";
+        String connection2Id = "ced";
         boolean bothCanBeOn = false;
 
-        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
+        Collision collision = collisionService.addCollision(index, name, connection1Id, connection2Id, bothCanBeOn);
 
         String id = collision.getId();
         collisionService.deleteCollisionById(id);
@@ -122,11 +122,11 @@ class CollisionServiceTest {
     public void deleteCollisionById_improperCollision_collisionNotFound() {
         int index = 0;
         String name = "name";
-        String trafficLight1Id = "abc";
-        String trafficLight2Id = "ced";
+        String connection1Id = "abc";
+        String connection2Id = "ced";
         boolean bothCanBeOn = false;
 
-        collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
+        collisionService.addCollision(index, name, connection1Id, connection2Id, bothCanBeOn);
         String id = "";
 
         assertNull(collisionService.deleteCollisionById(id));
@@ -137,28 +137,28 @@ class CollisionServiceTest {
     public void updateCollision_properCollision_collisionUpdated() {
         int index = 0;
         String name = "name";
-        String trafficLight1Id = "abc";
-        String trafficLight2Id = "ced";
+        String connection1Id = "abc";
+        String connection2Id = "ced";
         boolean bothCanBeOn = false;
 
-        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
+        Collision collision = collisionService.addCollision(index, name, connection1Id, connection2Id, bothCanBeOn);
 
         String id = collision.getId();
         int indexUpdated = 1;
         String nameUpdated = "updt";
-        String trafficLight1IdUpdated = "dsadasasd";
-        String trafficLight2IdUpdated = "fdsfds";
+        String connection1IdUpdated = "dsadasasd";
+        String connection2IdUpdated = "fdsfds";
         boolean bothCanBeOnUpdated = true;
 
-        collisionService.updateCollision(id, indexUpdated, nameUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, bothCanBeOnUpdated);
+        collisionService.updateCollision(id, indexUpdated, nameUpdated, connection1IdUpdated, connection2IdUpdated, bothCanBeOnUpdated);
         Collision updated = collisionService.getCollisionById(id);
 
         assertEquals(1, collisionService.getCollisionRepository().count());
         assertNotNull(updated);
         assertEquals(indexUpdated, updated.getIndex());
         assertEquals(nameUpdated, updated.getName());
-        assertEquals(trafficLight1IdUpdated, updated.getTrafficLight1Id());
-        assertEquals(trafficLight2IdUpdated, updated.getTrafficLight2Id());
+        assertEquals(connection1IdUpdated, updated.getConnection1Id());
+        assertEquals(connection2IdUpdated, updated.getConnection2Id());
         assertEquals(bothCanBeOnUpdated, updated.getBothCanBeOn());
     }
 
@@ -166,20 +166,20 @@ class CollisionServiceTest {
     public void updateCollision_improperCollision_collisionNotFound() {
         int index = 0;
         String name = "name";
-        String trafficLight1Id = "abc";
-        String trafficLight2Id = "ced";
+        String connection1Id = "abc";
+        String connection2Id = "ced";
         boolean bothCanBeOn = false;
 
-        collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
+        collisionService.addCollision(index, name, connection1Id, connection2Id, bothCanBeOn);
 
         String id = "";
         int indexUpdated = 1;
         String nameUpdated = "updt";
-        String trafficLight1IdUpdated = "dsadasasd";
-        String trafficLight2IdUpdated = "fdsfds";
+        String connection1IdUpdated = "dsadasasd";
+        String connection2IdUpdated = "fdsfds";
         boolean bothCanBeOnUpdated = true;
 
-        assertNull(collisionService.updateCollision(id, indexUpdated, nameUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, bothCanBeOnUpdated));
+        assertNull(collisionService.updateCollision(id, indexUpdated, nameUpdated, connection1IdUpdated, connection2IdUpdated, bothCanBeOnUpdated));
         assertNull(collisionService.deleteCollisionById(id));
         assertEquals(1, collisionService.getCollisionRepository().count());
     }

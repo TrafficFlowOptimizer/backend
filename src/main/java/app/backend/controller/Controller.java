@@ -60,8 +60,8 @@ public class Controller {
 
                     return new JSONArray(
                             Arrays.asList(
-                                    collision.getTrafficLight1Id(),
-                                    collision.getTrafficLight2Id()
+                                    collision.getConnection1Id(),
+                                    collision.getConnection2Id()
                             )
                     );
                 })
@@ -129,12 +129,12 @@ public class Controller {
         return roadsIDs;
     }
 
-    private String addCollision(int index, String name, int light1, int light2, ArrayList<String> lightsType, ArrayList<String> lightsIDs){
+    private String addCollision(int index, String name, int con1, int con2, ArrayList<String> lightsType, ArrayList<String> lightsIDs){
         boolean bothCanBeOn;
-        bothCanBeOn = !Objects.equals(lightsType.get(light1), "heavy") &&
-                !Objects.equals(lightsType.get(light2), "heavy");
-        String trafficLight1Id = lightsIDs.get(light1);
-        String trafficLight2Id = lightsIDs.get(light2);
+        bothCanBeOn = !Objects.equals(lightsType.get(con1), "heavy") &&
+                !Objects.equals(lightsType.get(con2), "heavy");
+        String trafficLight1Id = lightsIDs.get(con1);
+        String trafficLight2Id = lightsIDs.get(con2);
         Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
         return collision.getId();
     }
