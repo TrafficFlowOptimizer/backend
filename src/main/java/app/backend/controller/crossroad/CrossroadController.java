@@ -90,44 +90,25 @@ public class CrossroadController {
 
     @PostMapping() // TODO: try catch nosuchelement
     public ResponseEntity<Boolean> addCrossroad(@RequestBody CrossroadDescription crossroadDescription) {
+
+        List<String> roadIds = crossroadDescription
+                .getRoads()
+                .stream()
+                .map( roadRequest -> roadService.addRoad(
+                                roadRequest.getIndex(),
+                                roadRequest.getName(),
+                                roadRequest.getType(),
+                                roadRequest.getCapacity()
+                        ).getId()
+                )
+                .collect(Collectors.toList());
+
         List<String> trafficLightsIds = crossroadDescription
                 .getTrafficLights()
                 .stream()
                 .map( trafficLightRequest -> trafficLightService.addTrafficLight(
                         trafficLightRequest.getIndex(),
                         trafficLightRequest.getType()
-                ).getId())
-                .collect(Collectors.toList());
-
-        List<String> roadIds = crossroadDescription
-                .getRoads()
-                .stream()
-                .map( roadRequest -> roadService.addRoad(
-                        roadRequest.getIndex(),
-                        roadRequest.getName(),
-                        roadRequest.getType(),
-                        roadRequest.getCapacity()
-                    ).getId()
-                )
-                .collect(Collectors.toList());
-
-        List<String> collisionIds = crossroadDescription
-                .getCollisions()
-                .stream()
-                .map( collisionRequest -> collisionService.addCollision(
-                        collisionRequest.getIndex(),
-                        collisionRequest.getName(),
-                        trafficLightsIds
-                                .stream()
-                                .filter( trafficLightId -> trafficLightService.getTrafficLightById(trafficLightId).getIndex() == collisionRequest.getConnection1Id())
-                                .findAny()
-                                .orElseThrow(),
-                        trafficLightsIds
-                                .stream()
-                                .filter( trafficLightId -> trafficLightService.getTrafficLightById(trafficLightId).getIndex() == collisionRequest.getConnection2Id())
-                                .findAny()
-                                .orElseThrow(),
-                        collisionRequest.getBothCanBeOn()
                 ).getId())
                 .collect(Collectors.toList());
 
@@ -150,6 +131,26 @@ public class CrossroadController {
                                 .findAny()
                                 .orElseThrow(),
                         Collections.emptyList()
+                ).getId())
+                .collect(Collectors.toList());
+
+        List<String> collisionIds = crossroadDescription
+                .getCollisions()
+                .stream()
+                .map( collisionRequest -> collisionService.addCollision(
+                        collisionRequest.getIndex(),
+                        collisionRequest.getName(),
+                        connectionIds
+                                .stream()
+                                .filter( connectionId -> connectionService.getConnectionById(connectionId).getIndex() == collisionRequest.getConnection1Id())
+                                .findAny()
+                                .orElseThrow(),
+                        connectionIds
+                                .stream()
+                                .filter( connectionId -> connectionService.getConnectionById(connectionId).getIndex() == collisionRequest.getConnection2Id())
+                                .findAny()
+                                .orElseThrow(),
+                        collisionRequest.getBothCanBeOn()
                 ).getId())
                 .collect(Collectors.toList());
 
