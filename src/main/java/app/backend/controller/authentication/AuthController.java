@@ -5,18 +5,13 @@ import app.backend.request.UserLogin;
 import app.backend.service.UserService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.Authentication;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
