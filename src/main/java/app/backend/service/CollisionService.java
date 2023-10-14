@@ -1,7 +1,6 @@
 package app.backend.service;
 
-import app.backend.document.collision.Collision;
-import app.backend.document.collision.CollisionType;
+import app.backend.document.Collision;
 import app.backend.repository.CollisionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class CollisionService {
             String name,
             String trafficLight1Id,
             String trafficLight2Id,
-            CollisionType type
+            boolean bothCanBeOn
     ){
         return collisionRepository.insert(
                 new Collision(
@@ -37,7 +36,7 @@ public class CollisionService {
                         name,
                         trafficLight1Id,
                         trafficLight2Id,
-                        type
+                        bothCanBeOn
                 )
         );
     }
@@ -58,7 +57,7 @@ public class CollisionService {
             String name,
             String trafficLight1Id,
             String trafficLight2Id,
-            CollisionType type
+            boolean bothCanBeOn
     ) {
         Optional<Collision> collision = collisionRepository.findById(id);
         if (collision.isEmpty()){
@@ -70,7 +69,7 @@ public class CollisionService {
         collisionToUpdate.setName(name);
         collisionToUpdate.setTrafficLight1Id(trafficLight1Id);
         collisionToUpdate.setTrafficLight2Id(trafficLight2Id);
-        collisionToUpdate.setType(type);
+        collisionToUpdate.setBothCanBeOn(bothCanBeOn);
 
         collisionRepository.save(collisionToUpdate);
 

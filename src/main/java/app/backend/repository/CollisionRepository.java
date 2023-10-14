@@ -1,6 +1,6 @@
 package app.backend.repository;
 
-import app.backend.document.collision.Collision;
+import app.backend.document.Collision;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

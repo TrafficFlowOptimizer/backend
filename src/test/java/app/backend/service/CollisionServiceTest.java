@@ -1,7 +1,6 @@
 package app.backend.service;
 
-import app.backend.document.collision.Collision;
-import app.backend.document.collision.CollisionType;
+import app.backend.document.Collision;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,10 +65,10 @@ class CollisionServiceTest {
         String name = "name";
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
-        CollisionType type = CollisionType.HEAVY;
+        boolean bothCanBeOn = false;
 
-        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
-        collisionService.addCollision(1, "nm", "sddas", "dsaadsds", CollisionType.LIGHT);
+        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
+        collisionService.addCollision(1, "nm", "sddas", "dsaadsds", true);
 
         Collision found = collisionService.getCollisionById(collision.getId());
 
@@ -79,7 +78,7 @@ class CollisionServiceTest {
         assertEquals(name, found.getName());
         assertEquals(trafficLight1Id, found.getTrafficLight1Id());
         assertEquals(trafficLight2Id, found.getTrafficLight2Id());
-        assertEquals(type, found.getType());
+        assertEquals(bothCanBeOn, found.getBothCanBeOn());
     }
 
     @Test
@@ -88,10 +87,10 @@ class CollisionServiceTest {
         String name = "name";
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
-        CollisionType type = CollisionType.HEAVY;
+        boolean bothCanBeOn = false;
 
-        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
-        collisionService.addCollision(1, "nm", "sddas", "dsaadsds", CollisionType.LIGHT);
+        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
+        collisionService.addCollision(1, "nm", "sddas", "dsaadsds", true);
 
         assertEquals(2, collisionService.getCollisionRepository().count());
         assertNotNull(collision);
@@ -99,7 +98,7 @@ class CollisionServiceTest {
         assertEquals(name, collision.getName());
         assertEquals(trafficLight1Id, collision.getTrafficLight1Id());
         assertEquals(trafficLight2Id, collision.getTrafficLight2Id());
-        assertEquals(type, collision.getType());
+        assertEquals(bothCanBeOn, collision.getBothCanBeOn());
     }
 
     @Test
@@ -108,9 +107,9 @@ class CollisionServiceTest {
         String name = "name";
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
-        CollisionType type = CollisionType.HEAVY;
+        boolean bothCanBeOn = false;
 
-        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
+        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
 
         String id = collision.getId();
         collisionService.deleteCollisionById(id);
@@ -125,9 +124,9 @@ class CollisionServiceTest {
         String name = "name";
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
-        CollisionType type = CollisionType.HEAVY;
+        boolean bothCanBeOn = false;
 
-        collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
+        collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
         String id = "";
 
         assertNull(collisionService.deleteCollisionById(id));
@@ -140,18 +139,18 @@ class CollisionServiceTest {
         String name = "name";
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
-        CollisionType type = CollisionType.HEAVY;
+        boolean bothCanBeOn = false;
 
-        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
+        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
 
         String id = collision.getId();
         int indexUpdated = 1;
         String nameUpdated = "updt";
         String trafficLight1IdUpdated = "dsadasasd";
         String trafficLight2IdUpdated = "fdsfds";
-        CollisionType typeUpdated = CollisionType.LIGHT;
+        boolean bothCanBeOnUpdated = true;
 
-        collisionService.updateCollision(id, indexUpdated, nameUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated);
+        collisionService.updateCollision(id, indexUpdated, nameUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, bothCanBeOnUpdated);
         Collision updated = collisionService.getCollisionById(id);
 
         assertEquals(1, collisionService.getCollisionRepository().count());
@@ -160,7 +159,7 @@ class CollisionServiceTest {
         assertEquals(nameUpdated, updated.getName());
         assertEquals(trafficLight1IdUpdated, updated.getTrafficLight1Id());
         assertEquals(trafficLight2IdUpdated, updated.getTrafficLight2Id());
-        assertEquals(typeUpdated, updated.getType());
+        assertEquals(bothCanBeOnUpdated, updated.getBothCanBeOn());
     }
 
     @Test
@@ -169,18 +168,18 @@ class CollisionServiceTest {
         String name = "name";
         String trafficLight1Id = "abc";
         String trafficLight2Id = "ced";
-        CollisionType type = CollisionType.HEAVY;
+        boolean bothCanBeOn = false;
 
-        collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
+        collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
 
         String id = "";
         int indexUpdated = 1;
         String nameUpdated = "updt";
         String trafficLight1IdUpdated = "dsadasasd";
         String trafficLight2IdUpdated = "fdsfds";
-        CollisionType typeUpdated = CollisionType.LIGHT;
+        boolean bothCanBeOnUpdated = true;
 
-        assertNull(collisionService.updateCollision(id, indexUpdated, nameUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, typeUpdated));
+        assertNull(collisionService.updateCollision(id, indexUpdated, nameUpdated, trafficLight1IdUpdated, trafficLight2IdUpdated, bothCanBeOnUpdated));
         assertNull(collisionService.deleteCollisionById(id));
         assertEquals(1, collisionService.getCollisionRepository().count());
     }

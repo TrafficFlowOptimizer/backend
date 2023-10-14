@@ -4,8 +4,7 @@ import app.backend.document.CarFlow;
 import app.backend.document.Connection;
 import app.backend.document.TimeInterval;
 import app.backend.document.light.TrafficLight;
-import app.backend.document.collision.Collision;
-import app.backend.document.collision.CollisionType;
+import app.backend.document.Collision;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.crossroad.CrossroadType;
 import app.backend.document.road.Road;
@@ -83,13 +82,13 @@ public class Controller {
         for (int i = 0; i < numberOfLights; i++) {
             TrafficLight trafficLight;
             if(i%3==0) {
-                trafficLight = trafficLightService.addTrafficLight(i + 1, "name", LEFT);
+                trafficLight = trafficLightService.addTrafficLight(i + 1, LEFT);
             }
             else if(i%3==1) {
-                trafficLight = trafficLightService.addTrafficLight(i + 1, "name", FORWARD);
+                trafficLight = trafficLightService.addTrafficLight(i + 1, FORWARD);
             }
             else{
-                trafficLight = trafficLightService.addTrafficLight(i + 1, "name", ARROW);
+                trafficLight = trafficLightService.addTrafficLight(i + 1, ARROW_LEFT);
             }
             lightsIDs.add(trafficLight.getId());
         }
@@ -131,17 +130,12 @@ public class Controller {
     }
 
     private String addCollision(int index, String name, int light1, int light2, ArrayList<String> lightsType, ArrayList<String> lightsIDs){
-        CollisionType type;
-        if (Objects.equals(lightsType.get(light1), "heavy") ||
-                Objects.equals(lightsType.get(light2), "heavy")) {
-
-            type = CollisionType.HEAVY;
-        } else {
-            type = CollisionType.LIGHT;
-        }
+        boolean bothCanBeOn;
+        bothCanBeOn = !Objects.equals(lightsType.get(light1), "heavy") &&
+                !Objects.equals(lightsType.get(light2), "heavy");
         String trafficLight1Id = lightsIDs.get(light1);
         String trafficLight2Id = lightsIDs.get(light2);
-        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, type);
+        Collision collision = collisionService.addCollision(index, name, trafficLight1Id, trafficLight2Id, bothCanBeOn);
         return collision.getId();
     }
 
@@ -175,18 +169,14 @@ public class Controller {
                             light2 == (light1 + 5) % numberOfLights ||
                             light2 == (light1 + 8) % numberOfLights ||
                             light2 == (light1 + 9) % numberOfLights) {
-                        CollisionType type;
-                        if (Objects.equals(lightsType.get(light1), "heavy") ||
-                                Objects.equals(lightsType.get(light2), "heavy") ||
-                                light2 == (light1 + 3) % numberOfLights ||
-                                light2 == (light1 + 9) % numberOfLights) {
-                            type = CollisionType.HEAVY;
-                        } else {
-                            type = CollisionType.LIGHT;
-                        }
+                        boolean bothCanBeOn;
+                        bothCanBeOn = !Objects.equals(lightsType.get(light1), "heavy") &&
+                                !Objects.equals(lightsType.get(light2), "heavy") &&
+                                light2 != (light1 + 3) % numberOfLights &&
+                                light2 != (light1 + 9) % numberOfLights;
                         String trafficLight1Id = lightsIDs.get(light1);
                         String trafficLight2Id = lightsIDs.get(light2);
-                        Collision collision = collisionService.addCollision(index, "name", trafficLight1Id, trafficLight2Id, type);
+                        Collision collision = collisionService.addCollision(index, "name", trafficLight1Id, trafficLight2Id, bothCanBeOn);
                         collisionsIDs.add(collision.getId());
                     }
                 }

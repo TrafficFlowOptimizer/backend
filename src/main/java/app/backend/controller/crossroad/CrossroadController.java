@@ -95,7 +95,6 @@ public class CrossroadController {
                 .stream()
                 .map( trafficLightRequest -> trafficLightService.addTrafficLight(
                         trafficLightRequest.getIndex(),
-                        trafficLightRequest.getName(),
                         trafficLightRequest.getType()
                 ).getId())
                 .collect(Collectors.toList());
@@ -128,7 +127,7 @@ public class CrossroadController {
                                 .filter( trafficLightId -> trafficLightService.getTrafficLightById(trafficLightId).getIndex() == collisionRequest.getTrafficLight2Id())
                                 .findAny()
                                 .orElseThrow(),
-                        collisionRequest.getType()
+                        collisionRequest.getBothCanBeOn()
                 ).getId())
                 .collect(Collectors.toList());
 
@@ -169,48 +168,6 @@ public class CrossroadController {
                 .ok()
                 .body(true);
     }
-
-//    @PostMapping()
-//    public ResponseEntity<Boolean> addCrossroad(@RequestBody Crossroad crossroad) {
-//        crossroadService.addCrossroad(
-//                crossroad.getName(),
-//                crossroad.getLocation(),
-//                crossroad.getCreatorId(),
-//                crossroad.getType(),
-//                crossroad.getRoadIds(),
-//                crossroad.getCollisionIds(),
-//                crossroad.getConnectionIds(),
-//                crossroad.getTrafficLightIds()
-//        );
-//        return ResponseEntity
-//                .ok()
-//                .body(true); // TODO: czy użytkownik może dodać 2 skrzyżowania o tej samej nazwie?
-//    }
-//
-//    @PutMapping()
-//    public ResponseEntity<Crossroad> updateCrossroad(@RequestBody Crossroad crossroad) {
-//        Crossroad updatedCrossroad = crossroadService.updateCrossroad(
-//                crossroad.getId(),
-//                crossroad.getName(),
-//                crossroad.getLocation(),
-//                crossroad.getCreatorId(),
-//                crossroad.getType(),
-//                crossroad.getRoadIds(),
-//                crossroad.getCollisionIds(),
-//                crossroad.getConnectionIds(),
-//                crossroad.getTrafficLightIds()
-//        );
-//
-//        if (updatedCrossroad != null) {
-//            return ResponseEntity
-//                    .ok()
-//                    .body(updatedCrossroad);
-//        } else {
-//            return ResponseEntity
-//                    .status(NOT_FOUND)
-//                    .build();
-//        }
-//    }
 
     @GetMapping(value="/{crossroadId}/optimization/{videoId}/{time}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getOptimization( // TODO: change to JSONObject

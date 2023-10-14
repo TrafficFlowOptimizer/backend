@@ -24,11 +24,10 @@ public class TrafficLightService {
                 .orElse(null);
     }
 
-    public TrafficLight addTrafficLight(int index, String name, TrafficLightType type){
+    public TrafficLight addTrafficLight(int index, TrafficLightType type){
         return trafficLightRepository.insert(
                 new TrafficLight(
                         index,
-                        name,
                         type
                 )
         );
@@ -44,7 +43,7 @@ public class TrafficLightService {
         return trafficLight.get();
     }
 
-    public TrafficLight updateTrafficLight(String id, int index, String name, TrafficLightType type) {
+    public TrafficLight updateTrafficLight(String id, int index, TrafficLightType type) {
         Optional<TrafficLight> trafficLight = trafficLightRepository.findById(id);
         if (trafficLight.isEmpty()) {
             return null;
@@ -52,7 +51,6 @@ public class TrafficLightService {
 
         TrafficLight trafficLightToUpdate = trafficLight.get();
         trafficLightToUpdate.setIndex(index);
-        trafficLightToUpdate.setName(name);
         trafficLightToUpdate.setType(type);
 
         trafficLightRepository.save(trafficLightToUpdate);

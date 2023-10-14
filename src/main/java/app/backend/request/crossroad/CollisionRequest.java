@@ -1,20 +1,18 @@
 package app.backend.request.crossroad;
 
-import app.backend.document.collision.CollisionType;
-
 public class CollisionRequest {
     private int index;
     private String name;
     private int trafficLight1Id;
     private int trafficLight2Id;
-    private CollisionType type;
+    private boolean bothCanBeOn;
 
-    public CollisionRequest(int index, String name, int trafficLight1Id, int trafficLight2Id, CollisionType type) {
+    public CollisionRequest(int index, String name, int trafficLight1Id, int trafficLight2Id, boolean bothCanBeOn) {
         this.index = index;
         this.name = name;
         this.trafficLight1Id = trafficLight1Id;
         this.trafficLight2Id = trafficLight2Id;
-        this.type = type;
+        this.bothCanBeOn = bothCanBeOn;
     }
 
     public int getIndex() {
@@ -49,11 +47,11 @@ public class CollisionRequest {
         this.trafficLight2Id = trafficLight2Id;
     }
 
-    public CollisionType getType() {
-        return type;
+    public boolean getBothCanBeOn() {
+        return bothCanBeOn;
     }
 
-    public void setType(CollisionType type) {
-        this.type = type;
+    public void setBothCanBeOn(boolean bothCanBeOn) {
+        this.bothCanBeOn = bothCanBeOn;
     }
 }

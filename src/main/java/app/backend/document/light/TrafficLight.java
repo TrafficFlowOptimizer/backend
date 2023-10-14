@@ -14,15 +14,11 @@ public class TrafficLight {
     @PositiveOrZero
     private int index;
 
-    @NotBlank
-    private String name;
-
     @NotNull
     private TrafficLightType type;
 
-    public TrafficLight(int index, String name, @NotNull TrafficLightType type) {
+    public TrafficLight(int index, @NotNull TrafficLightType type) {
         this.index = index;
-        this.name = name;
         this.type = type;
     }
 
@@ -40,14 +36,6 @@ public class TrafficLight {
 
     public void setIndex(int index) {
         this.index = index;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public @NotNull TrafficLightType getType() {

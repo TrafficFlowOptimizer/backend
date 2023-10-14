@@ -1,0 +1,164 @@
+{
+    "crossroad": {
+        "name": "testing",
+        "location": "Poland, Kraków, Podwawelskie",
+        "creatorId": "65298ec70cd2821b34624245",
+        "type": "PRIVATE",
+        "roadIds": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+        ],
+        "collisionsIds": [
+            1
+        ],
+        "trafficLightIds": [
+            1,
+            2,
+            3,
+            4,
+            5
+        ],
+        "connectionIds": [
+            5,
+            1,
+            2,
+            4,
+            6,
+            3
+        ]
+    },
+    "roads": [
+        {
+            "index": 1,
+            "type": "SOURCE",
+            "street": "prawa",
+            "capacity": -1
+        },
+        {
+            "index": 2,
+            "type": "SOURCE",
+            "street": "gorna",
+            "capacity": -1
+        },
+        {
+            "index": 3,
+            "type": "SOURCE",
+            "street": "lewa",
+            "capacity": -1
+        },
+        {
+            "index": 4,
+            "type": "TARGET",
+            "street": "lewa",
+            "capacity": -1
+        },
+        {
+            "index": 5,
+            "type": "TARGET",
+            "street": "gorna",
+            "capacity": -1
+        },
+        {
+            "index": 6,
+            "type": "TARGET",
+            "street": "prawa",
+            "capacity": -1
+        }
+    ],
+    "collisions": [
+        {
+            "index": 1,
+            "name": "gora-lewo z prawo prosto",
+            "type": "HEAVY",
+            "trafficLight1Id": 2,
+            "trafficLight2Id": 1
+        }
+    ],
+    "connections": [
+        {
+            "index": 5,
+            "name": "z lewej na gore",
+            "trafficLightIDs": [],
+            "sourceId": 3,
+            "targetId": 5
+        },
+        {
+            "index": 1,
+            "name": "prosta z lewej na prawa",
+            "trafficLightIDs": [
+                3
+            ],
+            "sourceId": 3,
+            "targetId": 6
+        },
+        {
+            "index": 2,
+            "name": "prosta z prawej na lewa",
+            "trafficLightIDs": [
+                1
+            ],
+            "sourceId": 1,
+            "targetId": 4
+        },
+        {
+            "index": 4,
+            "name": "z gory na prawo",
+            "trafficLightIDs": [
+                2
+            ],
+            "sourceId": 2,
+            "targetId": 6
+        },
+        {
+            "index": 6,
+            "name": "z prawej na gore",
+            "trafficLightIDs": [
+                1,
+                5
+            ],
+            "sourceId": 1,
+            "targetId": 5
+        },
+        {
+            "index": 3,
+            "name": "z gory na lewo",
+            "trafficLightIDs": [
+                2,
+                4
+            ],
+            "sourceId": 2,
+            "targetId": 4
+        }
+    ],
+    "trafficLights": [
+        {
+            "index": 1,
+            "name": "L1",
+            "direction": "RIGHT_FORWARD"
+        },
+        {
+            "index": 2,
+            "name": "L2",
+            "direction": "LEFT_RIGHT"
+        },
+        {
+            "index": 3,
+            "name": "L3",
+            "direction": "LEFT_FORWARD"
+        },
+        {
+            "index": 4,
+            "name": "L4",
+            "direction": "ARROW"
+        },
+        {
+            "index": 5,
+            "name": "L5",
+            "direction": "ARROW"
+        }
+    ]
+}

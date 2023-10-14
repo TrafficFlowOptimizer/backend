@@ -56,12 +56,12 @@ class TrafficLightServiceTest {
 
     @Test
     void getAndGetTrafficLightById_properTrafficLight_correctTrafficLight() {
-        trafficLightService.addTrafficLight(0, "nm", FORWARD);
+        trafficLightService.addTrafficLight(0, FORWARD);
         int index = 1;
         String name = "name";
         TrafficLightType type = LEFT;
-        TrafficLight trafficLight = trafficLightService.addTrafficLight(index, name, type);
-        trafficLightService.addTrafficLight(2, "ndsam", RIGHT);
+        TrafficLight trafficLight = trafficLightService.addTrafficLight(index, type);
+        trafficLightService.addTrafficLight(2, RIGHT);
 
         String id = trafficLight.getId();
         TrafficLight found = trafficLightService.getTrafficLightById(id);
@@ -69,15 +69,14 @@ class TrafficLightServiceTest {
         assertEquals(3, trafficLightService.getTrafficLightRepository().count());
         assertEquals(id, found.getId());
         assertEquals(index, found.getIndex());
-        assertEquals(name, found.getName());
         assertEquals(type, found.getType());
     }
 
     @Test
     void getAndGetTrafficLightById_improperTrafficLight_trafficLightNotFound() {
-        trafficLightService.addTrafficLight(0, "a", LEFT);
-        trafficLightService.addTrafficLight(1, "b", FORWARD);
-        trafficLightService.addTrafficLight(2, "c", RIGHT);
+        trafficLightService.addTrafficLight(0, LEFT);
+        trafficLightService.addTrafficLight(1, FORWARD);
+        trafficLightService.addTrafficLight(2, RIGHT);
 
         String id = "";
         assertNull(trafficLightService.getTrafficLightById(id));
@@ -86,9 +85,9 @@ class TrafficLightServiceTest {
 
     @Test
     void deleteTrafficLightById_properTrafficLight_trafficLightDeleted() {
-        trafficLightService.addTrafficLight(0, "a", LEFT);
-        TrafficLight trafficLight = trafficLightService.addTrafficLight(1, "b", FORWARD);
-        trafficLightService.addTrafficLight(2, "c", RIGHT);
+        trafficLightService.addTrafficLight(0, LEFT);
+        TrafficLight trafficLight = trafficLightService.addTrafficLight(1, FORWARD);
+        trafficLightService.addTrafficLight(2, RIGHT);
 
         String id = trafficLight.getId();
         trafficLightService.deleteTrafficLightById(id);
@@ -99,9 +98,9 @@ class TrafficLightServiceTest {
 
     @Test
     void deleteTrafficLightById_improperTrafficLight_trafficLightNotFound() {
-        trafficLightService.addTrafficLight(0, "a", LEFT);
-        trafficLightService.addTrafficLight(1, "name", FORWARD);
-        trafficLightService.addTrafficLight(2, "c", RIGHT);
+        trafficLightService.addTrafficLight(0, LEFT);
+        trafficLightService.addTrafficLight(1, FORWARD);
+        trafficLightService.addTrafficLight(2, RIGHT);
 
         String id = "";
         assertNull(trafficLightService.deleteTrafficLightById(id));
@@ -111,22 +110,19 @@ class TrafficLightServiceTest {
     @Test
     void updateTrafficLightById_properTrafficLight_trafficLightUpdated() {
         int index = 0;
-        String name = "name";
 
-        TrafficLight trafficLight = trafficLightService.addTrafficLight(index, name, LEFT);
+        TrafficLight trafficLight = trafficLightService.addTrafficLight(index, LEFT);
 
         String id = trafficLight.getId();
         int indexUpdated = 1;
-        String nameUpdated = "names";
 
-        trafficLightService.updateTrafficLight(id, indexUpdated, nameUpdated, FORWARD);
+        trafficLightService.updateTrafficLight(id, indexUpdated, FORWARD);
 
         TrafficLight updated = trafficLightService.getTrafficLightById(id);
 
         assertEquals(1, trafficLightService.getTrafficLightRepository().count());
         assertNotNull(updated);
         assertEquals(indexUpdated, updated.getIndex());
-        assertEquals(nameUpdated, updated.getName());
         assertEquals(FORWARD, updated.getType());
     }
 
@@ -135,13 +131,12 @@ class TrafficLightServiceTest {
         int index = 0;
         TrafficLightType type = LEFT;
 
-        trafficLightService.addTrafficLight(index, "n", type);
+        trafficLightService.addTrafficLight(index, type);
 
         String id = "";
         int indexUpdated = 1;
-        String nameUpdated = "name";
 
-        assertNull(trafficLightService.updateTrafficLight(id, indexUpdated, nameUpdated, RIGHT));
+        assertNull(trafficLightService.updateTrafficLight(id, indexUpdated, RIGHT));
 
         trafficLightService.deleteTrafficLightById(id);
 

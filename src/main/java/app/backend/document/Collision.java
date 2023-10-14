@@ -1,4 +1,4 @@
-package app.backend.document.collision;
+package app.backend.document;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,15 +23,14 @@ public class Collision {
     @NotBlank
     private String trafficLight2Id;
 
-    @NotNull
-    private CollisionType type;
+    private boolean bothCanBeOn;
 
-    public Collision(int index, String name, String trafficLight1Id, String trafficLight2Id, @NotNull CollisionType type) {
+    public Collision(int index, String name, String trafficLight1Id, String trafficLight2Id, boolean bothCanBeOn) {
         this.index = index;
         this.name = name;
         this.trafficLight1Id = trafficLight1Id;
         this.trafficLight2Id = trafficLight2Id;
-        this.type = type;
+        this.bothCanBeOn = bothCanBeOn;
     }
 
     public String getId() {
@@ -74,11 +73,11 @@ public class Collision {
         this.trafficLight2Id = trafficLight2Id;
     }
 
-    public @NotNull CollisionType getType() {
-        return type;
+    public boolean getBothCanBeOn() {
+        return bothCanBeOn;
     }
 
-    public void setType(@NotNull CollisionType type) {
-        this.type = type;
+    public void setBothCanBeOn(boolean bothCanBeOn) {
+        this.bothCanBeOn = bothCanBeOn;
     }
 }

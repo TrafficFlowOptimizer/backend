@@ -1,13 +1,15 @@
 package app.backend.document.light;
 
 public enum TrafficLightType {
+    ENTIRE,
     LEFT,
     RIGHT,
     FORWARD,
-    ARROW,
-    TURNING,
+    ARROW_LEFT,
+    ARROW_RIGHT,
+    UTURN,
     LEFT_RIGHT,
     LEFT_FORWARD,
     RIGHT_FORWARD,
-    LEFT_TURNING
+    UTURN_LEFT
 }

@@ -1,6 +1,5 @@
 package app.backend.controller.crossroad;
 
-import app.backend.document.collision.CollisionType;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.light.TrafficLightType;
@@ -211,7 +210,7 @@ public class CrossroadsUtils {
             Map<Boolean, List<String>> collisionsDivided = collisions
                     .stream()
                     .collect(Collectors.partitioningBy(collisionId ->
-                            collisionService.getCollisionById(collisionId).getType().equals(CollisionType.LIGHT)
+                            collisionService.getCollisionById(collisionId).getBothCanBeOn()
                     ));
 
             List<String> lightCollisions = collisionsDivided.get(true);
