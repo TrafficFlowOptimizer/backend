@@ -1,5 +1,7 @@
 package app.backend.controller.crossroad;
 
+import app.backend.document.Collision;
+import app.backend.document.Connection;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.light.TrafficLightType;
@@ -10,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -17,6 +20,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Component
@@ -205,26 +209,39 @@ public class CrossroadsUtils {
             json.put("number_of_roads", roads.size());
 
 //  -----------------------------  collisions  -----------------------------
-            // TODO: UPDATE DO ZGODNOŚCI Z NOWĄ WERSJĄ DB
-            List<String> collisions = crossroad.getCollisionIds();
-            Map<Boolean, List<String>> collisionsDivided = collisions
+            List<Pair<Integer, Integer>> collisions = crossroad
+                    .getCollisionIds()
                     .stream()
-                    .collect(Collectors.partitioningBy( collisionId ->
-                            collisionService.getCollisionById(collisionId).getBothCanBeOn()
-                    ));
+                    .flatMap( collisionId -> {
+                        Collision collision = collisionService.getCollisionById(collisionId);
 
-            List<String> lightCollisions = collisionsDivided.get(true);
-            List<JSONArray> lightsLightCollisions = mapCollisions(lightCollisions);
+                        if (collision.getBothCanBeOn()) {
+                            return Stream.empty();
+                        }
 
-            json.put("lights_light_collisions", lightsLightCollisions);
-            json.put("light_collisions_no", lightsLightCollisions.size());
+                        String connection1Id = collision.getConnection1Id();
+                        String connection2Id = collision.getConnection2Id();
 
+                        Connection connection1 = connectionService.getConnectionById(connection1Id);
+                        Connection connection2 = connectionService.getConnectionById(connection2Id);
 
-            List<String> heavyCollisions = collisionsDivided.get(false);
-            List<JSONArray> lightsHeavyCollisions = mapCollisions(heavyCollisions);
+                        List<Pair<Integer, Integer>> lights = new LinkedList<>();
+                        for (String trafficLight1Id : connection1.getTrafficLightIds()) {
+                            for (String trafficLight2Id : connection2.getTrafficLightIds()) {
+                                lights.add(
+                                        Pair.of(
+                                                trafficLightService.getTrafficLightById(trafficLight1Id).getIndex(),
+                                                trafficLightService.getTrafficLightById(trafficLight2Id).getIndex()
+                                        )
+                                );
+                            }
+                        }
+                        return lights.stream();
+                    })
+                    .toList();
 
-            json.put("lights_heavy_collisions", lightsHeavyCollisions);
-            json.put("heavy_collisions_no", lightsHeavyCollisions.size());
+            json.put("lights_heavy_collisions", collisions);
+            json.put("heavy_collisions_no", collisions.size());
 
 //  -----------------------------  connections  -----------------------------
             List<String> connections = crossroad.getConnectionIds();
@@ -288,23 +305,5 @@ public class CrossroadsUtils {
         jsonBase.put("configuration", json);
 
         return jsonBase;
-    }
-
-    public List<JSONArray> mapCollisions(List<String> collisions) {
-        return collisions
-                .stream()
-                .map(collisionId -> {
-                    try {
-                        return new JSONArray(
-                                Arrays.asList(
-                                        trafficLightService.getTrafficLightById(collisionService.getCollisionById(collisionId).getConnection1Id()).getIndex(),
-                                        trafficLightService.getTrafficLightById(collisionService.getCollisionById(collisionId).getConnection2Id()).getIndex()
-                                )
-                        );
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return new JSONArray();
-                }).toList();
     }
 }
