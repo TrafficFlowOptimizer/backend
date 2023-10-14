@@ -3,10 +3,22 @@ package app.backend.controller.authentication;
 import app.backend.document.User;
 import app.backend.request.UserLogin;
 import app.backend.service.UserService;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -14,6 +26,9 @@ import static org.springframework.http.HttpStatus.*;
 @RequestMapping("/auth")
 public class AuthController {
 
+    @Value("${secret.key}")
+    private String secret;
+    private static final long EXPIRATION_TIME = TimeUnit.MINUTES.toMillis(1);
     private final UserService userService;
 
     @Autowired
@@ -33,12 +48,23 @@ public class AuthController {
                     .status(UNAUTHORIZED)
                     .body(false);
         } else {
+            HttpHeaders headers = onAuthenticationSuccess(u);
             return ResponseEntity
                     .ok()
+                    .headers(headers)
                     .body(true);
         }
     }
 
+    public HttpHeaders onAuthenticationSuccess(User user) {
+        String token = JWT.create() // 2
+                .withSubject(user.getNickname()) // 3
+                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // 4
+                .sign(Algorithm.HMAC256(secret)); // 5
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return headers; // 6
+    }
     @PostMapping(value="/register")
     public ResponseEntity<Boolean> register(@RequestBody @Valid User user) {
         if (userService.addUser(
