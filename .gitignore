@@ -47,4 +47,4 @@ target
 HELP.md
 
 application-local.properties
-temp/*
+temp
