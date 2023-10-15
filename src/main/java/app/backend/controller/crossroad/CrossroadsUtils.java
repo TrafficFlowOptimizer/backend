@@ -209,39 +209,42 @@ public class CrossroadsUtils {
             json.put("number_of_roads", roads.size());
 
 //  -----------------------------  collisions  -----------------------------
-            List<Pair<Integer, Integer>> collisions = crossroad
+            Map<Boolean, List<Pair<Integer, Integer>>> collisionsPartitioned = crossroad
                     .getCollisionIds()
                     .stream()
-                    .flatMap( collisionId -> {
-                        Collision collision = collisionService.getCollisionById(collisionId);
+                    .map(collisionService::getCollisionById)
+                    .collect(
+                            Collectors.partitioningBy(
+                                    Collision::getBothCanBeOn,
+                                    Collectors.flatMapping( collision -> {
+                                        String connection1Id = collision.getConnection1Id();
+                                        String connection2Id = collision.getConnection2Id();
 
-                        if (collision.getBothCanBeOn()) {
-                            return Stream.empty();
-                        }
+                                        Connection connection1 = connectionService.getConnectionById(connection1Id);
+                                        Connection connection2 = connectionService.getConnectionById(connection2Id);
 
-                        String connection1Id = collision.getConnection1Id();
-                        String connection2Id = collision.getConnection2Id();
+                                        List<Pair<Integer, Integer>> lights = new LinkedList<>();
+                                        for (String trafficLight1Id : connection1.getTrafficLightIds()) {
+                                            for (String trafficLight2Id : connection2.getTrafficLightIds()) {
+                                                lights.add(
+                                                        Pair.of(
+                                                                trafficLightService.getTrafficLightById(trafficLight1Id).getIndex(),
+                                                                trafficLightService.getTrafficLightById(trafficLight2Id).getIndex()
+                                                        )
+                                                );
+                                            }
+                                        }
+                                        return lights.stream();
+                                    },
+                                    Collectors.toList())
+                            )
+                    );
 
-                        Connection connection1 = connectionService.getConnectionById(connection1Id);
-                        Connection connection2 = connectionService.getConnectionById(connection2Id);
+            json.put("lights_light_collisions", collisionsPartitioned.get(true));
+            json.put("light_collisions_no", collisionsPartitioned.get(true).size());
 
-                        List<Pair<Integer, Integer>> lights = new LinkedList<>();
-                        for (String trafficLight1Id : connection1.getTrafficLightIds()) {
-                            for (String trafficLight2Id : connection2.getTrafficLightIds()) {
-                                lights.add(
-                                        Pair.of(
-                                                trafficLightService.getTrafficLightById(trafficLight1Id).getIndex(),
-                                                trafficLightService.getTrafficLightById(trafficLight2Id).getIndex()
-                                        )
-                                );
-                            }
-                        }
-                        return lights.stream();
-                    })
-                    .toList();
-
-            json.put("lights_heavy_collisions", collisions);
-            json.put("heavy_collisions_no", collisions.size());
+            json.put("lights_heavy_collisions", collisionsPartitioned.get(false));
+            json.put("heavy_collisions_no", collisionsPartitioned.get(false).size());
 
 //  -----------------------------  connections  -----------------------------
             List<String> connections = crossroad.getConnectionIds();
