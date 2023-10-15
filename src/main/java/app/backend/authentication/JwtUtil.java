@@ -4,7 +4,6 @@ import app.backend.document.User;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtUtil {
-
 
     @Value("${secret.key}")
     private String secret_key = "randomoweznaki";
@@ -30,7 +28,7 @@ public class JwtUtil {
     }
 
     public String createToken(User user) {
-        Claims claims = Jwts.claims().setSubject(user.getEmail());
+        Claims claims = Jwts.claims().setSubject(user.getId());
         claims.put("firstName", user.getFirstName());
         claims.put("lastName", user.getLastName());
         Date tokenCreateTime = new Date();
@@ -79,7 +77,7 @@ public class JwtUtil {
         }
     }
 
-    public String getEmail(Claims claims) {
+    public String getId(Claims claims) {
         return claims.getSubject();
     }
 

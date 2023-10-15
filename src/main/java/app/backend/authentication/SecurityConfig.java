@@ -24,9 +24,9 @@ public class SecurityConfig  {
         this.userDetailsService = userService;
         this.jwtAuthorizationFilter = jwtAuthorizationFilter;
     }
+
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, NoOpPasswordEncoder noOpPasswordEncoder)
-            throws Exception {
+    public AuthenticationManager authenticationManager(HttpSecurity http, NoOpPasswordEncoder noOpPasswordEncoder) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(noOpPasswordEncoder);
         return authenticationManagerBuilder.build();
@@ -46,6 +46,7 @@ public class SecurityConfig  {
     }
 
 
+    // TODO: https://stackoverflow.com/questions/52134823/multiple-markers-at-this-line-the-type-nooppasswordencoder-is-deprecated-the
     @SuppressWarnings("deprecation")
     @Bean
     public NoOpPasswordEncoder passwordEncoder() {

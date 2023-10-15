@@ -1,20 +1,20 @@
 package app.backend.response.auth;
 
-public class LoginRes {
-    private String email;
+public class LoginResponse {
+    private String id;
     private String token;
 
-    public LoginRes(String email, String token) {
-        this.email = email;
+    public LoginResponse(String id, String token) {
+        this.id = id;
         this.token = token;
     }
 
     public String getEmail() {
-        return email;
+        return id;
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.id = id;
     }
 
     public String getToken() {
