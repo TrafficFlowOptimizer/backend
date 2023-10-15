@@ -9,11 +9,11 @@ public class LoginResponse {
         this.token = token;
     }
 
-    public String getEmail() {
+    public String getId() {
         return id;
     }
 
-    public void setEmail(String email) {
+    public void setId(String id) {
         this.id = id;
     }
 

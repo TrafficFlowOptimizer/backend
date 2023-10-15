@@ -100,8 +100,9 @@ public class UserService implements UserDetailsService {
         User user = optionalUser.get();
         List<String> roles = new ArrayList<>();
         roles.add("USER");
+
         return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
+                .username(user.getId())
                 .password(user.getPassword())
                 .roles(roles.toArray(new String[0]))
                 .build();

@@ -33,37 +33,34 @@ public class AuthController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest)  {
+        Authentication authentication;
         try {
-            Authentication authentication = authenticationManager.authenticate(
+            authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getUsername(),
                             loginRequest.getPassword()
                     )
             );
-
-            String id = authentication.getName();
-            User user = userService.getUserById(id);
-            String token = jwtUtil.createToken(user);
-
-            LoginResponse loginResponse = new LoginResponse(id, token);
-
-            return ResponseEntity
-                    .ok()
-                    .body(loginResponse);
-
         } catch (BadCredentialsException e) {
-            System.out.println(e.getMessage());
             return ResponseEntity
                     .status(UNAUTHORIZED)
                     .build();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        }
+
+        String id = authentication.getName();
+        User user = userService.getUserById(id);
+        if (user == null) {
             return ResponseEntity
-                    .status(BAD_REQUEST)
+                    .status(NOT_FOUND)
                     .build();
         }
+        String token = jwtUtil.createToken(user);
+
+        return ResponseEntity
+                .ok()
+                .body(new LoginResponse(id, token));
     }
 
     @PostMapping(value="/register")
