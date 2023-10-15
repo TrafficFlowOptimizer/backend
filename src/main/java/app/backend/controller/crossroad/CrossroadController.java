@@ -1,5 +1,6 @@
 package app.backend.controller.crossroad;
 
+import app.backend.authentication.JwtUtil;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.request.crossroad.CrossroadDescriptionRequest;
 import app.backend.response.crossroad.CrossroadDescriptionResponse;
@@ -7,6 +8,7 @@ import app.backend.service.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +39,7 @@ public class CrossroadController {
     private final UserService userService;
     private final OptimizationService optimizationService;
     private final CrossroadsUtils crossroadsUtils;
+    private final JwtUtil jwtUtil;
 
     @Autowired
     public CrossroadController(
@@ -47,7 +50,8 @@ public class CrossroadController {
             TrafficLightService trafficLightService,
             UserService userService,
             OptimizationService optimizationService,
-            CrossroadsUtils crossroadsUtils
+            CrossroadsUtils crossroadsUtils,
+            JwtUtil jwtUtil
     ) {
         this.crossroadService = crossroadService;
         this.roadService = roadService;
@@ -57,6 +61,7 @@ public class CrossroadController {
         this.userService = userService;
         this.optimizationService = optimizationService;
         this.crossroadsUtils = crossroadsUtils;
+        this.jwtUtil = jwtUtil;
     }
 
     @GetMapping
@@ -110,7 +115,15 @@ public class CrossroadController {
     }
 
     @PostMapping() // TODO: try catch nosuchelement
-    public ResponseEntity<Boolean> addCrossroad(@RequestBody CrossroadDescriptionRequest crossroadDescriptionRequest) {
+    public ResponseEntity<Boolean> addCrossroad(
+            @RequestBody CrossroadDescriptionRequest crossroadDescriptionRequest,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken
+    ) {
+        String creatorId = jwtUtil.getId(
+                jwtUtil.parseJwtClaims(
+                        jwtToken.split(" ")[1]
+                )
+        );
 
         List<String> roadIds = crossroadDescriptionRequest
                 .getRoads()
@@ -178,7 +191,7 @@ public class CrossroadController {
         crossroadService.addCrossroad(
                 crossroadDescriptionRequest.getCrossroad().getName(),
                 crossroadDescriptionRequest.getCrossroad().getLocation(),
-                crossroadDescriptionRequest.getCrossroad().getCreatorId(),
+                creatorId,
                 crossroadDescriptionRequest.getCrossroad().getType(),
                 roadIds,
                 collisionIds,
