@@ -123,7 +123,7 @@ public class Controller {
                 type = RoadType.SOURCE;
             }
             int capacity = -1;
-            Road road = roadService.addRoad(i+1, name, type, capacity);
+            Road road = roadService.addRoad(i+1, name, type, capacity, Float.valueOf(String.valueOf(i)), Float.valueOf(String.valueOf(i)));
             roadsIDs.add(road.getId());
         }
         return roadsIDs;

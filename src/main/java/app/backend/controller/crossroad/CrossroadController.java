@@ -98,7 +98,9 @@ public class CrossroadController {
                                 roadRequest.getIndex(),
                                 roadRequest.getName(),
                                 roadRequest.getType(),
-                                roadRequest.getCapacity()
+                                roadRequest.getCapacity(),
+                                roadRequest.getxCord(),
+                                roadRequest.getyCord()
                         ).getId()
                 )
                 .collect(Collectors.toList());

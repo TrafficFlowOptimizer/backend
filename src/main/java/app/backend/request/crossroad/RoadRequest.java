@@ -8,11 +8,16 @@ public class RoadRequest {
     private RoadType type;
     private int capacity;
 
-    public RoadRequest(int index, String name, RoadType type, int capacity) {
+    private Float xCord;
+    private Float yCord;
+
+    public RoadRequest(int index, String name, RoadType type, int capacity, Float xCord, Float yCord) {
         this.index = index;
         this.name = name;
         this.type = type;
         this.capacity = capacity;
+        this.xCord = xCord;
+        this.yCord = yCord;
     }
 
     public int getIndex() {
@@ -45,5 +50,21 @@ public class RoadRequest {
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
+    }
+
+    public Float getxCord() {
+        return xCord;
+    }
+
+    public void setxCord(Float xCord) {
+        this.xCord = xCord;
+    }
+
+    public Float getyCord() {
+        return yCord;
+    }
+
+    public void setyCord(Float yCord) {
+        this.yCord = yCord;
     }
 }

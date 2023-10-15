@@ -24,13 +24,15 @@ public class RoadService {
                 .orElse(null);
     }
 
-    public Road addRoad(int index, String name, RoadType type, int capacity){
+    public Road addRoad(int index, String name, RoadType type, int capacity, Float xCord, Float yCord){
         return roadRepository.insert(
                 new Road(
                         index,
                         name,
                         type,
-                        capacity
+                        capacity,
+                        xCord,
+                        yCord
                 )
         );
     }

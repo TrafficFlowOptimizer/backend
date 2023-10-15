@@ -21,13 +21,21 @@ public class Road {
     private RoadType type;
 
     @PositiveOrZero
+    private Float xCord;
+
+    @PositiveOrZero
+    private Float yCord;
+
+    @PositiveOrZero
     private int capacity;
 
-    public Road(int index, String name, @NotNull RoadType type, int capacity) {
+    public Road(int index, String name, @NotNull RoadType type, int capacity, Float xCord, Float yCord) {
         this.index = index;
         this.name = name;
         this.type = type;
         this.capacity = capacity;
+        this.yCord = yCord;
+        this.xCord = xCord;
     }
 
     public String getId() {
