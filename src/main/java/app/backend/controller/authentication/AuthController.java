@@ -2,59 +2,72 @@ package app.backend.controller.authentication;
 
 import app.backend.authentication.JwtUtil;
 import app.backend.document.User;
-import app.backend.request.auth.LoginReq;
-import app.backend.response.auth.ErrorRes;
-import app.backend.response.auth.LoginRes;
+import app.backend.request.auth.LoginRequest;
+import app.backend.response.auth.LoginResponse;
 import app.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+import static org.springframework.http.HttpStatus.*;
 
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
 
+    private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private JwtUtil jwtUtil;
-    UserService userService;
+    private final JwtUtil jwtUtil;
+    private final UserService userService;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService) {
+    public AuthController(
+            BCryptPasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            JwtUtil jwtUtil,
+            UserService userService
+    ) {
+        this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userService = userService;
     }
 
-    @ResponseBody
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
-    public ResponseEntity login(@RequestBody LoginReq loginReq)  {
-
+    @PostMapping(value = "/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest)  {
+        Authentication authentication;
         try {
-            Authentication authentication =
-                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginReq.getUsername(), loginReq.getPassword()));
-            String email = authentication.getName();
-            User user = userService.getUserByEmail(email);
-            String token = jwtUtil.createToken(user);
-            LoginRes loginRes = new LoginRes(email,token);
-
-            return ResponseEntity.ok(loginRes);
-
-        }catch (BadCredentialsException e){
-            ErrorRes errorResponse = new ErrorRes(HttpStatus.BAD_REQUEST,"Invalid username or password");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-        }catch (Exception e){
-            ErrorRes errorResponse = new ErrorRes(HttpStatus.BAD_REQUEST, e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            return ResponseEntity
+                    .status(UNAUTHORIZED)
+                    .build();
         }
+
+        String id = authentication.getName();
+        User user = userService.getUserById(id);
+        if (user == null) {
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        }
+        String token = jwtUtil.createToken(user);
+
+        return ResponseEntity
+                .ok()
+                .body(new LoginResponse(id, token));
     }
 
     @PostMapping(value="/register")
@@ -64,7 +77,7 @@ public class AuthController {
                 user.getLastName(),
                 user.getNickname(),
                 user.getEmail(),
-                user.getPassword()
+                passwordEncoder.encode(user.getPassword())
         ) != null) {
             return ResponseEntity
                     .ok()
