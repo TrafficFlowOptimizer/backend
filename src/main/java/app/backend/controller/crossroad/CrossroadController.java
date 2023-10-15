@@ -1,7 +1,8 @@
 package app.backend.controller.crossroad;
 
 import app.backend.document.crossroad.Crossroad;
-import app.backend.request.crossroad.CrossroadDescription;
+import app.backend.request.crossroad.CrossroadDescriptionRequest;
+import app.backend.response.crossroad.CrossroadDescriptionResponse;
 import app.backend.service.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -58,7 +59,7 @@ public class CrossroadController {
         this.crossroadsUtils = crossroadsUtils;
     }
 
-    @GetMapping(value = "")
+    @GetMapping
     public ResponseEntity<List<Crossroad>> getUserCrossroads(@RequestParam(required = false) String userId) {
         // for now if userId passed then returns PRIVATE for user and PUBLIC, else PUBLIC. In the future using session it will return PRIVATE for user and PUBLIC
         // maybe in the future option to get only privates or publics??
@@ -75,23 +76,43 @@ public class CrossroadController {
     }
 
     @GetMapping(value="/{crossroadId}")
-    public ResponseEntity<Crossroad> getCrossroad(@PathVariable String crossroadId) {
+    public ResponseEntity<CrossroadDescriptionResponse> getCrossroad(@PathVariable String crossroadId) {
         Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
-        if (crossroad != null) {
-            return ResponseEntity
-                    .ok()
-                    .body(crossroad);
-        } else {
+        if (crossroad == null) {
             return ResponseEntity
                     .status(NOT_FOUND)
                     .build();
         }
+
+        CrossroadDescriptionResponse crossroadDescriptionResponse = new CrossroadDescriptionResponse(
+                crossroad,
+                crossroad.getRoadIds()
+                        .stream()
+                        .map(roadService::getRoadById)
+                        .collect(Collectors.toList()),
+                crossroad.getCollisionIds()
+                        .stream()
+                        .map(collisionService::getCollisionById)
+                        .collect(Collectors.toList()),
+                crossroad.getConnectionIds()
+                        .stream()
+                        .map(connectionService::getConnectionById)
+                        .collect(Collectors.toList()),
+                crossroad.getTrafficLightIds()
+                        .stream()
+                        .map(trafficLightService::getTrafficLightById)
+                        .collect(Collectors.toList())
+        );
+
+        return ResponseEntity
+                .ok()
+                .body(crossroadDescriptionResponse);
     }
 
     @PostMapping() // TODO: try catch nosuchelement
-    public ResponseEntity<Boolean> addCrossroad(@RequestBody CrossroadDescription crossroadDescription) {
+    public ResponseEntity<Boolean> addCrossroad(@RequestBody CrossroadDescriptionRequest crossroadDescriptionRequest) {
 
-        List<String> roadIds = crossroadDescription
+        List<String> roadIds = crossroadDescriptionRequest
                 .getRoads()
                 .stream()
                 .map( roadRequest -> roadService.addRoad(
@@ -103,7 +124,7 @@ public class CrossroadController {
                 )
                 .collect(Collectors.toList());
 
-        List<String> trafficLightsIds = crossroadDescription
+        List<String> trafficLightsIds = crossroadDescriptionRequest
                 .getTrafficLights()
                 .stream()
                 .map( trafficLightRequest -> trafficLightService.addTrafficLight(
@@ -112,7 +133,7 @@ public class CrossroadController {
                 ).getId())
                 .collect(Collectors.toList());
 
-        List<String> connectionIds = crossroadDescription
+        List<String> connectionIds = crossroadDescriptionRequest
                 .getConnections()
                 .stream()
                 .map( connectionRequest -> connectionService.addConnection(
@@ -134,7 +155,7 @@ public class CrossroadController {
                 ).getId())
                 .collect(Collectors.toList());
 
-        List<String> collisionIds = crossroadDescription
+        List<String> collisionIds = crossroadDescriptionRequest
                 .getCollisions()
                 .stream()
                 .map( collisionRequest -> collisionService.addCollision(
@@ -155,10 +176,10 @@ public class CrossroadController {
                 .collect(Collectors.toList());
 
         crossroadService.addCrossroad(
-                crossroadDescription.getCrossroad().getName(),
-                crossroadDescription.getCrossroad().getLocation(),
-                crossroadDescription.getCrossroad().getCreatorId(),
-                crossroadDescription.getCrossroad().getType(),
+                crossroadDescriptionRequest.getCrossroad().getName(),
+                crossroadDescriptionRequest.getCrossroad().getLocation(),
+                crossroadDescriptionRequest.getCrossroad().getCreatorId(),
+                crossroadDescriptionRequest.getCrossroad().getType(),
                 roadIds,
                 collisionIds,
                 connectionIds,

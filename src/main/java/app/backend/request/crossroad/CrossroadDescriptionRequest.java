@@ -2,14 +2,14 @@ package app.backend.request.crossroad;
 
 import java.util.List;
 
-public class CrossroadDescription {
+public class CrossroadDescriptionRequest {
     private CrossroadRequest crossroad;
     private List<RoadRequest> roads;
     private List<CollisionRequest> collisions;
     private List<ConnectionRequest> connections;
     private List<TrafficLightRequest> trafficLights;
 
-    public CrossroadDescription(
+    public CrossroadDescriptionRequest(
             CrossroadRequest crossroad,
             List<RoadRequest> roads,
             List<CollisionRequest> collisions,
