@@ -4,12 +4,17 @@ import app.backend.document.User;
 import app.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
@@ -29,6 +34,13 @@ public class UserService {
                 .findByNickname(nickname)
                 .orElse(null);
     }
+
+    public User getUserByEmail(String email){
+        return userRepository
+                .findByEmail(email)
+                .orElse(null);
+    }
+
 
     public User addUser(String firstName, String lastName, String nickname, String email, String password) {
         try {
@@ -76,5 +88,22 @@ public class UserService {
 
     public UserRepository getUserRepository() {
         return userRepository;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> optionalUser = userRepository.findByNickname(username);
+        if (optionalUser.isEmpty()){
+            throw new UsernameNotFoundException("User with username " + username + "not found");
+        }
+
+        User user = optionalUser.get();
+        List<String> roles = new ArrayList<>();
+        roles.add("USER");
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .roles(roles.toArray(new String[0]))
+                .build();
     }
 }
