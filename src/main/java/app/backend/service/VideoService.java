@@ -1,9 +1,9 @@
 package app.backend.service;
 
 import app.backend.document.Video;
-import app.backend.repository.VideoRepository;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -14,18 +14,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.stream.Stream;
 
 @Service
 public class VideoService {
 
-    private final VideoRepository videoRepository;
     private final GridFsTemplate gridFsTemplate;
     private final GridFsOperations gridFsOperations;
 
     @Autowired
-    public VideoService(VideoRepository videoRepository, GridFsTemplate gridFsTemplate, GridFsOperations gridFsOperations) {
-        this.videoRepository = videoRepository;
+    public VideoService(GridFsTemplate gridFsTemplate, GridFsOperations gridFsOperations) {
         this.gridFsTemplate = gridFsTemplate;
         this.gridFsOperations = gridFsOperations;
     }
@@ -71,13 +68,11 @@ public class VideoService {
         return video;
     }
 
-    public Stream<Video> getAllVideos() {
-        return videoRepository
-                .findAll()
-                .stream();
+    public GridFSFindIterable getAllVideos() {
+        return gridFsTemplate.find(null);
     }
 
     public void deleteVideoById(String id){
-        videoRepository.deleteById(id);
+        gridFsTemplate.delete(new Query(Criteria.where("_id").is(id)));
     }
 }

@@ -5,6 +5,7 @@ import app.backend.request.DetectionRectangle;
 import app.backend.response.VideoResponseFile;
 import app.backend.response.VideoResponseMessage;
 import app.backend.service.VideoService;
+import com.mongodb.client.model.Filters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -16,11 +17,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
-@CrossOrigin("http://localhost:8081")
 @RequestMapping("/videos")
 public class VideoController {
 
@@ -69,19 +70,23 @@ public class VideoController {
 
     @GetMapping
     public ResponseEntity<List<VideoResponseFile>> list() {
-            List<VideoResponseFile> videos = videoService.getAllVideos().map(video -> {
+            List<VideoResponseFile> videos = videoService.getAllVideos()
+                    .filter(Filters.)
+                    .map(video -> {
                 String fileDownloadUri = ServletUriComponentsBuilder
                         .fromCurrentContextPath()
                         .path("/videos/")
-                        .path(video.getId())
+                        .path(video.getId().toString())
                         .toUriString();
 
-                return new VideoResponseFile(
-                        video.getName(),
-                        fileDownloadUri,
-                        video.getType(),
-                        video.getData().length
-                );
+                if (video.getMetadata() != null) {
+                    return new VideoResponseFile(
+                            video.getFilename(),
+                            fileDownloadUri,
+                            video.getMetadata().get("type").toString(),
+                            video.getData().length
+                    );
+                }
             }).collect(Collectors.toList());
 
             return ResponseEntity
