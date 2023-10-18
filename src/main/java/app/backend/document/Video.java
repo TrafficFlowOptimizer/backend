@@ -1,7 +1,5 @@
 package app.backend.document;
 
-import jakarta.persistence.Basic;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
@@ -24,7 +22,6 @@ public class Video {
     private String timeIntervalId;
 
     @Lob
-    @Basic(fetch = FetchType.LAZY)
     private byte[] data;
 
     public Video(String crossroadId, String name, String type, String timeIntervalId, byte[] data) {

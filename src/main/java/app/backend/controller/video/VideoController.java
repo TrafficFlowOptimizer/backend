@@ -39,10 +39,10 @@ public class VideoController {
             @RequestParam("crossroadId") String crossroadId,
             @RequestParam("timeIntervalId") String timeIntervalId
     ) {
-        Video vid = videoService.store(video, crossroadId, timeIntervalId);
+        String videoId = videoService.store(video, crossroadId, timeIntervalId);
 
-        if (vid != null) {
-            String message = "Video: " + vid.getName() + " uploaded successfully with id: " + vid.getId();
+        if (videoId != null) {
+            String message = "Video: " + video.getOriginalFilename() + " uploaded successfully with id: " + videoId;
             return ResponseEntity
                     .ok()
                     .body(new VideoResponseMessage(message));
@@ -67,7 +67,7 @@ public class VideoController {
         return videoUtils.analyseVideo(id, skipFrames, detectionRectangles);
     }
 
-    @GetMapping(value="")
+    @GetMapping
     public ResponseEntity<List<VideoResponseFile>> list() {
             List<VideoResponseFile> videos = videoService.getAllVideos().map(video -> {
                 String fileDownloadUri = ServletUriComponentsBuilder
@@ -80,7 +80,8 @@ public class VideoController {
                         video.getName(),
                         fileDownloadUri,
                         video.getType(),
-                        video.getData().length);
+                        video.getData().length
+                );
             }).collect(Collectors.toList());
 
             return ResponseEntity
