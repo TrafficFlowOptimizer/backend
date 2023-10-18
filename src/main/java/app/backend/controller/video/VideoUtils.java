@@ -1,6 +1,6 @@
 package app.backend.controller.video;
 
-import app.backend.entity.Video;
+import app.backend.document.Video;
 import app.backend.request.DetectionRectangle;
 import app.backend.service.VideoService;
 import org.json.JSONObject;

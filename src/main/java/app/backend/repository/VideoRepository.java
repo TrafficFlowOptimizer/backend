@@ -1,10 +1,10 @@
 package app.backend.repository;
 
-import app.backend.entity.Video;
-import org.springframework.data.jpa.repository.JpaRepository;
+import app.backend.document.Video;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface VideoRepository extends JpaRepository<Video, String> {
+public interface VideoRepository extends MongoRepository<Video, String> {
 
 }

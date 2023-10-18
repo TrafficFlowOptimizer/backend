@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -30,22 +29,10 @@ class RoadServiceTest {
     private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
             .withExposedPorts(27017);
 
-    @Container
-    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:15-alpine")
-            .withUsername("postgres")
-            .withPassword("postgres")
-            .withDatabaseName("test");
-
     @DynamicPropertySource
     static void mongoDbProperties(DynamicPropertyRegistry registry) {
         mongoDBContainer.start();
         registry.add("spring.data.mongodb.uri", ()-> mongoDBContainer.getReplicaSetUrl() + "?retryWrites=false");
-    }
-
-    @DynamicPropertySource
-    static void postgreSQLProperties(DynamicPropertyRegistry registry) {
-        postgreSQLContainer.start();
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
     }
 
     @AfterEach
@@ -66,9 +53,11 @@ class RoadServiceTest {
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
+        float x = (float)0.1;
+        float y = (float)0.2;
 
-        Road road = roadService.addRoad(index, name, type, capacity);
-        roadService.addRoad(1, "Notjohn", RoadType.TARGET, 12222);
+        Road road = roadService.addRoad(index, name, type, capacity, x, y);
+        roadService.addRoad(1, "Notjohn", RoadType.TARGET, 12222, (float)-0.1, (float)-0.2);
 
         Road found = roadService.getRoadById(road.getId());
 
@@ -78,6 +67,8 @@ class RoadServiceTest {
         assertEquals(name, found.getName());
         assertEquals(type, found.getType());
         assertEquals(capacity, found.getCapacity());
+        assertEquals(x, found.getxCord());
+        assertEquals(y, found.getyCord());
     }
 
     @Test
@@ -86,14 +77,18 @@ class RoadServiceTest {
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
+        float x = (float)0.1;
+        float y = (float)0.2;
 
-        Road road = roadService.addRoad(index, name, type, capacity);
+        Road road = roadService.addRoad(index, name, type, capacity, x, y);
 
         assertEquals(1, roadService.getRoadRepository().count());
         assertEquals(index, road.getIndex());
         assertEquals(name, road.getName());
         assertEquals(type, road.getType());
         assertEquals(capacity, road.getCapacity());
+        assertEquals(x, road.getxCord());
+        assertEquals(y, road.getyCord());
     }
 
     @Test
@@ -102,8 +97,10 @@ class RoadServiceTest {
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
+        float x = (float)0.1;
+        float y = (float)0.2;
 
-        Road road = roadService.addRoad(index, name, type, capacity);
+        Road road = roadService.addRoad(index, name, type, capacity, x, y);
 
         String id = road.getId();
         roadService.deleteRoadById(id);
@@ -118,8 +115,10 @@ class RoadServiceTest {
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
+        float x = (float)0.1;
+        float y = (float)0.2;
 
-        roadService.addRoad(index, name, type, capacity);
+        roadService.addRoad(index, name, type, capacity, x, y);
         String id = "";
 
         assertNull(roadService.deleteRoadById(id));
@@ -132,16 +131,20 @@ class RoadServiceTest {
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
+        float x = (float)0.1;
+        float y = (float)0.2;
 
-        Road road = roadService.addRoad(index, name, type, capacity);
+        Road road = roadService.addRoad(index, name, type, capacity, x, y);
 
         String id = road.getId();
         int indexUpdated = 1;
         String nameUpdated = "Jon";
         RoadType typeUpdated = RoadType.INTER;
         int capacityUpdated = 11;
+        float xUpdated = (float)0.2332;
+        float yUpdated = (float)-11.233;
 
-        roadService.updateRoad(id, indexUpdated, nameUpdated, typeUpdated, capacityUpdated);
+        roadService.updateRoad(id, indexUpdated, nameUpdated, typeUpdated, capacityUpdated, xUpdated, yUpdated);
         Road updated = roadService.getRoadById(id);
 
         assertEquals(1, roadService.getRoadRepository().count());
@@ -150,6 +153,8 @@ class RoadServiceTest {
         assertEquals(nameUpdated, updated.getName());
         assertEquals(typeUpdated, updated.getType());
         assertEquals(capacityUpdated, updated.getCapacity());
+        assertEquals(xUpdated, updated.getxCord());
+        assertEquals(yUpdated, updated.getyCord());
     }
 
     @Test
@@ -158,16 +163,20 @@ class RoadServiceTest {
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
+        float x = (float)0.1;
+        float y = (float)0.2;
 
-        roadService.addRoad(index, name, type, capacity);
+        roadService.addRoad(index, name, type, capacity, x, y);
 
         String id = "";
         int indexUpdated = 1;
         String nameUpdated = "Jon";
         RoadType typeUpdated = RoadType.INTER;
         int capacityUpdated = 11;
+        float xUpdated = (float)0.2332;
+        float yUpdated = (float)-11.233;
 
-        assertNull(roadService.updateRoad(id, indexUpdated, nameUpdated, typeUpdated, capacityUpdated));
+        assertNull(roadService.updateRoad(id, indexUpdated, nameUpdated, typeUpdated, capacityUpdated, xUpdated, yUpdated));
         assertNull(roadService.deleteRoadById(id));
         assertEquals(1, roadService.getRoadRepository().count());
     }
