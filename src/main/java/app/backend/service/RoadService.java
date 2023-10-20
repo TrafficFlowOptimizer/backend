@@ -24,7 +24,7 @@ public class RoadService {
                 .orElse(null);
     }
 
-    public Road addRoad(int index, String name, RoadType type, int capacity, Float xCord, Float yCord){
+    public Road addRoad(int index, String name, RoadType type, int capacity, float xCord, float yCord){
         return roadRepository.insert(
                 new Road(
                         index,
@@ -47,7 +47,7 @@ public class RoadService {
         return road.get();
     }
 
-    public Road updateRoad(String id, int index, String name, RoadType type, int capacity) {
+    public Road updateRoad(String id, int index, String name, RoadType type, int capacity, float xCord, float yCord) {
         Optional<Road> road = roadRepository.findById(id);
         if (road.isEmpty()){
             return null;
@@ -58,6 +58,8 @@ public class RoadService {
         roadToUpdate.setName(name);
         roadToUpdate.setType(type);
         roadToUpdate.setCapacity(capacity);
+        roadToUpdate.setxCord(xCord);
+        roadToUpdate.setyCord(yCord);
 
         roadRepository.save(roadToUpdate);
 

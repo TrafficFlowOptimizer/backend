@@ -1,57 +1,79 @@
 package app.backend.service;
 
-import app.backend.entity.Video;
-import app.backend.repository.VideoRepository;
+import app.backend.document.Video;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.client.gridfs.GridFSFindIterable;
+import com.mongodb.client.gridfs.model.GridFSFile;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.util.Objects;
-import java.util.stream.Stream;
+import java.io.IOException;
 
 @Service
 public class VideoService {
 
-    private final VideoRepository videoRepository;
+    private final GridFsTemplate gridFsTemplate;
+    private final GridFsOperations gridFsOperations;
 
     @Autowired
-    public VideoService(VideoRepository videoRepository) {
-        this.videoRepository = videoRepository;
+    public VideoService(GridFsTemplate gridFsTemplate, GridFsOperations gridFsOperations) {
+        this.gridFsTemplate = gridFsTemplate;
+        this.gridFsOperations = gridFsOperations;
     }
 
-    public Video store(MultipartFile file, String crossroadId, String timeIntervalId) {
-        String name = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+    public String store(MultipartFile file, String crossroadId, String timeIntervalId) {
+        DBObject metadata = new BasicDBObject();
+        metadata.put("crossroadId", crossroadId);
+        metadata.put("timeIntervalId", timeIntervalId);
+        metadata.put("type", file.getContentType());
 
+        ObjectId objectId;
         try {
-            return videoRepository.save(
-                    new Video(
-                            crossroadId,
-                            name,
-                            file.getContentType(),
-                            timeIntervalId,
-                            file.getBytes()
-                    )
+            objectId = gridFsTemplate.store(
+                    file.getInputStream(),
+                    file.getOriginalFilename(),
+                    file.getContentType(),
+                    metadata
             );
         } catch (IOException e) {
             return null;
         }
+
+        return objectId.toString();
     }
 
     public Video getVideo(String id) {
-        return videoRepository
-                .findById(id)
-                .orElse(null);
+        GridFSFile file = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
+
+        Video video = null;
+        if (file != null && file.getMetadata() != null) {
+            try {
+                video = new Video(
+                        file.getMetadata().get("crossroadId").toString(),
+                        file.getFilename(),
+                        file.getMetadata().get("type").toString(),
+                        file.getMetadata().get("timeIntervalId").toString(),
+                        gridFsOperations.getResource(file).getInputStream().readAllBytes()
+                );
+                video.setId(file.getId().toString());
+            } catch (IOException ignored) {}
+        }
+
+        return video;
     }
 
-    public Stream<Video> getAllVideos() {
-        return videoRepository
-                .findAll()
-                .stream();
+    public GridFSFindIterable getAllVideos() {
+        return gridFsTemplate.find(new Query());
     }
 
     public void deleteVideoById(String id){
-        videoRepository.deleteById(id);
+        gridFsTemplate.delete(new Query(Criteria.where("_id").is(id)));
     }
 }

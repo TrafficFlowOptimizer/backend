@@ -1,16 +1,11 @@
-package app.backend.entity;
+package app.backend.document;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.Id;
 
-@Entity
-@Table(name = "videos")
 public class Video {
 
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
     @NotBlank
@@ -25,11 +20,7 @@ public class Video {
     @NotBlank
     private String timeIntervalId;
 
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
     private byte[] data;
-
-    public Video() {}
 
     public Video(String crossroadId, String name, String type, String timeIntervalId, byte[] data) {
         this.crossroadId = crossroadId;

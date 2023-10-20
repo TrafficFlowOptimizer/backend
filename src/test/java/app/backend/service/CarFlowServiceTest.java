@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -29,22 +28,10 @@ class CarFlowServiceTest {
     private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
             .withExposedPorts(27017);
 
-    @Container
-    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:15-alpine")
-            .withUsername("postgres")
-            .withPassword("postgres")
-            .withDatabaseName("test");
-
     @DynamicPropertySource
     static void mongoDbProperties(DynamicPropertyRegistry registry) {
         mongoDBContainer.start();
         registry.add("spring.data.mongodb.uri", ()-> mongoDBContainer.getReplicaSetUrl() + "?retryWrites=false");
-    }
-
-    @DynamicPropertySource
-    static void postgreSQLProperties(DynamicPropertyRegistry registry) {
-        postgreSQLContainer.start();
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
     }
 
     @AfterEach

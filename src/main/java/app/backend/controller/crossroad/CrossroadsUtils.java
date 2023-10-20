@@ -5,7 +5,7 @@ import app.backend.document.Connection;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.light.TrafficLightType;
-import app.backend.entity.Video;
+import app.backend.document.Video;
 import app.backend.service.*;
 import app.backend.service.VideoService;
 import org.json.JSONArray;
@@ -20,7 +20,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Component

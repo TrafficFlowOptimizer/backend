@@ -77,4 +77,20 @@ public class Road {
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
+
+    public Float getxCord() {
+        return xCord;
+    }
+
+    public void setxCord(Float xCord) {
+        this.xCord = xCord;
+    }
+
+    public Float getyCord() {
+        return yCord;
+    }
+
+    public void setyCord(Float yCord) {
+        this.yCord = yCord;
+    }
 }

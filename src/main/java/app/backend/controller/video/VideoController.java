@@ -1,12 +1,13 @@
 package app.backend.controller.video;
 
-import app.backend.entity.Video;
+import app.backend.document.Video;
 import app.backend.request.DetectionRectangle;
 import app.backend.response.VideoResponseFile;
 import app.backend.response.VideoResponseMessage;
 import app.backend.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.util.Streamable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
-@CrossOrigin("http://localhost:8081")
+@CrossOrigin("*")
 @RequestMapping("/videos")
 public class VideoController {
 
@@ -39,10 +39,10 @@ public class VideoController {
             @RequestParam("crossroadId") String crossroadId,
             @RequestParam("timeIntervalId") String timeIntervalId
     ) {
-        Video vid = videoService.store(video, crossroadId, timeIntervalId);
+        String videoId = videoService.store(video, crossroadId, timeIntervalId);
 
-        if (vid != null) {
-            String message = "Video: " + vid.getName() + " uploaded successfully with id: " + vid.getId();
+        if (videoId != null) {
+            String message = "Video: " + video.getOriginalFilename() + " uploaded successfully with id: " + videoId;
             return ResponseEntity
                     .ok()
                     .body(new VideoResponseMessage(message));
@@ -67,25 +67,32 @@ public class VideoController {
         return videoUtils.analyseVideo(id, skipFrames, detectionRectangles);
     }
 
-    @GetMapping(value="")
+    @GetMapping
     public ResponseEntity<List<VideoResponseFile>> list() {
-            List<VideoResponseFile> videos = videoService.getAllVideos().map(video -> {
-                String fileDownloadUri = ServletUriComponentsBuilder
-                        .fromCurrentContextPath()
-                        .path("/videos/")
-                        .path(video.getId())
-                        .toUriString();
+        List<VideoResponseFile> videos = Streamable.of(videoService.getAllVideos()
+                .map(video -> {
+                    String fileDownloadUri = ServletUriComponentsBuilder
+                            .fromCurrentContextPath()
+                            .path("/videos/")
+                            .path(video.getId().asObjectId().toString())
+                            .toUriString();
 
-                return new VideoResponseFile(
-                        video.getName(),
-                        fileDownloadUri,
-                        video.getType(),
-                        video.getData().length);
-            }).collect(Collectors.toList());
+                    if (video.getMetadata() != null) {
+                        return new VideoResponseFile(
+                                video.getFilename(),
+                                fileDownloadUri,
+                                video.getMetadata().get("type").toString(),
+                                video.getLength()
+                        );
+                    } else {
+                        return null;
+                    }
+                }))
+                .toList();
 
-            return ResponseEntity
-                    .ok()
-                    .body(videos);
+        return ResponseEntity
+                .ok()
+                .body(videos);
     }
 
     @GetMapping(value="/{id}")
