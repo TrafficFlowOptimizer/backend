@@ -74,7 +74,7 @@ public class VideoController {
                     String fileDownloadUri = ServletUriComponentsBuilder
                             .fromCurrentContextPath()
                             .path("/videos/")
-                            .path(video.getId().toString())
+                            .path(video.getId().asObjectId().toString())
                             .toUriString();
 
                     if (video.getMetadata() != null) {

@@ -94,7 +94,6 @@ public class VideoUtils {
     }
 
     public ResponseEntity<InputStreamResource> getSampleFrame(String videoId) {
-        System.out.println("Aaa");
         Video video = videoService.getVideo(videoId);
 
         if (video == null) {

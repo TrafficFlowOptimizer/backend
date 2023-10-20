@@ -5,6 +5,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.gridfs.model.GridFSFile;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -33,19 +34,19 @@ public class VideoService {
         metadata.put("timeIntervalId", timeIntervalId);
         metadata.put("type", file.getContentType());
 
-        String id;
+        ObjectId objectId;
         try {
-            id = gridFsTemplate.store(
+            objectId = gridFsTemplate.store(
                     file.getInputStream(),
                     file.getOriginalFilename(),
                     file.getContentType(),
                     metadata
-            ).toString();
+            );
         } catch (IOException e) {
             return null;
         }
 
-        return id;
+        return objectId.toString();
     }
 
     public Video getVideo(String id) {
