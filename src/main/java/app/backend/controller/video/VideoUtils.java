@@ -13,7 +13,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -24,7 +28,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 public class VideoUtils {
@@ -37,7 +42,7 @@ public class VideoUtils {
     VideoService videoService;
 
     @Autowired
-    public VideoUtils(VideoService videoService){
+    public VideoUtils(VideoService videoService) {
         this.videoService = videoService;
     }
 
@@ -53,7 +58,7 @@ public class VideoUtils {
                     .build();
         }
         connection.setDoOutput(true);
-        connection.setRequestProperty("Content-Type","application/json");
+        connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Accept", "application/json");
 
         Video video = videoService.getVideo(videoId);

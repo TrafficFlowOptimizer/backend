@@ -18,11 +18,11 @@ public class UserController {
     private final UserService userService;
 
     @Autowired
-    public UserController(UserService userService){
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping(value="{nickname}")
+    @GetMapping(value = "{nickname}")
     public ResponseEntity<String> userIdByNickname(@RequestParam String nickname) {
         User user = userService.getUserByNickname(nickname);
         if (user != null) {

@@ -12,7 +12,9 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -32,13 +34,13 @@ class RoadServiceTest {
     @DynamicPropertySource
     static void mongoDbProperties(DynamicPropertyRegistry registry) {
         mongoDBContainer.start();
-        registry.add("spring.data.mongodb.uri", ()-> mongoDBContainer.getReplicaSetUrl() + "?retryWrites=false");
+        registry.add("spring.data.mongodb.uri", () -> mongoDBContainer.getReplicaSetUrl() + "?retryWrites=false");
     }
 
     @AfterEach
-    public void cleanUpEach(){
-            roadService.getRoadRepository().deleteAll();
-        }
+    public void cleanUpEach() {
+        roadService.getRoadRepository().deleteAll();
+    }
 
     @Test
     public void getRoadById_improperRoad_roadNotFound() {
@@ -53,11 +55,11 @@ class RoadServiceTest {
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
-        float x = (float)0.1;
-        float y = (float)0.2;
+        float x = (float) 0.1;
+        float y = (float) 0.2;
 
         Road road = roadService.addRoad(index, name, type, capacity, x, y);
-        roadService.addRoad(1, "Notjohn", RoadType.TARGET, 12222, (float)-0.1, (float)-0.2);
+        roadService.addRoad(1, "Notjohn", RoadType.TARGET, 12222, (float) -0.1, (float) -0.2);
 
         Road found = roadService.getRoadById(road.getId());
 
@@ -77,8 +79,8 @@ class RoadServiceTest {
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
-        float x = (float)0.1;
-        float y = (float)0.2;
+        float x = (float) 0.1;
+        float y = (float) 0.2;
 
         Road road = roadService.addRoad(index, name, type, capacity, x, y);
 
@@ -97,8 +99,8 @@ class RoadServiceTest {
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
-        float x = (float)0.1;
-        float y = (float)0.2;
+        float x = (float) 0.1;
+        float y = (float) 0.2;
 
         Road road = roadService.addRoad(index, name, type, capacity, x, y);
 
@@ -115,8 +117,8 @@ class RoadServiceTest {
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
-        float x = (float)0.1;
-        float y = (float)0.2;
+        float x = (float) 0.1;
+        float y = (float) 0.2;
 
         roadService.addRoad(index, name, type, capacity, x, y);
         String id = "";
@@ -131,8 +133,8 @@ class RoadServiceTest {
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
-        float x = (float)0.1;
-        float y = (float)0.2;
+        float x = (float) 0.1;
+        float y = (float) 0.2;
 
         Road road = roadService.addRoad(index, name, type, capacity, x, y);
 
@@ -141,8 +143,8 @@ class RoadServiceTest {
         String nameUpdated = "Jon";
         RoadType typeUpdated = RoadType.INTER;
         int capacityUpdated = 11;
-        float xUpdated = (float)0.2332;
-        float yUpdated = (float)-11.233;
+        float xUpdated = (float) 0.2332;
+        float yUpdated = (float) -11.233;
 
         roadService.updateRoad(id, indexUpdated, nameUpdated, typeUpdated, capacityUpdated, xUpdated, yUpdated);
         Road updated = roadService.getRoadById(id);
@@ -163,8 +165,8 @@ class RoadServiceTest {
         String name = "John";
         RoadType type = RoadType.SOURCE;
         int capacity = 10;
-        float x = (float)0.1;
-        float y = (float)0.2;
+        float x = (float) 0.1;
+        float y = (float) 0.2;
 
         roadService.addRoad(index, name, type, capacity, x, y);
 
@@ -173,8 +175,8 @@ class RoadServiceTest {
         String nameUpdated = "Jon";
         RoadType typeUpdated = RoadType.INTER;
         int capacityUpdated = 11;
-        float xUpdated = (float)0.2332;
-        float yUpdated = (float)-11.233;
+        float xUpdated = (float) 0.2332;
+        float yUpdated = (float) -11.233;
 
         assertNull(roadService.updateRoad(id, indexUpdated, nameUpdated, typeUpdated, capacityUpdated, xUpdated, yUpdated));
         assertNull(roadService.deleteRoadById(id));

@@ -1,9 +1,6 @@
 package app.backend.controller;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ControllerTest {
     @Test

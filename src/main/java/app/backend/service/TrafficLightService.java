@@ -24,7 +24,7 @@ public class TrafficLightService {
                 .orElse(null);
     }
 
-    public TrafficLight addTrafficLight(int index, TrafficLightType type){
+    public TrafficLight addTrafficLight(int index, TrafficLightType type) {
         return trafficLightRepository.insert(
                 new TrafficLight(
                         index,

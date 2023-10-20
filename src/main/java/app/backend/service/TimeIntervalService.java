@@ -45,7 +45,7 @@ public class TimeIntervalService {
 
     public TimeInterval updateTimeInterval(String id, LocalTime startTime, LocalTime endTime) {
         Optional<TimeInterval> timeInterval = timeIntervalRepository.findById(id);
-        if (timeInterval.isEmpty()){
+        if (timeInterval.isEmpty()) {
             return null;
         }
 

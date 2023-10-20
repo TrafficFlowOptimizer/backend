@@ -64,7 +64,7 @@ public class ConnectionService {
             List<String> carFlowIDs
     ) {
         Optional<Connection> connection = connectionRepository.findById(id);
-        if (connection.isEmpty()){
+        if (connection.isEmpty()) {
             return null;
         }
 

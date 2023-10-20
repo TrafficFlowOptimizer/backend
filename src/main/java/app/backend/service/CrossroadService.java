@@ -91,7 +91,7 @@ public class CrossroadService {
             List<String> trafficLightIds
     ) {
         Optional<Crossroad> crossroad = crossroadRepository.findById(id);
-        if (crossroad.isEmpty()){
+        if (crossroad.isEmpty()) {
             return null;
         }
 

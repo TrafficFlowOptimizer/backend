@@ -35,7 +35,7 @@ public class UserService implements UserDetailsService {
                 .orElse(null);
     }
 
-    public User getUserByEmail(String email){
+    public User getUserByEmail(String email) {
         return userRepository
                 .findByEmail(email)
                 .orElse(null);
@@ -93,7 +93,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> optionalUser = userRepository.findByNickname(username);
-        if (optionalUser.isEmpty()){
+        if (optionalUser.isEmpty()) {
             throw new UsernameNotFoundException("User with username " + username + "not found");
         }
 

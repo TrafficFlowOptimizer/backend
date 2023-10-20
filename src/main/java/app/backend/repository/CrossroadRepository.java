@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CrossroadRepository extends MongoRepository<Crossroad, String> {
     Iterable<Crossroad> findAllByCreatorId(String creatorId);
+
     Iterable<Crossroad> findAllByType(CrossroadType type);
 }

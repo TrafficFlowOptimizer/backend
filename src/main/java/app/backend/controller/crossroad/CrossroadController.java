@@ -4,14 +4,27 @@ import app.backend.authentication.JwtUtil;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.request.crossroad.CrossroadDescriptionRequest;
 import app.backend.response.crossroad.CrossroadDescriptionResponse;
-import app.backend.service.*;
+import app.backend.service.CollisionService;
+import app.backend.service.ConnectionService;
+import app.backend.service.CrossroadService;
+import app.backend.service.OptimizationService;
+import app.backend.service.RoadService;
+import app.backend.service.TrafficLightService;
+import app.backend.service.UserService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -68,19 +81,18 @@ public class CrossroadController {
     public ResponseEntity<List<Crossroad>> getUserCrossroads(@RequestParam(required = false) String userId) {
         // for now if userId passed then returns PRIVATE for user and PUBLIC, else PUBLIC. In the future using session it will return PRIVATE for user and PUBLIC
         // maybe in the future option to get only privates or publics??
-        if(userId != null) {
+        if (userId != null) {
             return ResponseEntity
                     .ok()
                     .body(crossroadService.getCrossroadsByCreatorIdOrPublic(userId));
-        }
-        else {
+        } else {
             return ResponseEntity
                     .ok()
                     .body(crossroadService.getPublicCrossroads());
         }
     }
 
-    @GetMapping(value="/{crossroadId}")
+    @GetMapping(value = "/{crossroadId}")
     public ResponseEntity<CrossroadDescriptionResponse> getCrossroad(@PathVariable String crossroadId) {
         Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
         if (crossroad == null) {
@@ -128,7 +140,7 @@ public class CrossroadController {
         List<String> roadIds = crossroadDescriptionRequest
                 .getRoads()
                 .stream()
-                .map( roadRequest -> roadService.addRoad(
+                .map(roadRequest -> roadService.addRoad(
                                 roadRequest.getIndex(),
                                 roadRequest.getName(),
                                 roadRequest.getType(),
@@ -142,7 +154,7 @@ public class CrossroadController {
         List<String> trafficLightsIds = crossroadDescriptionRequest
                 .getTrafficLights()
                 .stream()
-                .map( trafficLightRequest -> trafficLightService.addTrafficLight(
+                .map(trafficLightRequest -> trafficLightService.addTrafficLight(
                         trafficLightRequest.getIndex(),
                         trafficLightRequest.getType()
                 ).getId())
@@ -151,19 +163,19 @@ public class CrossroadController {
         List<String> connectionIds = crossroadDescriptionRequest
                 .getConnections()
                 .stream()
-                .map( connectionRequest -> connectionService.addConnection(
+                .map(connectionRequest -> connectionService.addConnection(
                         connectionRequest.getIndex(),
                         connectionRequest.getName(),
                         trafficLightsIds
                                 .stream()
-                                .filter( trafficLightId -> connectionRequest.getTrafficLightIds() != null && connectionRequest.getTrafficLightIds().contains(trafficLightService.getTrafficLightById(trafficLightId).getIndex()))
+                                .filter(trafficLightId -> connectionRequest.getTrafficLightIds() != null && connectionRequest.getTrafficLightIds().contains(trafficLightService.getTrafficLightById(trafficLightId).getIndex()))
                                 .collect(Collectors.toList()),
                         roadIds.stream()
-                                .filter( roadId -> roadService.getRoadById(roadId).getIndex() == connectionRequest.getSourceId())
+                                .filter(roadId -> roadService.getRoadById(roadId).getIndex() == connectionRequest.getSourceId())
                                 .findAny()
                                 .orElseThrow(),
                         roadIds.stream()
-                                .filter( roadId -> roadService.getRoadById(roadId).getIndex() == connectionRequest.getTargetId())
+                                .filter(roadId -> roadService.getRoadById(roadId).getIndex() == connectionRequest.getTargetId())
                                 .findAny()
                                 .orElseThrow(),
                         Collections.emptyList()
@@ -173,17 +185,17 @@ public class CrossroadController {
         List<String> collisionIds = crossroadDescriptionRequest
                 .getCollisions()
                 .stream()
-                .map( collisionRequest -> collisionService.addCollision(
+                .map(collisionRequest -> collisionService.addCollision(
                         collisionRequest.getIndex(),
                         collisionRequest.getName(),
                         connectionIds
                                 .stream()
-                                .filter( connectionId -> connectionService.getConnectionById(connectionId).getIndex() == collisionRequest.getConnection1Id())
+                                .filter(connectionId -> connectionService.getConnectionById(connectionId).getIndex() == collisionRequest.getConnection1Id())
                                 .findAny()
                                 .orElseThrow(),
                         connectionIds
                                 .stream()
-                                .filter( connectionId -> connectionService.getConnectionById(connectionId).getIndex() == collisionRequest.getConnection2Id())
+                                .filter(connectionId -> connectionService.getConnectionById(connectionId).getIndex() == collisionRequest.getConnection2Id())
                                 .findAny()
                                 .orElseThrow(),
                         collisionRequest.getBothCanBeOn()
@@ -206,11 +218,11 @@ public class CrossroadController {
                 .body(true);
     }
 
-    @GetMapping(value="/{crossroadId}/optimization/{videoId}/{time}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{crossroadId}/optimization/{videoId}/{time}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getOptimization( // TODO: change to JSONObject
-            @PathVariable String crossroadId,
-            @PathVariable String videoId,
-            @PathVariable int time
+                                                   @PathVariable String crossroadId,
+                                                   @PathVariable String videoId,
+                                                   @PathVariable int time
     ) {
         int serverPort = 9091; // TODO: get from variable from environment
         String result = "{}";
@@ -235,9 +247,10 @@ public class CrossroadController {
 
         } catch (Exception e) {
             try {
-                sleep(time*1000L);
+                sleep(time * 1000L);
                 result = Files.readString(Paths.get("newTemplateOutput.json"));
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         System.out.println(result);
 
@@ -246,13 +259,13 @@ public class CrossroadController {
                 .body(result);
     }
 
-    private List<List<Integer>> convertJSONArrayToArray(String jsonArray){
+    private List<List<Integer>> convertJSONArrayToArray(String jsonArray) {
         JSONObject obj = new JSONObject(jsonArray);
         JSONArray arr = obj.getJSONArray("results");
         List<List<Integer>> ar = new ArrayList<>();
-        for(int i=0;i<arr.length();i++){
+        for (int i = 0; i < arr.length(); i++) {
             List<Integer> row = new ArrayList<>();
-            for(int j=0;j<arr.getJSONArray(0).length();j++){
+            for (int j = 0; j < arr.getJSONArray(0).length(); j++) {
                 row.add((int) arr.getJSONArray(i).get(j));
             }
             ar.add(row);
@@ -260,7 +273,7 @@ public class CrossroadController {
         return ar;
     }
 
-    @GetMapping(value="/{crossroadId}/optimization/{time}",  produces = MediaType.APPLICATION_JSON_VALUE) // TODO
+    @GetMapping(value = "/{crossroadId}/optimization/{time}", produces = MediaType.APPLICATION_JSON_VALUE) // TODO
     public String getOptimizationWithoutVideo(@PathVariable String crossroadId, @PathVariable int time) {
         int serverPort = 9091;
         String result = "{results: \"ERROR\"}";
@@ -281,17 +294,18 @@ public class CrossroadController {
 
         } catch (Exception e) {
             try {
-                sleep(time*1000L);
+                sleep(time * 1000L);
                 result = Files.readString(Paths.get("newTemplateOutput.json"));
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         System.out.println(result);
 
         return result;
     }
 
-    @GetMapping(value="/{crossroadId}/optimization_results",  produces = MediaType.APPLICATION_JSON_VALUE) // TODO
-    public String getOptimizationResults( @PathVariable String crossroadId, String timeIntervalID){
+    @GetMapping(value = "/{crossroadId}/optimization_results", produces = MediaType.APPLICATION_JSON_VALUE) // TODO
+    public String getOptimizationResults(@PathVariable String crossroadId, String timeIntervalID) {
         try {
             List<List<Integer>> newestResult = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, timeIntervalID).getResults();
             List<List<Integer>> secondNewestResult = optimizationService.getSecondNewestOptimizationByCrossroadId(crossroadId, timeIntervalID).getResults();

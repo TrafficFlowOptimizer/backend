@@ -5,9 +5,14 @@ import app.backend.repository.OptimizationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,9 +39,9 @@ public class OptimizationServiceTestOnMocks {
     @Test
     void testGetFreeVersionNumber_SequentialVersions() {
         List<Optimization> sampleData = Arrays.asList(
-                new Optimization("testId", 1, null,null),
-                new Optimization("testId", 2, null,null),
-                new Optimization("testId", 3, null,null)
+                new Optimization("testId", 1, null, null),
+                new Optimization("testId", 2, null, null),
+                new Optimization("testId", 3, null, null)
         );
 
         when(optimizationRepository.findAllByCrossroadId("testId")).thenReturn(sampleData);
@@ -48,9 +53,9 @@ public class OptimizationServiceTestOnMocks {
     @Test
     void testGetFreeVersionNumber_nonSequentialVersions() {
         List<Optimization> sampleData = Arrays.asList(
-                new Optimization("testId", 1, null,null),
-                new Optimization("testId", 2, null,null),
-                new Optimization("testId", 5, null,null)
+                new Optimization("testId", 1, null, null),
+                new Optimization("testId", 2, null, null),
+                new Optimization("testId", 5, null, null)
         );
 
         when(optimizationRepository.findAllByCrossroadId("testId")).thenReturn(sampleData);

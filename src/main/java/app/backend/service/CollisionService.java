@@ -29,7 +29,7 @@ public class CollisionService {
             String connection1Id,
             String connection2Id,
             boolean bothCanBeOn
-    ){
+    ) {
         return collisionRepository.insert(
                 new Collision(
                         index,
@@ -60,7 +60,7 @@ public class CollisionService {
             boolean bothCanBeOn
     ) {
         Optional<Collision> collision = collisionRepository.findById(id);
-        if (collision.isEmpty()){
+        if (collision.isEmpty()) {
             return null;
         }
 

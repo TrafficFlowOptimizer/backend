@@ -29,11 +29,11 @@ class OptimizationServiceTest {
     @DynamicPropertySource
     static void mongoDbProperties(DynamicPropertyRegistry registry) {
         mongoDBContainer.start();
-        registry.add("spring.data.mongodb.uri", ()-> mongoDBContainer.getReplicaSetUrl() + "?retryWrites=false");
+        registry.add("spring.data.mongodb.uri", () -> mongoDBContainer.getReplicaSetUrl() + "?retryWrites=false");
     }
 
     @AfterEach
-    public void cleanUpEach(){
+    public void cleanUpEach() {
         optimizationService.getOptimizationRepository().deleteAll();
     }
 

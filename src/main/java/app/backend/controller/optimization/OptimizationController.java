@@ -4,7 +4,10 @@ import app.backend.document.Optimization;
 import app.backend.service.OptimizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,11 +20,11 @@ public class OptimizationController {
     private final OptimizationService optimizationService;
 
     @Autowired
-    public OptimizationController(OptimizationService optimizationService){
+    public OptimizationController(OptimizationService optimizationService) {
         this.optimizationService = optimizationService;
     }
 
-    @GetMapping(value="/{optimizationId}")
+    @GetMapping(value = "/{optimizationId}")
     public ResponseEntity<Optimization> getOptimization(@PathVariable String optimizationId) {
         Optimization optimization = optimizationService.getOptimizationById(optimizationId);
 
@@ -36,12 +39,12 @@ public class OptimizationController {
         }
     }
 
-    @GetMapping(value="/{crossroadId}")
+    @GetMapping(value = "/{crossroadId}")
     public ResponseEntity<List<Optimization>> list(@PathVariable String crossroadId) {
-        Iterable<Optimization> optimizations =  optimizationService.getOptimizationsByCrossroadId(crossroadId);
+        Iterable<Optimization> optimizations = optimizationService.getOptimizationsByCrossroadId(crossroadId);
 
         List<Optimization> ret = new LinkedList<>();
-        for(Optimization optimization : optimizations) {
+        for (Optimization optimization : optimizations) {
             ret.add(optimization);
         }
 

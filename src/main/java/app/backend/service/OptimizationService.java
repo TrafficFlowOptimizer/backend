@@ -5,12 +5,13 @@ import app.backend.repository.OptimizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.StreamSupport;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class OptimizationService {
@@ -21,6 +22,7 @@ public class OptimizationService {
     public OptimizationService(OptimizationRepository optimizationRepository) {
         this.optimizationRepository = optimizationRepository;
     }
+
     public Optimization getOptimizationById(String id) {
         return optimizationRepository
                 .findById(id)
@@ -52,7 +54,7 @@ public class OptimizationService {
 
     public Optimization deleteOptimizationById(String id) {
         Optional<Optimization> optimization = optimizationRepository.findById(id);
-        if(optimization.isEmpty()) {
+        if (optimization.isEmpty()) {
             return null;
         }
 
@@ -62,7 +64,7 @@ public class OptimizationService {
 
     public Optimization updateOptimization(String id, String crossroadId, int version, String timeIntervalId, List<List<Integer>> results) {
         Optional<Optimization> optimization = optimizationRepository.findById(id);
-        if(optimization.isEmpty()) {
+        if (optimization.isEmpty()) {
             return null;
         }
 

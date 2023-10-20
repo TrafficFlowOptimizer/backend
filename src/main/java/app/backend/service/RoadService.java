@@ -24,7 +24,7 @@ public class RoadService {
                 .orElse(null);
     }
 
-    public Road addRoad(int index, String name, RoadType type, int capacity, float xCord, float yCord){
+    public Road addRoad(int index, String name, RoadType type, int capacity, float xCord, float yCord) {
         return roadRepository.insert(
                 new Road(
                         index,
@@ -49,7 +49,7 @@ public class RoadService {
 
     public Road updateRoad(String id, int index, String name, RoadType type, int capacity, float xCord, float yCord) {
         Optional<Road> road = roadRepository.findById(id);
-        if (road.isEmpty()){
+        if (road.isEmpty()) {
             return null;
         }
 

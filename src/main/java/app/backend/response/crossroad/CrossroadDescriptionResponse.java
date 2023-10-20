@@ -5,7 +5,6 @@ import app.backend.document.Connection;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.road.Road;
-import app.backend.request.crossroad.*;
 
 import java.util.List;
 

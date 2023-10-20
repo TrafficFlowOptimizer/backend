@@ -18,7 +18,7 @@ public class User {
     @NotBlank
     private String lastName;
 
-    @Indexed(unique=true)
+    @Indexed(unique = true)
     @NotBlank
     @Size(min = 4, message = "{validation.name.size.too_short}")
     @Size(max = 32, message = "{validation.name.size.too_long}")

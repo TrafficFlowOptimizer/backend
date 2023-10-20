@@ -63,7 +63,8 @@ public class VideoService {
                         gridFsOperations.getResource(file).getInputStream().readAllBytes()
                 );
                 video.setId(file.getId().toString());
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
 
         return video;
@@ -73,7 +74,7 @@ public class VideoService {
         return gridFsTemplate.find(new Query());
     }
 
-    public void deleteVideoById(String id){
+    public void deleteVideoById(String id) {
         gridFsTemplate.delete(new Query(Criteria.where("_id").is(id)));
     }
 }

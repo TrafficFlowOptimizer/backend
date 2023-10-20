@@ -1,15 +1,22 @@
 package app.backend.controller;
 
 import app.backend.document.CarFlow;
+import app.backend.document.Collision;
 import app.backend.document.Connection;
 import app.backend.document.TimeInterval;
-import app.backend.document.light.TrafficLight;
-import app.backend.document.Collision;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.crossroad.CrossroadType;
+import app.backend.document.light.TrafficLight;
 import app.backend.document.road.Road;
 import app.backend.document.road.RoadType;
-import app.backend.service.*;
+import app.backend.service.CarFlowService;
+import app.backend.service.CollisionService;
+import app.backend.service.ConnectionService;
+import app.backend.service.CrossroadService;
+import app.backend.service.RoadService;
+import app.backend.service.TimeIntervalService;
+import app.backend.service.TrafficLightService;
+import app.backend.service.UserService;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +25,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
-import static app.backend.document.light.TrafficLightType.*;
+import static app.backend.document.light.TrafficLightType.ARROW_LEFT;
+import static app.backend.document.light.TrafficLightType.FORWARD;
+import static app.backend.document.light.TrafficLightType.LEFT;
 
 @RestController
 public class Controller {
@@ -81,13 +94,11 @@ public class Controller {
         ArrayList<String> lightsIDs = new ArrayList<>();
         for (int i = 0; i < numberOfLights; i++) {
             TrafficLight trafficLight;
-            if(i%3==0) {
+            if (i % 3 == 0) {
                 trafficLight = trafficLightService.addTrafficLight(i + 1, LEFT);
-            }
-            else if(i%3==1) {
+            } else if (i % 3 == 1) {
                 trafficLight = trafficLightService.addTrafficLight(i + 1, FORWARD);
-            }
-            else{
+            } else {
                 trafficLight = trafficLightService.addTrafficLight(i + 1, ARROW_LEFT);
             }
             lightsIDs.add(trafficLight.getId());
@@ -123,13 +134,13 @@ public class Controller {
                 type = RoadType.SOURCE;
             }
             int capacity = -1;
-            Road road = roadService.addRoad(i+1, name, type, capacity, Float.valueOf(String.valueOf(i)), Float.valueOf(String.valueOf(i)));
+            Road road = roadService.addRoad(i + 1, name, type, capacity, Float.valueOf(String.valueOf(i)), Float.valueOf(String.valueOf(i)));
             roadsIDs.add(road.getId());
         }
         return roadsIDs;
     }
 
-    private String addCollision(int index, String name, int con1, int con2, ArrayList<String> lightsType, ArrayList<String> lightsIDs){
+    private String addCollision(int index, String name, int con1, int con2, ArrayList<String> lightsType, ArrayList<String> lightsIDs) {
         boolean bothCanBeOn;
         bothCanBeOn = !Objects.equals(lightsType.get(con1), "heavy") &&
                 !Objects.equals(lightsType.get(con2), "heavy");
@@ -210,7 +221,7 @@ public class Controller {
             targetId = roadsIDs.get(((i * 3 + 1) + 8) % numberOfRoads);
             lightsIDsTMP.add(lightsIDs.get(i * 3));
             carFlowsIDsTMP.add(carFlowsIDs.get(i * 3));
-            connection = connectionService.addConnection(3*i+1, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
+            connection = connectionService.addConnection(3 * i + 1, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
 
 
@@ -220,7 +231,7 @@ public class Controller {
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 1));
             carFlowsIDsTMP.clear();
             carFlowsIDsTMP.add(carFlowsIDs.get(i * 3 + 1));
-            connection = connectionService.addConnection(3*i + 2, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
+            connection = connectionService.addConnection(3 * i + 2, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
 
 
@@ -231,7 +242,7 @@ public class Controller {
             lightsIDsTMP.add(lightsIDs.get(i * 3 + 2));
             carFlowsIDsTMP.clear();
             carFlowsIDsTMP.add(carFlowsIDs.get(i * 3 + 2));
-            connection = connectionService.addConnection(3*i + 3, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
+            connection = connectionService.addConnection(3 * i + 3, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
         }
         return collisionsIDs;

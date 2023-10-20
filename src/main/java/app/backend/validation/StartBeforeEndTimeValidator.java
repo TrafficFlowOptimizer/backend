@@ -6,7 +6,8 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class StartBeforeEndTimeValidator implements ConstraintValidator<StartBeforeEndTime, TimeInterval> {
     @Override
-    public void initialize(StartBeforeEndTime annotation){}
+    public void initialize(StartBeforeEndTime annotation) {
+    }
 
     @Override
     public boolean isValid(TimeInterval timeInterval, ConstraintValidatorContext context) {

@@ -13,7 +13,7 @@ public class CarFlowService {
     private final CarFlowRepository carFlowRepository;
 
     @Autowired
-    public CarFlowService(CarFlowRepository carFlowRepository){
+    public CarFlowService(CarFlowRepository carFlowRepository) {
         this.carFlowRepository = carFlowRepository;
     }
 
@@ -44,7 +44,7 @@ public class CarFlowService {
 
     public CarFlow updateCarFlow(String id, int carFlowPm, String timeIntervalId) {
         Optional<CarFlow> carFlow = carFlowRepository.findById(id);
-        if (carFlow.isEmpty()){
+        if (carFlow.isEmpty()) {
             return null;
         }
 

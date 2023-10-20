@@ -5,7 +5,12 @@ import app.backend.service.CrossroadService;
 import app.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -22,12 +27,12 @@ public class IntersectionController {
         this.crossroadService = crossroadService;
     }
 
-    @PostMapping(value="")
+    @PostMapping(value = "")
     public String upload() {
         return "upload";
     }
 
-    @GetMapping(value="/{user}")
+    @GetMapping(value = "/{user}")
     public ResponseEntity<List<Crossroad>> list(@PathVariable String userId) { //trzeba podać userId; docelowo token będzie to załatwiał
         List<Crossroad> intersections = crossroadService.getCrossroadByCreatorId(userId);
         return ResponseEntity
@@ -35,7 +40,7 @@ public class IntersectionController {
                 .body(intersections);
     }
 
-    @GetMapping(value="/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<Crossroad> get(@PathVariable String id) {
         Crossroad crossroad = crossroadService.getCrossroadById(id);
         if (crossroad != null) {
@@ -49,7 +54,7 @@ public class IntersectionController {
         }
     }
 
-    @PutMapping(value="/{id}")
+    @PutMapping(value = "/{id}")
     public String update() {
         return "update";
     }

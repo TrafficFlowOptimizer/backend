@@ -12,8 +12,12 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static app.backend.document.light.TrafficLightType.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static app.backend.document.light.TrafficLightType.FORWARD;
+import static app.backend.document.light.TrafficLightType.LEFT;
+import static app.backend.document.light.TrafficLightType.RIGHT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -33,13 +37,13 @@ class TrafficLightServiceTest {
     @DynamicPropertySource
     static void mongoDbProperties(DynamicPropertyRegistry registry) {
         mongoDBContainer.start();
-        registry.add("spring.data.mongodb.uri", ()-> mongoDBContainer.getReplicaSetUrl() + "?retryWrites=false");
+        registry.add("spring.data.mongodb.uri", () -> mongoDBContainer.getReplicaSetUrl() + "?retryWrites=false");
     }
 
     @AfterEach
-    public void cleanUpEach(){
+    public void cleanUpEach() {
         trafficLightService.getTrafficLightRepository().deleteAll();
-        }
+    }
 
     @Test
     void getAndGetTrafficLightById_properTrafficLight_correctTrafficLight() {

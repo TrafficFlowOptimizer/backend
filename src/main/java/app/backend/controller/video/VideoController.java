@@ -11,7 +11,14 @@ import org.springframework.data.util.Streamable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -33,7 +40,7 @@ public class VideoController {
         this.videoUtils = videoUtils;
     }
 
-    @PostMapping(value="/upload")
+    @PostMapping(value = "/upload")
     public ResponseEntity<VideoResponseMessage> upload(
             @RequestParam("file") MultipartFile video,
             @RequestParam("crossroadId") String crossroadId,
@@ -53,12 +60,12 @@ public class VideoController {
         }
     }
 
-    @GetMapping(value="/{id}/sample")
+    @GetMapping(value = "/{id}/sample")
     public ResponseEntity<InputStreamResource> sample(@PathVariable String id) {
         return videoUtils.getSampleFrame(id);
     }
 
-    @GetMapping(value="/{id}/analysis")
+    @GetMapping(value = "/{id}/analysis")
     public ResponseEntity<String> analyse(
             @PathVariable String id,
             @RequestParam int skipFrames,
@@ -70,24 +77,24 @@ public class VideoController {
     @GetMapping
     public ResponseEntity<List<VideoResponseFile>> list() {
         List<VideoResponseFile> videos = Streamable.of(videoService.getAllVideos()
-                .map(video -> {
-                    String fileDownloadUri = ServletUriComponentsBuilder
-                            .fromCurrentContextPath()
-                            .path("/videos/")
-                            .path(video.getId().asObjectId().toString())
-                            .toUriString();
+                        .map(video -> {
+                            String fileDownloadUri = ServletUriComponentsBuilder
+                                    .fromCurrentContextPath()
+                                    .path("/videos/")
+                                    .path(video.getId().asObjectId().toString())
+                                    .toUriString();
 
-                    if (video.getMetadata() != null) {
-                        return new VideoResponseFile(
-                                video.getFilename(),
-                                fileDownloadUri,
-                                video.getMetadata().get("type").toString(),
-                                video.getLength()
-                        );
-                    } else {
-                        return null;
-                    }
-                }))
+                            if (video.getMetadata() != null) {
+                                return new VideoResponseFile(
+                                        video.getFilename(),
+                                        fileDownloadUri,
+                                        video.getMetadata().get("type").toString(),
+                                        video.getLength()
+                                );
+                            } else {
+                                return null;
+                            }
+                        }))
                 .toList();
 
         return ResponseEntity
@@ -95,7 +102,7 @@ public class VideoController {
                 .body(videos);
     }
 
-    @GetMapping(value="/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<byte[]> get(@PathVariable String id) {
         Video video = videoService.getVideo(id);
 
