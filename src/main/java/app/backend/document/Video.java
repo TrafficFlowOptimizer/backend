@@ -1,6 +1,5 @@
 package app.backend.document;
 
-import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 
@@ -21,7 +20,6 @@ public class Video {
     @NotBlank
     private String timeIntervalId;
 
-    @Lob
     private byte[] data;
 
     public Video(String crossroadId, String name, String type, String timeIntervalId, byte[] data) {

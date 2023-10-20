@@ -96,20 +96,15 @@ public class VideoUtils {
     public ResponseEntity<InputStreamResource> getSampleFrame(String videoId) {
         System.out.println("Aaa");
         Video video = videoService.getVideo(videoId);
-        System.out.println("Aaa");
 
         if (video == null) {
-            System.out.println("BBB");
-
             return ResponseEntity
                     .status(NOT_FOUND)
                     .build();
         }
-        System.out.println("Aaa");
         String uuid = UUID.randomUUID().toString();
         String videoName = uuid + video.getName();
         String imageName = uuid + "img.jpg";
-        System.out.println("Aaa");
 
         if (!createTempVideoFile(video.getData(), videoName)) {
             return ResponseEntity

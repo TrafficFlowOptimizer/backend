@@ -69,7 +69,7 @@ public class VideoService {
     }
 
     public GridFSFindIterable getAllVideos() {
-        return gridFsTemplate.find(null);
+        return gridFsTemplate.find(new Query());
     }
 
     public void deleteVideoById(String id){

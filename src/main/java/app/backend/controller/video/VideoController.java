@@ -5,9 +5,9 @@ import app.backend.request.DetectionRectangle;
 import app.backend.response.VideoResponseFile;
 import app.backend.response.VideoResponseMessage;
 import app.backend.service.VideoService;
-import com.mongodb.client.model.Filters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.util.Streamable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/videos")
 public class VideoController {
 
@@ -70,28 +69,30 @@ public class VideoController {
 
     @GetMapping
     public ResponseEntity<List<VideoResponseFile>> list() {
-            List<VideoResponseFile> videos = videoService.getAllVideos()
-                    .filter(Filters.)
-                    .map(video -> {
-                String fileDownloadUri = ServletUriComponentsBuilder
-                        .fromCurrentContextPath()
-                        .path("/videos/")
-                        .path(video.getId().toString())
-                        .toUriString();
+        List<VideoResponseFile> videos = Streamable.of(videoService.getAllVideos()
+                .map(video -> {
+                    String fileDownloadUri = ServletUriComponentsBuilder
+                            .fromCurrentContextPath()
+                            .path("/videos/")
+                            .path(video.getId().toString())
+                            .toUriString();
 
-                if (video.getMetadata() != null) {
-                    return new VideoResponseFile(
-                            video.getFilename(),
-                            fileDownloadUri,
-                            video.getMetadata().get("type").toString(),
-                            video.getData().length
-                    );
-                }
-            }).collect(Collectors.toList());
+                    if (video.getMetadata() != null) {
+                        return new VideoResponseFile(
+                                video.getFilename(),
+                                fileDownloadUri,
+                                video.getMetadata().get("type").toString(),
+                                video.getLength()
+                        );
+                    } else {
+                        return null;
+                    }
+                }))
+                .toList();
 
-            return ResponseEntity
-                    .ok()
-                    .body(videos);
+        return ResponseEntity
+                .ok()
+                .body(videos);
     }
 
     @GetMapping(value="/{id}")
