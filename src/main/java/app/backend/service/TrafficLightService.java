@@ -51,7 +51,7 @@ public class TrafficLightService {
 
         TrafficLight trafficLightToUpdate = trafficLight.get();
         trafficLightToUpdate.setIndex(index);
-        trafficLightToUpdate.setType(type);
+        trafficLightToUpdate.setDirection(type);
 
         trafficLightRepository.save(trafficLightToUpdate);
 

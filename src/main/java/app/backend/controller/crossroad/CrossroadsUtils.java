@@ -118,7 +118,7 @@ public class CrossroadsUtils {
                     .stream()
                     .map(trafficLightService::getTrafficLightById)
                     .filter(light -> light.getIndex() == finalI + 1)
-                    .map(TrafficLight::getType)
+                    .map(TrafficLight::getDirection)
                     .toList();
             assert lightType.size() == 1;
             lightDirectionMap.put(i + 1, lightType.get(0));

@@ -49,9 +49,8 @@ class TrafficLightServiceTest {
     void getAndGetTrafficLightById_properTrafficLight_correctTrafficLight() {
         trafficLightService.addTrafficLight(0, FORWARD);
         int index = 1;
-        String name = "name";
-        TrafficLightType type = LEFT;
-        TrafficLight trafficLight = trafficLightService.addTrafficLight(index, type);
+        TrafficLightType direction = LEFT;
+        TrafficLight trafficLight = trafficLightService.addTrafficLight(index, direction);
         trafficLightService.addTrafficLight(2, RIGHT);
 
         String id = trafficLight.getId();
@@ -60,7 +59,7 @@ class TrafficLightServiceTest {
         assertEquals(3, trafficLightService.getTrafficLightRepository().count());
         assertEquals(id, found.getId());
         assertEquals(index, found.getIndex());
-        assertEquals(type, found.getType());
+        assertEquals(direction, found.getDirection());
     }
 
     @Test
@@ -114,15 +113,14 @@ class TrafficLightServiceTest {
         assertEquals(1, trafficLightService.getTrafficLightRepository().count());
         assertNotNull(updated);
         assertEquals(indexUpdated, updated.getIndex());
-        assertEquals(FORWARD, updated.getType());
+        assertEquals(FORWARD, updated.getDirection());
     }
 
     @Test
     void updateTrafficLightById_improperTrafficLight_trafficLightNotFound() {
         int index = 0;
-        TrafficLightType type = LEFT;
 
-        trafficLightService.addTrafficLight(index, type);
+        trafficLightService.addTrafficLight(index, LEFT);
 
         String id = "";
         int indexUpdated = 1;

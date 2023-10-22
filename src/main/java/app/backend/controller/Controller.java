@@ -129,9 +129,9 @@ public class Controller {
             String name = "Street_" + i;
             RoadType type;
             if (i % 3 == 0) {
-                type = RoadType.TARGET;
+                type = RoadType.EXIT;
             } else {
-                type = RoadType.SOURCE;
+                type = RoadType.ENTRANCE;
             }
             int capacity = -1;
             Road road = roadService.addRoad(i + 1, name, type, capacity, Float.valueOf(String.valueOf(i)), Float.valueOf(String.valueOf(i)));

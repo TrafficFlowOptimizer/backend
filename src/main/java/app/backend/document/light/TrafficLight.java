@@ -14,11 +14,11 @@ public class TrafficLight {
     private int index;
 
     @NotNull
-    private TrafficLightType type;
+    private TrafficLightType direction;
 
-    public TrafficLight(int index, @NotNull TrafficLightType type) {
+    public TrafficLight(int index, @NotNull TrafficLightType direction) {
         this.index = index;
-        this.type = type;
+        this.direction = direction;
     }
 
     public String getId() {
@@ -37,11 +37,11 @@ public class TrafficLight {
         this.index = index;
     }
 
-    public @NotNull TrafficLightType getType() {
-        return type;
+    public @NotNull TrafficLightType getDirection() {
+        return direction;
     }
 
-    public void setType(@NotNull TrafficLightType type) {
-        this.type = type;
+    public void setDirection(@NotNull TrafficLightType direction) {
+        this.direction = direction;
     }
 }

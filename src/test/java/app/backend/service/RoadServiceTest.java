@@ -53,13 +53,13 @@ class RoadServiceTest {
     public void getRoadById_properRoad_correctRoad() {
         int index = 0;
         String name = "John";
-        RoadType type = RoadType.SOURCE;
+        RoadType type = RoadType.ENTRANCE;
         int capacity = 10;
         float x = (float) 0.1;
         float y = (float) 0.2;
 
         Road road = roadService.addRoad(index, name, type, capacity, x, y);
-        roadService.addRoad(1, "Notjohn", RoadType.TARGET, 12222, (float) -0.1, (float) -0.2);
+        roadService.addRoad(1, "Notjohn", RoadType.EXIT, 12222, (float) -0.1, (float) -0.2);
 
         Road found = roadService.getRoadById(road.getId());
 
@@ -77,7 +77,7 @@ class RoadServiceTest {
     public void addRoad_properRoad_roadAdded() {
         int index = 0;
         String name = "John";
-        RoadType type = RoadType.SOURCE;
+        RoadType type = RoadType.ENTRANCE;
         int capacity = 10;
         float x = (float) 0.1;
         float y = (float) 0.2;
@@ -97,7 +97,7 @@ class RoadServiceTest {
     public void deleteRoadById_properRoad_roadDeleted() {
         int index = 0;
         String name = "John";
-        RoadType type = RoadType.SOURCE;
+        RoadType type = RoadType.ENTRANCE;
         int capacity = 10;
         float x = (float) 0.1;
         float y = (float) 0.2;
@@ -115,7 +115,7 @@ class RoadServiceTest {
     public void deleteRoadById_improperRoad_roadNotFound() {
         int index = 0;
         String name = "John";
-        RoadType type = RoadType.SOURCE;
+        RoadType type = RoadType.ENTRANCE;
         int capacity = 10;
         float x = (float) 0.1;
         float y = (float) 0.2;
@@ -131,7 +131,7 @@ class RoadServiceTest {
     public void updateRoad_properRoad_roadUpdated() {
         int index = 0;
         String name = "John";
-        RoadType type = RoadType.SOURCE;
+        RoadType type = RoadType.ENTRANCE;
         int capacity = 10;
         float x = (float) 0.1;
         float y = (float) 0.2;
@@ -141,7 +141,7 @@ class RoadServiceTest {
         String id = road.getId();
         int indexUpdated = 1;
         String nameUpdated = "Jon";
-        RoadType typeUpdated = RoadType.INTER;
+        RoadType typeUpdated = RoadType.INTERMEDIATE;
         int capacityUpdated = 11;
         float xUpdated = (float) 0.2332;
         float yUpdated = (float) -11.233;
@@ -163,7 +163,7 @@ class RoadServiceTest {
     public void updateRoad_improperRoad_roadNotFound() {
         int index = 0;
         String name = "John";
-        RoadType type = RoadType.SOURCE;
+        RoadType type = RoadType.ENTRANCE;
         int capacity = 10;
         float x = (float) 0.1;
         float y = (float) 0.2;
@@ -173,7 +173,7 @@ class RoadServiceTest {
         String id = "";
         int indexUpdated = 1;
         String nameUpdated = "Jon";
-        RoadType typeUpdated = RoadType.INTER;
+        RoadType typeUpdated = RoadType.INTERMEDIATE;
         int capacityUpdated = 11;
         float xUpdated = (float) 0.2332;
         float yUpdated = (float) -11.233;
