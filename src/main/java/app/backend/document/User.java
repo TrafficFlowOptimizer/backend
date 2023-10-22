@@ -22,7 +22,7 @@ public class User {
     @NotBlank
     @Size(min = 4, message = "{validation.name.size.too_short}")
     @Size(max = 32, message = "{validation.name.size.too_long}")
-    private String nickname;
+    private String username;
 
     @Email
     @NotBlank
@@ -31,10 +31,10 @@ public class User {
     @NotBlank
     private String password;
 
-    public User(String firstName, String lastName, String nickname, String email, String password) {
+    public User(String firstName, String lastName, String username, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.nickname = nickname;
+        this.username = username;
         this.email = email;
         this.password = password;
     }
@@ -63,12 +63,12 @@ public class User {
         this.lastName = lastName;
     }
 
-    public String getNickname() {
-        return nickname;
+    public String getUsername() {
+        return username;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {

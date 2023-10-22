@@ -22,9 +22,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(value = "{nickname}")
-    public ResponseEntity<String> userIdByNickname(@RequestParam String nickname) {
-        User user = userService.getUserByNickname(nickname);
+    @GetMapping(value = "{username}")
+    public ResponseEntity<String> userIdByUsername(@RequestParam String username) {
+        User user = userService.getUserByUsername(username);
         if (user != null) {
             return ResponseEntity
                     .ok()

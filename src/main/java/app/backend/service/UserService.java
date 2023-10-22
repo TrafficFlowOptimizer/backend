@@ -29,9 +29,9 @@ public class UserService implements UserDetailsService {
                 .orElse(null);
     }
 
-    public User getUserByNickname(String nickname) {
+    public User getUserByUsername(String username) {
         return userRepository
-                .findByNickname(nickname)
+                .findByUsername(username)
                 .orElse(null);
     }
 
@@ -42,13 +42,13 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public User addUser(String firstName, String lastName, String nickname, String email, String password) {
+    public User addUser(String firstName, String lastName, String username, String email, String password) {
         try {
             return userRepository.insert(
                     new User(
                             firstName,
                             lastName,
-                            nickname,
+                            username,
                             email,
                             password
                     )
@@ -68,7 +68,7 @@ public class UserService implements UserDetailsService {
         return user.get();
     }
 
-    public User updateUser(String id, String firstName, String lastName, String nickname, String email, String password) {
+    public User updateUser(String id, String firstName, String lastName, String username, String email, String password) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) {
             return null;
@@ -77,7 +77,7 @@ public class UserService implements UserDetailsService {
         User userToUpdate = user.get();
         userToUpdate.setFirstName(firstName);
         userToUpdate.setLastName(lastName);
-        userToUpdate.setNickname(nickname);
+        userToUpdate.setUsername(username);
         userToUpdate.setEmail(email);
         userToUpdate.setPassword(password);
 
@@ -92,7 +92,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findByNickname(username);
+        Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
             throw new UsernameNotFoundException("User with username " + username + "not found");
         }

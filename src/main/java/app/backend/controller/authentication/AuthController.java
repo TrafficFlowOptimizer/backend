@@ -79,7 +79,7 @@ public class AuthController {
         if (userService.addUser(
                 user.getFirstName(),
                 user.getLastName(),
-                user.getNickname(),
+                user.getUsername(),
                 user.getEmail(),
                 passwordEncoder.encode(user.getPassword())
         ) != null) {
