@@ -78,10 +78,17 @@ public class CrossroadController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Crossroad>> getUserCrossroads(@RequestParam(required = false) String userId) {
-        // for now if userId passed then returns PRIVATE for user and PUBLIC, else PUBLIC. In the future using session it will return PRIVATE for user and PUBLIC
-        // maybe in the future option to get only privates or publics??
-        if (userId != null) {
+    public ResponseEntity<List<Crossroad>> getUserCrossroads(
+            @RequestParam(required = false) Boolean getPrivate,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken
+    ) {
+        String userId = jwtUtil.getId(
+                jwtUtil.parseJwtClaims(
+                        jwtToken.split(" ")[1]
+                )
+        );
+
+        if (getPrivate) {
             return ResponseEntity
                     .ok()
                     .body(crossroadService.getCrossroadsByCreatorIdOrPublic(userId));
@@ -168,7 +175,7 @@ public class CrossroadController {
                         connectionRequest.getName(),
                         trafficLightsIds
                                 .stream()
-                                .filter(trafficLightId -> connectionRequest.getTrafficLightIds() != null && connectionRequest.getTrafficLightIds().contains(trafficLightService.getTrafficLightById(trafficLightId).getIndex()))
+                                .filter(trafficLightId -> connectionRequest.getTrafficLightIds().contains(trafficLightService.getTrafficLightById(trafficLightId).getIndex()))
                                 .collect(Collectors.toList()),
                         roadIds.stream()
                                 .filter(roadId -> roadService.getRoadById(roadId).getIndex() == connectionRequest.getSourceId())
