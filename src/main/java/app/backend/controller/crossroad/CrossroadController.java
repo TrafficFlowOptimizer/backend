@@ -17,9 +17,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,9 +47,14 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping(value = "/crossroad")
 public class CrossroadController {
 
+    @Value("${optimizer.host}")
+    private String OPTIMIZER_HOST;
+    @Value("${optimizer.port}")
+    private int OPTIMIZER_PORT;
     private final CrossroadService crossroadService;
     private final RoadService roadService;
     private final CollisionService collisionService;
@@ -255,9 +262,8 @@ public class CrossroadController {
                                                    @PathVariable String videoId,
                                                    @PathVariable int time
     ) {
-        int serverPort = 9091; // TODO: get from variable from environment
         String result = "{}";
-        try (Socket socket = new Socket("localhost", serverPort)) {
+        try (Socket socket = new Socket(OPTIMIZER_HOST, OPTIMIZER_PORT)) {
             JSONObject jsonData = crossroadsUtils.parseJSON(crossroadId, time);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             out.println(jsonData);
@@ -304,11 +310,10 @@ public class CrossroadController {
         return ar;
     }
 
-    @GetMapping(value = "/{crossroadId}/optimization/{time}", produces = MediaType.APPLICATION_JSON_VALUE) // TODO
+    @GetMapping(value = "/{crossroadId}/optimization/novid/{time}", produces = MediaType.APPLICATION_JSON_VALUE) // TODO
     public String getOptimizationWithoutVideo(@PathVariable String crossroadId, @PathVariable int time) {
-        int serverPort = 9091;
         String result = "{results: \"ERROR\"}";
-        try (Socket socket = new Socket("localhost", serverPort)) {
+        try (Socket socket = new Socket(OPTIMIZER_HOST, OPTIMIZER_PORT)) {
             JSONObject jsonData = crossroadsUtils.parseJSON(crossroadId, time);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             out.println(jsonData);

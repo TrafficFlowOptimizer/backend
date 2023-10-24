@@ -28,7 +28,7 @@ class CarFlowServiceTest {
 
     @Container
     private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
-            .withExposedPorts(27017);
+            .withExposedPorts(27017); // TODO: env vars
 
     @DynamicPropertySource
     static void mongoDbProperties(DynamicPropertyRegistry registry) {
