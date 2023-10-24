@@ -4,6 +4,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - MONGO_HOST=mongodb
+      - MONGO_PORT=27017
+    networks:
+      - tfo-net
     ports:
       - 8080:8080
     restart: always
+
+networks:
+  tfo-net:
+    external: true

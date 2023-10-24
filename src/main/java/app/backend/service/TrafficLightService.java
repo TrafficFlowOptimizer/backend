@@ -18,7 +18,7 @@ public class TrafficLightService {
         this.trafficLightRepository = trafficLightRepository;
     }
 
-    public TrafficLight getTrafficLightById(String id) { // TODO: error handling albo integralność przy dodawaniu
+    public TrafficLight getTrafficLightById(String id) {
         return trafficLightRepository
                 .findById(id)
                 .orElse(null);
