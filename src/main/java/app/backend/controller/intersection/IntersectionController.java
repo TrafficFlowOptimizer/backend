@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,10 +51,5 @@ public class IntersectionController {
                     .status(NOT_FOUND)
                     .build();
         }
-    }
-
-    @PutMapping(value = "/{id}")
-    public String update() {
-        return "update";
     }
 }

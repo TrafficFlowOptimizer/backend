@@ -18,7 +18,6 @@ public class Connection {
     @NotBlank
     private String name;
 
-    //@NotEmpty?
     private List<String> trafficLightIds;
 
     @NotBlank

@@ -285,7 +285,7 @@ public class CrossroadController {
         } catch (Exception e) {
             try {
                 sleep(time * 1000L);
-                result = Files.readString(Paths.get("newTemplateOutput.json"));
+                result = Files.readString(Paths.get("temp/newTemplateOutput.json"));
             } catch (Exception ignored) {
             }
         }
@@ -331,7 +331,7 @@ public class CrossroadController {
         } catch (Exception e) {
             try {
                 sleep(time * 1000L);
-                result = Files.readString(Paths.get("newTemplateOutput.json"));
+                result = Files.readString(Paths.get("temp/newTemplateOutput.json"));
             } catch (Exception ignored) {
             }
         }
@@ -348,7 +348,7 @@ public class CrossroadController {
             return crossroadsUtils.parseOutput(newestResult, secondNewestResult, crossroadId);
         } catch (Exception e) {
             try {
-                return Files.readString(Paths.get("newTemplateOutput.json"));
+                return Files.readString(Paths.get("temp/newTemplateOutput.json"));
             } catch (Exception ignored) {
                 throw new RuntimeException("Error with reading template output.");
             }

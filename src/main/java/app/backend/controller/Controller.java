@@ -134,7 +134,7 @@ public class Controller {
                 type = RoadType.ENTRANCE;
             }
             int capacity = -1;
-            Road road = roadService.addRoad(i + 1, name, type, capacity, Float.valueOf(String.valueOf(i)), Float.valueOf(String.valueOf(i)));
+            Road road = roadService.addRoad(i + 1, name, type, capacity, Float.parseFloat(String.valueOf(i)), Float.parseFloat(String.valueOf(i)));
             roadsIDs.add(road.getId());
         }
         return roadsIDs;
