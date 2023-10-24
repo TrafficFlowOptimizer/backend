@@ -265,6 +265,7 @@ public class Controller {
         String location = "Kijowska-KWielkiego";
         String creatorId = "NK";
         CrossroadType type = CrossroadType.PUBLIC;
+        String imageId = "nosuchimage";
 
         Crossroad crossroad = crossroadService.addCrossroad(
                 name,
@@ -274,7 +275,8 @@ public class Controller {
                 roadsIDs,
                 collisionsIDs,
                 connectionsIDs,
-                lightsIDs
+                lightsIDs,
+                imageId
         );
 
         crossroadService.getCrossroadById(crossroad.getId());

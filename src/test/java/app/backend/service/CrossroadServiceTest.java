@@ -70,9 +70,10 @@ class CrossroadServiceTest {
         List<String> trafficLightIds = new ArrayList<>();
         collisionIDs.add("s");
         collisionIDs.add("f");
+        String imageId = "nosuchid";
 
-        Crossroad crossroad = crossroadService.addCrossroad(name, location, creatorId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
-        crossroadService.addCrossroad("Notjohn", "Notdoe", "sdf", CrossroadType.PUBLIC, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        Crossroad crossroad = crossroadService.addCrossroad(name, location, creatorId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds, imageId);
+        crossroadService.addCrossroad("Notjohn", "Notdoe", "sdf", CrossroadType.PUBLIC, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), imageId);
 
         Crossroad found = crossroadService.getCrossroadById(crossroad.getId());
 
@@ -86,6 +87,7 @@ class CrossroadServiceTest {
         assertEquals(collisionIDs, found.getCollisionIds());
         assertEquals(connectionIds, found.getConnectionIds());
         assertEquals(trafficLightIds, found.getTrafficLightIds());
+        assertEquals(imageId, found.getImageId());
     }
 
     @Test
@@ -106,8 +108,9 @@ class CrossroadServiceTest {
         List<String> trafficLightIds = new ArrayList<>();
         collisionIDs.add("s");
         collisionIDs.add("f");
+        String imageId = "nosuchid";
 
-        Crossroad crossroad = crossroadService.addCrossroad(name, location, creatorId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
+        Crossroad crossroad = crossroadService.addCrossroad(name, location, creatorId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds, imageId);
 
         assertEquals(1, crossroadService.getCrossroadRepository().count());
         assertEquals(name, crossroad.getName());
@@ -118,6 +121,7 @@ class CrossroadServiceTest {
         assertEquals(collisionIDs, crossroad.getCollisionIds());
         assertEquals(connectionIds, crossroad.getConnectionIds());
         assertEquals(trafficLightIds, crossroad.getTrafficLightIds());
+        assertEquals(imageId, crossroad.getImageId());
     }
 
     @Test
@@ -138,8 +142,9 @@ class CrossroadServiceTest {
         List<String> trafficLightIds = new ArrayList<>();
         collisionIDs.add("s");
         collisionIDs.add("f");
+        String imageId = "nosuchid";
 
-        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
+        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds, imageId);
 
         String id = crossroad.getId();
         crossroadService.deleteCrossroadById(id);
@@ -166,8 +171,9 @@ class CrossroadServiceTest {
         List<String> trafficLightIds = new ArrayList<>();
         collisionIDs.add("s");
         collisionIDs.add("f");
+        String imageId = "nosuchid";
 
-        crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
+        crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds, imageId);
 
         String id = "";
         assertNull(crossroadService.deleteCrossroadById(id));
@@ -192,8 +198,9 @@ class CrossroadServiceTest {
         List<String> trafficLightIds = new ArrayList<>();
         collisionIDs.add("s");
         collisionIDs.add("f");
+        String imageId = "nosuchid";
 
-        Crossroad crossroad = crossroadService.addCrossroad(name, location, creatorId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
+        Crossroad crossroad = crossroadService.addCrossroad(name, location, creatorId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds, imageId);
 
         String id = crossroad.getId();
         String nameUpdated = "Johna";
@@ -214,8 +221,9 @@ class CrossroadServiceTest {
         List<String> trafficLightIdsUpdated = new ArrayList<>();
         collisionIDs.add("iwopeq");
         collisionIDs.add("als");
+        String imageIdUpdated = "updatedid";
 
-        crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, creatorIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated, connectionIdsUpdated, trafficLightIdsUpdated);
+        crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, creatorIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated, connectionIdsUpdated, trafficLightIdsUpdated, imageIdUpdated);
         Crossroad updated = crossroadService.getCrossroadById(id);
 
         assertEquals(1, crossroadService.getCrossroadRepository().count());
@@ -228,6 +236,7 @@ class CrossroadServiceTest {
         assertEquals(collisionIDsUpdated, updated.getCollisionIds());
         assertEquals(connectionIds, updated.getConnectionIds());
         assertEquals(trafficLightIds, updated.getTrafficLightIds());
+        assertEquals(imageIdUpdated, updated.getImageId());
     }
 
     @Test
@@ -248,8 +257,9 @@ class CrossroadServiceTest {
         List<String> trafficLightIds = new ArrayList<>();
         collisionIDs.add("s");
         collisionIDs.add("f");
+        String imageId = "nosuchid";
 
-        Crossroad crossroad = crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds);
+        crossroadService.addCrossroad(name, location, ownerId, type, roadIDs, collisionIDs, connectionIds, trafficLightIds, imageId);
 
         String id = "";
         String nameUpdated = "Johna";
@@ -270,8 +280,9 @@ class CrossroadServiceTest {
         List<String> trafficLightIdsUpdated = new ArrayList<>();
         collisionIDs.add("iwopeq");
         collisionIDs.add("als");
+        String imageIdUpdated = "updatedid";
 
-        assertNull(crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, ownerIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated, connectionIdsUpdated, trafficLightIdsUpdated));
+        assertNull(crossroadService.updateCrossroad(id, nameUpdated, locationUpdated, ownerIdUpdated, typeUpdated, roadIDsUpdated, collisionIDsUpdated, connectionIdsUpdated, trafficLightIdsUpdated, imageIdUpdated));
         assertNull(crossroadService.deleteCrossroadById(id));
         assertEquals(1, crossroadService.getCrossroadRepository().count());
     }

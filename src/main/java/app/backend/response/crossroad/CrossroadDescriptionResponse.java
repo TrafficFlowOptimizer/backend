@@ -14,13 +14,22 @@ public class CrossroadDescriptionResponse {
     private List<Collision> collisions;
     private List<Connection> connections;
     private List<TrafficLight> trafficLights;
+    private byte[] image;
 
-    public CrossroadDescriptionResponse(Crossroad crossroad, List<Road> roads, List<Collision> collisions, List<Connection> connections, List<TrafficLight> trafficLights) {
+    public CrossroadDescriptionResponse(
+            Crossroad crossroad,
+            List<Road> roads,
+            List<Collision> collisions,
+            List<Connection> connections,
+            List<TrafficLight> trafficLights,
+            byte[] image
+    ) {
         this.crossroad = crossroad;
         this.roads = roads;
         this.collisions = collisions;
         this.connections = connections;
         this.trafficLights = trafficLights;
+        this.image = image;
     }
 
     public Crossroad getCrossroad() {
@@ -61,5 +70,13 @@ public class CrossroadDescriptionResponse {
 
     public void setTrafficLights(List<TrafficLight> trafficLights) {
         this.trafficLights = trafficLights;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 }

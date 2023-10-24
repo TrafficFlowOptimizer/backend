@@ -54,7 +54,7 @@ public class CrossroadService {
                 .collect(Collectors.toList());
     }
 
-    public Crossroad addCrossroad(String name, String location, String ownerId, CrossroadType type, List<String> roadIDs, List<String> collisionIDs, List<String> connectionIds, List<String> trafficLightIds) {
+    public Crossroad addCrossroad(String name, String location, String ownerId, CrossroadType type, List<String> roadIDs, List<String> collisionIDs, List<String> connectionIds, List<String> trafficLightIds, String imageId) {
         return crossroadRepository.insert(
                 new Crossroad(
                         name,
@@ -64,7 +64,8 @@ public class CrossroadService {
                         roadIDs,
                         collisionIDs,
                         connectionIds,
-                        trafficLightIds
+                        trafficLightIds,
+                        imageId
                 )
         );
     }
@@ -88,7 +89,8 @@ public class CrossroadService {
             List<String> roadIDs,
             List<String> collisionIDs,
             List<String> connectionIds,
-            List<String> trafficLightIds
+            List<String> trafficLightIds,
+            String imageId
     ) {
         Optional<Crossroad> crossroad = crossroadRepository.findById(id);
         if (crossroad.isEmpty()) {
@@ -102,8 +104,9 @@ public class CrossroadService {
         crossroadToUpdate.setType(type);
         crossroadToUpdate.setRoadIds(roadIDs);
         crossroadToUpdate.setCollisionIds(collisionIDs);
-        crossroadToUpdate.setCollisionIds(connectionIds);
-        crossroadToUpdate.setCollisionIds(trafficLightIds);
+        crossroadToUpdate.setConnectionIds(connectionIds);
+        crossroadToUpdate.setTrafficLightIds(trafficLightIds);
+        crossroadToUpdate.setImageId(imageId);
 
         crossroadRepository.save(crossroadToUpdate);
 

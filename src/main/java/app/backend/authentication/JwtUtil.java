@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class JwtUtil {
 
     @Value("${secret.key}")
-    private String secret_key = "randomoweznaki";
+    private final String secret_key = "randomoweznaki";
     private final long accessTokenValidity = TimeUnit.MINUTES.toMillis(60);
 
     private final JwtParser jwtParser;

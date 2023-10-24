@@ -7,10 +7,13 @@ import app.backend.response.crossroad.CrossroadDescriptionResponse;
 import app.backend.service.CollisionService;
 import app.backend.service.ConnectionService;
 import app.backend.service.CrossroadService;
+import app.backend.service.ImageService;
 import app.backend.service.OptimizationService;
 import app.backend.service.RoadService;
 import app.backend.service.TrafficLightService;
 import app.backend.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +23,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -38,6 +41,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
@@ -51,8 +55,10 @@ public class CrossroadController {
     private final TrafficLightService trafficLightService;
     private final UserService userService;
     private final OptimizationService optimizationService;
+    private final ImageService imageService;
     private final CrossroadsUtils crossroadsUtils;
     private final JwtUtil jwtUtil;
+    private final ObjectMapper jsonMapper;
 
     @Autowired
     public CrossroadController(
@@ -63,8 +69,10 @@ public class CrossroadController {
             TrafficLightService trafficLightService,
             UserService userService,
             OptimizationService optimizationService,
+            ImageService imageService,
             CrossroadsUtils crossroadsUtils,
-            JwtUtil jwtUtil
+            JwtUtil jwtUtil,
+            ObjectMapper jsonMapper
     ) {
         this.crossroadService = crossroadService;
         this.roadService = roadService;
@@ -73,8 +81,10 @@ public class CrossroadController {
         this.trafficLightService = trafficLightService;
         this.userService = userService;
         this.optimizationService = optimizationService;
+        this.imageService = imageService;
         this.crossroadsUtils = crossroadsUtils;
         this.jwtUtil = jwtUtil;
+        this.jsonMapper = jsonMapper;
     }
 
     @GetMapping
@@ -88,7 +98,7 @@ public class CrossroadController {
                 )
         );
 
-        if (getPrivate) {
+        if (getPrivate != null && getPrivate) {
             return ResponseEntity
                     .ok()
                     .body(crossroadService.getCrossroadsByCreatorIdOrPublic(userId));
@@ -125,7 +135,8 @@ public class CrossroadController {
                 crossroad.getTrafficLightIds()
                         .stream()
                         .map(trafficLightService::getTrafficLightById)
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList()),
+                imageService.getImage(crossroad.getImageId())
         );
 
         return ResponseEntity
@@ -135,7 +146,8 @@ public class CrossroadController {
 
     @PostMapping() // TODO: try catch nosuchelement
     public ResponseEntity<Boolean> addCrossroad(
-            @RequestBody CrossroadDescriptionRequest crossroadDescriptionRequest,
+            @RequestParam("description") String crossroadDescriptionRequest,
+            @RequestParam("image") MultipartFile image,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken
     ) {
         String creatorId = jwtUtil.getId(
@@ -144,7 +156,16 @@ public class CrossroadController {
                 )
         );
 
-        List<String> roadIds = crossroadDescriptionRequest
+        CrossroadDescriptionRequest crossroadDescription;
+        try {
+            crossroadDescription = jsonMapper.readValue(crossroadDescriptionRequest, CrossroadDescriptionRequest.class);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity
+                    .status(BAD_REQUEST)
+                    .build();
+        }
+
+        List<String> roadIds = crossroadDescription
                 .getRoads()
                 .stream()
                 .map(roadRequest -> roadService.addRoad(
@@ -158,7 +179,7 @@ public class CrossroadController {
                 )
                 .collect(Collectors.toList());
 
-        List<String> trafficLightsIds = crossroadDescriptionRequest
+        List<String> trafficLightsIds = crossroadDescription
                 .getTrafficLights()
                 .stream()
                 .map(trafficLightRequest -> trafficLightService.addTrafficLight(
@@ -167,7 +188,7 @@ public class CrossroadController {
                 ).getId())
                 .collect(Collectors.toList());
 
-        List<String> connectionIds = crossroadDescriptionRequest
+        List<String> connectionIds = crossroadDescription
                 .getConnections()
                 .stream()
                 .map(connectionRequest -> connectionService.addConnection(
@@ -189,7 +210,7 @@ public class CrossroadController {
                 ).getId())
                 .collect(Collectors.toList());
 
-        List<String> collisionIds = crossroadDescriptionRequest
+        List<String> collisionIds = crossroadDescription
                 .getCollisions()
                 .stream()
                 .map(collisionRequest -> collisionService.addCollision(
@@ -209,15 +230,18 @@ public class CrossroadController {
                 ).getId())
                 .collect(Collectors.toList());
 
+        String imageId = imageService.store(image);
+
         crossroadService.addCrossroad(
-                crossroadDescriptionRequest.getCrossroad().getName(),
-                crossroadDescriptionRequest.getCrossroad().getLocation(),
+                crossroadDescription.getCrossroad().getName(),
+                crossroadDescription.getCrossroad().getLocation(),
                 creatorId,
-                crossroadDescriptionRequest.getCrossroad().getType(),
+                crossroadDescription.getCrossroad().getType(),
                 roadIds,
                 collisionIds,
                 connectionIds,
-                trafficLightsIds
+                trafficLightsIds,
+                imageId
         );
 
         return ResponseEntity

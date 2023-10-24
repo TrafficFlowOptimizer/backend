@@ -15,7 +15,6 @@ public class Crossroad {
     @NotBlank
     private String name;
 
-    // TODO: Location type might be better
     @NotBlank
     private String location;
 
@@ -33,8 +32,19 @@ public class Crossroad {
     private List<String> connectionIds;
     //@NotEmpty
     private List<String> trafficLightIds;
+    private String imageId;
 
-    public Crossroad(String name, String location, String creatorId, @NotNull CrossroadType type, List<String> roadIds, List<String> collisionIds, List<String> connectionIds, List<String> trafficLightIds) {
+    public Crossroad(
+            String name,
+            String location,
+            String creatorId,
+            @NotNull CrossroadType type,
+            List<String> roadIds,
+            List<String> collisionIds,
+            List<String> connectionIds,
+            List<String> trafficLightIds,
+            String imageId
+    ) {
         this.name = name;
         this.location = location;
         this.creatorId = creatorId;
@@ -43,6 +53,7 @@ public class Crossroad {
         this.collisionIds = collisionIds;
         this.connectionIds = connectionIds;
         this.trafficLightIds = trafficLightIds;
+        this.imageId = imageId;
     }
 
     public String getId() {
@@ -115,5 +126,13 @@ public class Crossroad {
 
     public void setTrafficLightIds(List<String> trafficLightIds) {
         this.trafficLightIds = trafficLightIds;
+    }
+
+    public String getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(String imageId) {
+        this.imageId = imageId;
     }
 }

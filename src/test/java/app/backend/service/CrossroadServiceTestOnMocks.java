@@ -30,7 +30,7 @@ class CrossroadServiceTestOnMocks {
 
     @Test
     void testGetCrossroadsByCreatorIdOrPublic_forPublicCrossroads() {
-        Crossroad publicCrossroad = new Crossroad("Grunwaldzkie", "Cracow", "otherId", CrossroadType.PUBLIC, null, null, null, null);
+        Crossroad publicCrossroad = new Crossroad("Grunwaldzkie", "Cracow", "otherId", CrossroadType.PUBLIC, null, null, null, null, null);
         when(crossroadRepository.findAll()).thenReturn(List.of(publicCrossroad));
 
         List<Crossroad> result = crossroadService.getCrossroadsByCreatorIdOrPublic("someId");
@@ -42,7 +42,7 @@ class CrossroadServiceTestOnMocks {
     @Test
     void testGetCrossroadsByCreatorIdOrPublic_forMatchingCreatorId() {
         String myId = "myId";
-        Crossroad crossroadWithMatchingCreator = new Crossroad("Grunwaldzkie", "Cracow", myId, CrossroadType.PUBLIC, null, null, null, null);
+        Crossroad crossroadWithMatchingCreator = new Crossroad("Grunwaldzkie", "Cracow", myId, CrossroadType.PUBLIC, null, null, null, null, null);
         when(crossroadRepository.findAll()).thenReturn(List.of(crossroadWithMatchingCreator));
 
         List<Crossroad> result = crossroadService.getCrossroadsByCreatorIdOrPublic(myId);
@@ -53,7 +53,7 @@ class CrossroadServiceTestOnMocks {
 
     @Test
     void testGetCrossroadsByCreatorIdOrPublic_forNonMatchingCreatorIdAndNotPublic() {
-        Crossroad privateCrossroad = new Crossroad("Grunwaldzkie", "Cracow", "anotherCreator", CrossroadType.PRIVATE, null, null, null, null);
+        Crossroad privateCrossroad = new Crossroad("Grunwaldzkie", "Cracow", "anotherCreator", CrossroadType.PRIVATE, null, null, null, null, null);
         when(crossroadRepository.findAll()).thenReturn(List.of(privateCrossroad));
 
         List<Crossroad> result = crossroadService.getCrossroadsByCreatorIdOrPublic("myId");
@@ -63,11 +63,11 @@ class CrossroadServiceTestOnMocks {
 
     @Test
     void testGetCrossroadsByCreatorIdOrPublic_forMultipleCrossroads() {
-        Crossroad publicCrossroad = new Crossroad("Grunwaldzkie", "Cracow", "anotherCreator", CrossroadType.PUBLIC, null, null, null, null);
+        Crossroad publicCrossroad = new Crossroad("Grunwaldzkie", "Cracow", "anotherCreator", CrossroadType.PUBLIC, null, null, null, null, null);
 
-        Crossroad crossroadWithMatchingCreator = new Crossroad("Grunwaldzkie", "Cracow", "creator123", CrossroadType.PRIVATE, null, null, null, null);
+        Crossroad crossroadWithMatchingCreator = new Crossroad("Grunwaldzkie", "Cracow", "creator123", CrossroadType.PRIVATE, null, null, null, null, null);
 
-        Crossroad privateCrossroad = new Crossroad("Grunwaldzkie", "Cracow", "anotherCreator", CrossroadType.PRIVATE, null, null, null, null);
+        Crossroad privateCrossroad = new Crossroad("Grunwaldzkie", "Cracow", "anotherCreator", CrossroadType.PRIVATE, null, null, null, null, null);
 
         when(crossroadRepository.findAll()).thenReturn(Arrays.asList(publicCrossroad, crossroadWithMatchingCreator, privateCrossroad));
 
