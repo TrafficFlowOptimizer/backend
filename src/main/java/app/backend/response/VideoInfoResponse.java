@@ -1,13 +1,13 @@
 package app.backend.response;
 
-public class VideoResponseFile {
+public class VideoInfoResponse {
 
     private String name;
     private String url;
     private String type;
     private long size;
 
-    public VideoResponseFile(String name, String url, String type, long size) {
+    public VideoInfoResponse(String name, String url, String type, long size) {
         this.name = name;
         this.url = url;
         this.type = type;

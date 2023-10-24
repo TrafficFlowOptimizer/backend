@@ -2,8 +2,7 @@ package app.backend.controller.video;
 
 import app.backend.document.Video;
 import app.backend.request.DetectionRectangle;
-import app.backend.response.VideoResponseFile;
-import app.backend.response.VideoResponseMessage;
+import app.backend.response.VideoInfoResponse;
 import app.backend.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -41,7 +40,7 @@ public class VideoController {
     }
 
     @PostMapping(value = "/upload")
-    public ResponseEntity<VideoResponseMessage> upload(
+    public ResponseEntity<String> upload(
             @RequestParam("file") MultipartFile video,
             @RequestParam("crossroadId") String crossroadId,
             @RequestParam("timeIntervalId") String timeIntervalId
@@ -49,14 +48,13 @@ public class VideoController {
         String videoId = videoService.store(video, crossroadId, timeIntervalId);
 
         if (videoId != null) {
-            String message = "Video: " + video.getOriginalFilename() + " uploaded successfully with id: " + videoId;
             return ResponseEntity
                     .ok()
-                    .body(new VideoResponseMessage(message));
+                    .body("Video: " + video.getOriginalFilename() + " uploaded successfully with id: " + videoId);
         } else {
             return ResponseEntity
                     .status(HttpStatus.EXPECTATION_FAILED)
-                    .body(new VideoResponseMessage("Video upload failed!"));
+                    .body("Video upload failed!");
         }
     }
 
@@ -75,8 +73,8 @@ public class VideoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VideoResponseFile>> list() {
-        List<VideoResponseFile> videos = Streamable.of(videoService.getAllVideos()
+    public ResponseEntity<List<VideoInfoResponse>> list() {
+        List<VideoInfoResponse> videos = Streamable.of(videoService.getAllVideos()
                         .map(video -> {
                             String fileDownloadUri = ServletUriComponentsBuilder
                                     .fromCurrentContextPath()
@@ -85,7 +83,7 @@ public class VideoController {
                                     .toUriString();
 
                             if (video.getMetadata() != null) {
-                                return new VideoResponseFile(
+                                return new VideoInfoResponse(
                                         video.getFilename(),
                                         fileDownloadUri,
                                         video.getMetadata().get("type").toString(),
