@@ -312,6 +312,9 @@ public class CrossroadController {
 
     @GetMapping(value = "/{crossroadId}/optimization/novid/{time}", produces = MediaType.APPLICATION_JSON_VALUE) // TODO
     public String getOptimizationWithoutVideo(@PathVariable String crossroadId, @PathVariable int time) {
+
+        // TODO: use OptimizationRequest class and create OptimizationResponse class
+
         String result = "{results: \"ERROR\"}";
         try (Socket socket = new Socket(OPTIMIZER_HOST, OPTIMIZER_PORT)) {
             JSONObject jsonData = crossroadsUtils.parseJSON(crossroadId, time);
