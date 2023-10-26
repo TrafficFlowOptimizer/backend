@@ -14,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.UnknownHttpStatusCodeException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -332,7 +335,8 @@ public class CrossroadController {
 
     @GetMapping(value = "/{crossroadId}/optimization/novid/{time}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getOptimizationWithoutVideo(@PathVariable String crossroadId, @PathVariable int time) {
-        OptimizationRequest optimizationRequest = crossroadsUtils.getOptimizationRequest(crossroadId, time);
+//        OptimizationRequest optimizationRequest = crossroadsUtils.getOptimizationRequest(crossroadId, time);
+        OptimizationRequest optimizationRequest = new OptimizationRequest();
 
         String url = "http://localhost:9091/optimization";
         HttpHeaders headers = new HttpHeaders();
@@ -340,20 +344,18 @@ public class CrossroadController {
 
         HttpEntity<OptimizationRequest> requestEntity = new HttpEntity<>(optimizationRequest, headers);
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-        int responseStatusCode = response.getStatusCode().value();
 
-        if (responseStatusCode >= 500) { // OT fault
-            return ResponseEntity.status(SERVICE_UNAVAILABLE).body("Optimizer unavailable\n" + responseStatusCode);
-        } else if (responseStatusCode >= 400) { // BE fault
-            return ResponseEntity.status(BAD_REQUEST).body("Invalid data given to optimizer\n" + responseStatusCode);
-        } else if (responseStatusCode >= 300) { // Redirection
-            return ResponseEntity.status(CONFLICT).body("There was some redirecting\n" + responseStatusCode);
-        } else if (responseStatusCode >= 200) { // OK
-            return response;
-        } else {
-            return ResponseEntity.status(NOT_FOUND).body("Something weird happened\n" + responseStatusCode);
+        ResponseEntity<String> response;
+        try {
+            response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+        } catch (HttpClientErrorException exception) {
+            return ResponseEntity.status(BAD_REQUEST).body("Invalid data given to optimizer\n");
+        } catch (HttpServerErrorException exception) {
+            return ResponseEntity.status(SERVICE_UNAVAILABLE).body("Optimizer unavailable\n");
+        } catch (UnknownHttpStatusCodeException exception) {
+            return ResponseEntity.status(NOT_FOUND).body("Something weird happened\n");
         }
+        return response;
     }
 
     @GetMapping(value = "/{crossroadId}/optimization_results", produces = MediaType.APPLICATION_JSON_VALUE) // TODO
