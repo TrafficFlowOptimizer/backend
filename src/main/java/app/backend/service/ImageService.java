@@ -8,9 +8,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class ImageService {
@@ -23,18 +24,12 @@ public class ImageService {
         this.gridFsOperations = gridFsOperations;
     }
 
-    public String store(MultipartFile file) {
+    public String store(String image) {
         ObjectId objectId;
-        try {
-            objectId = gridFsTemplate.store(
-                    file.getInputStream(),
-                    file.getOriginalFilename(),
-                    file.getContentType(),
-                    null
-            );
-        } catch (IOException e) {
-            return null;
-        }
+        objectId = gridFsTemplate.store(
+                new ByteArrayInputStream(image.getBytes(StandardCharsets.UTF_8)),
+                ""
+        );
 
         return objectId.toString();
     }

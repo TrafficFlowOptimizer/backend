@@ -14,7 +14,7 @@ public class CrossroadDescriptionResponse {
     private List<Collision> collisions;
     private List<Connection> connections;
     private List<TrafficLight> trafficLights;
-    private byte[] image;
+    private String image;
 
     public CrossroadDescriptionResponse(
             Crossroad crossroad,
@@ -22,7 +22,7 @@ public class CrossroadDescriptionResponse {
             List<Collision> collisions,
             List<Connection> connections,
             List<TrafficLight> trafficLights,
-            byte[] image
+            String image
     ) {
         this.crossroad = crossroad;
         this.roads = roads;
@@ -72,11 +72,11 @@ public class CrossroadDescriptionResponse {
         this.trafficLights = trafficLights;
     }
 
-    public byte[] getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(String image) {
         this.image = image;
     }
 }

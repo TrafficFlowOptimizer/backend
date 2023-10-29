@@ -5,24 +5,42 @@ import app.backend.document.crossroad.Crossroad;
 import app.backend.request.crossroad.CrossroadDescriptionRequest;
 import app.backend.request.optimization.OptimizationRequest;
 import app.backend.response.crossroad.CrossroadDescriptionResponse;
-import app.backend.service.*;
+import app.backend.service.CollisionService;
+import app.backend.service.ConnectionService;
+import app.backend.service.CrossroadService;
+import app.backend.service.ImageService;
+import app.backend.service.OptimizationService;
+import app.backend.service.RoadService;
+import app.backend.service.TrafficLightService;
+import app.backend.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -32,7 +50,9 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 
 @RestController
 @CrossOrigin("*")
@@ -107,7 +127,8 @@ public class CrossroadController {
     @GetMapping(value = "/{crossroadId}")
     public ResponseEntity<CrossroadDescriptionResponse> getCrossroad(@PathVariable String crossroadId) {
         Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
-        if (crossroad == null) {
+        byte[] image = imageService.getImage(crossroad.getImageId());
+        if (crossroad == null || image == null) {
             return ResponseEntity
                     .status(NOT_FOUND)
                     .build();
@@ -131,7 +152,7 @@ public class CrossroadController {
                         .stream()
                         .map(trafficLightService::getTrafficLightById)
                         .collect(Collectors.toList()),
-                imageService.getImage(crossroad.getImageId())
+                new String(image, StandardCharsets.UTF_8)
         );
 
         return ResponseEntity
@@ -142,7 +163,7 @@ public class CrossroadController {
     @PostMapping() // TODO: try catch nosuchelement
     public ResponseEntity<Boolean> addCrossroad(
             @RequestParam("description") String crossroadDescriptionRequest,
-            @RequestParam("image") MultipartFile image,
+            @RequestParam("image") String image,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken
     ) {
         String creatorId = jwtUtil.getId(
@@ -246,9 +267,9 @@ public class CrossroadController {
 
     @GetMapping(value = "/{crossroadId}/optimization/{videoId}/{time}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getOptimization( // TODO: change to JSONObject
-                                                   @PathVariable String crossroadId,
-                                                   @PathVariable String videoId,
-                                                   @PathVariable int time
+           @PathVariable String crossroadId,
+           @PathVariable String videoId,
+           @PathVariable int time
     ) {
         String result = "{}";
         try (Socket socket = new Socket(OPTIMIZER_HOST, OPTIMIZER_PORT)) {
