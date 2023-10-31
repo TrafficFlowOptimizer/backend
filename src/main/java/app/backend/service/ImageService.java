@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 @Service
 public class ImageService {
@@ -28,7 +29,7 @@ public class ImageService {
         ObjectId objectId;
         objectId = gridFsTemplate.store(
                 new ByteArrayInputStream(image.getBytes(StandardCharsets.UTF_8)),
-                ""
+                UUID.randomUUID().toString()
         );
 
         return objectId.toString();
