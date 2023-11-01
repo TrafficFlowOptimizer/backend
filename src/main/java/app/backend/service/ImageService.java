@@ -1,5 +1,7 @@
 package app.backend.service;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +28,14 @@ public class ImageService {
     }
 
     public String store(String image) {
+        DBObject metadata = new BasicDBObject();
+        metadata.put("type", "img");
+
         ObjectId objectId;
         objectId = gridFsTemplate.store(
                 new ByteArrayInputStream(image.getBytes(StandardCharsets.UTF_8)),
-                UUID.randomUUID().toString()
+                UUID.randomUUID().toString(),
+                metadata
         );
 
         return objectId.toString();
@@ -51,5 +57,9 @@ public class ImageService {
 
     public void deleteImageById(String id) {
         gridFsTemplate.delete(new Query(Criteria.where("_id").is(id)));
+    }
+
+    public void deleteAll() {
+        gridFsTemplate.delete(new Query(Criteria.where("metadata.type").is("img")));
     }
 }
