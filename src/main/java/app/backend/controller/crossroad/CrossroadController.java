@@ -12,7 +12,6 @@ import app.backend.service.ImageService;
 import app.backend.service.OptimizationService;
 import app.backend.service.RoadService;
 import app.backend.service.TrafficLightService;
-import app.backend.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
@@ -25,6 +24,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,6 +53,7 @@ import static java.lang.Thread.sleep;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestController
 @CrossOrigin("*")
@@ -68,7 +69,6 @@ public class CrossroadController {
     private final CollisionService collisionService;
     private final ConnectionService connectionService;
     private final TrafficLightService trafficLightService;
-    private final UserService userService;
     private final OptimizationService optimizationService;
     private final ImageService imageService;
     private final CrossroadsUtils crossroadsUtils;
@@ -82,7 +82,6 @@ public class CrossroadController {
             CollisionService collisionService,
             ConnectionService connectionService,
             TrafficLightService trafficLightService,
-            UserService userService,
             OptimizationService optimizationService,
             ImageService imageService,
             CrossroadsUtils crossroadsUtils,
@@ -94,7 +93,6 @@ public class CrossroadController {
         this.collisionService = collisionService;
         this.connectionService = connectionService;
         this.trafficLightService = trafficLightService;
-        this.userService = userService;
         this.optimizationService = optimizationService;
         this.imageService = imageService;
         this.crossroadsUtils = crossroadsUtils;
@@ -160,7 +158,7 @@ public class CrossroadController {
                 .body(crossroadDescriptionResponse);
     }
 
-    @PostMapping() // TODO: try catch nosuchelement
+    @PostMapping() // TODO: delete objects when error occurs while adding
     public ResponseEntity<Boolean> addCrossroad(
             @RequestParam("description") String crossroadDescriptionRequest,
             @RequestParam("image") String image,
@@ -303,6 +301,53 @@ public class CrossroadController {
         return ResponseEntity
                 .ok()
                 .body(result);
+    }
+
+    @DeleteMapping(value = "/{crossroadId}")
+    public ResponseEntity<Boolean> deleteCrossroad(
+            @PathVariable String crossroadId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken
+    ) {
+        String creatorId = jwtUtil.getId(
+                jwtUtil.parseJwtClaims(
+                        jwtToken.split(" ")[1]
+                )
+        );
+
+        Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
+        if (crossroad == null) {
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        } else if (crossroad.getCreatorId().equals(creatorId)) {
+            return ResponseEntity
+                    .status(UNAUTHORIZED)
+                    .build();
+        }
+
+        for (String roadId : crossroad.getRoadIds()) {
+            roadService.deleteRoadById(roadId);
+        }
+
+        for (String collisionId : crossroad.getCollisionIds()) {
+            collisionService.deleteCollisionById(collisionId);
+        }
+
+        for (String connectionId : crossroad.getConnectionIds()) {
+            connectionService.deleteConnectionById(connectionId);
+        }
+
+        for (String trafficLightId : crossroad.getTrafficLightIds()) {
+            trafficLightService.deleteTrafficLightById(trafficLightId);
+        }
+
+        imageService.deleteImageById(crossroad.getImageId());
+
+        crossroadService.deleteCrossroadById(crossroadId);
+
+        return ResponseEntity
+                .ok()
+                .body(true);
     }
 
     private List<List<Integer>> convertJSONArrayToArray(String jsonArray) {
