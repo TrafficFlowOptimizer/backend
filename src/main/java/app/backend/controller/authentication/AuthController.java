@@ -77,8 +77,6 @@ public class AuthController {
     @PostMapping(value = "/register")
     public ResponseEntity<Boolean> register(@RequestBody @Valid User user) {
         if (userService.addUser(
-                user.getFirstName(),
-                user.getLastName(),
                 user.getUsername(),
                 user.getEmail(),
                 passwordEncoder.encode(user.getPassword())

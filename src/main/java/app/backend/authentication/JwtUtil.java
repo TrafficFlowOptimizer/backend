@@ -33,8 +33,6 @@ public class JwtUtil {
 
     public String createToken(User user) {
         Claims claims = Jwts.claims().setSubject(user.getId());
-        claims.put("firstName", user.getFirstName());
-        claims.put("lastName", user.getLastName());
         Date tokenCreateTime = new Date();
         Date tokenValidity = new Date(tokenCreateTime.getTime() + TimeUnit.MINUTES.toMillis(accessTokenValidity));
 

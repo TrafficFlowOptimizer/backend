@@ -11,13 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class User {
     @Id
     private String id;
-
-    @NotBlank
-    private String firstName;
-
-    @NotBlank
-    private String lastName;
-
     @Indexed(unique = true)
     @NotBlank
     @Size(min = 4, message = "{validation.name.size.too_short}")
@@ -31,9 +24,7 @@ public class User {
     @NotBlank
     private String password;
 
-    public User(String firstName, String lastName, String username, String email, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -45,22 +36,6 @@ public class User {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public String getUsername() {
