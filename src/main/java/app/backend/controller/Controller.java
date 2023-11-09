@@ -117,7 +117,7 @@ public class Controller {
             } else {
                 carFlowValue = 12;
             }
-            CarFlow carFlow = carFlowService.addCarFlow(carFlowValue, timeInterval.getId());
+            CarFlow carFlow = carFlowService.addCarFlow(carFlowValue, 1, timeInterval.getId());
             carFlowsIDs.add(carFlow.getId());
         }
         return carFlowsIDs;

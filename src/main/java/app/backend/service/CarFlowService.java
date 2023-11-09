@@ -23,10 +23,11 @@ public class CarFlowService {
                 .orElse(null);
     }
 
-    public CarFlow addCarFlow(double carFlow, String timeIntervalId) {
+    public CarFlow addCarFlow(double carFlow, int version, String timeIntervalId) {
         return carFlowRepository.insert(
                 new CarFlow(
                         carFlow,
+                        version,
                         timeIntervalId
                 )
         );
