@@ -39,7 +39,6 @@ public class VideoService {
             objectId = gridFsTemplate.store(
                     file.getInputStream(),
                     file.getOriginalFilename(),
-                    file.getContentType(),
                     metadata
             );
         } catch (IOException e) {
@@ -63,7 +62,8 @@ public class VideoService {
                         gridFsOperations.getResource(file).getInputStream().readAllBytes()
                 );
                 video.setId(file.getId().toString());
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                return null;
             }
         }
 
@@ -76,5 +76,9 @@ public class VideoService {
 
     public void deleteVideoById(String id) {
         gridFsTemplate.delete(new Query(Criteria.where("_id").is(id)));
+    }
+
+    public void deleteVideoByCrossroadId(String crossroadId) {
+        gridFsTemplate.delete(new Query(Criteria.where("metadata.crossroadId").is(crossroadId)));
     }
 }

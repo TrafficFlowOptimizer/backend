@@ -12,6 +12,24 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.UnknownHttpStatusCodeException;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -23,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -33,6 +52,10 @@ import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
 import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestController
 @CrossOrigin("*")
@@ -48,7 +71,6 @@ public class CrossroadController {
     private final CollisionService collisionService;
     private final ConnectionService connectionService;
     private final TrafficLightService trafficLightService;
-    private final UserService userService;
     private final OptimizationService optimizationService;
     private final ImageService imageService;
     private final CrossroadsUtils crossroadsUtils;
@@ -62,7 +84,6 @@ public class CrossroadController {
             CollisionService collisionService,
             ConnectionService connectionService,
             TrafficLightService trafficLightService,
-            UserService userService,
             OptimizationService optimizationService,
             ImageService imageService,
             CrossroadsUtils crossroadsUtils,
@@ -74,7 +95,6 @@ public class CrossroadController {
         this.collisionService = collisionService;
         this.connectionService = connectionService;
         this.trafficLightService = trafficLightService;
-        this.userService = userService;
         this.optimizationService = optimizationService;
         this.imageService = imageService;
         this.crossroadsUtils = crossroadsUtils;
@@ -107,7 +127,8 @@ public class CrossroadController {
     @GetMapping(value = "/{crossroadId}")
     public ResponseEntity<CrossroadDescriptionResponse> getCrossroad(@PathVariable String crossroadId) {
         Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
-        if (crossroad == null) {
+        byte[] image = imageService.getImage(crossroad.getImageId());
+        if (crossroad == null || image == null) {
             return ResponseEntity
                     .status(NOT_FOUND)
                     .build();
@@ -131,7 +152,7 @@ public class CrossroadController {
                         .stream()
                         .map(trafficLightService::getTrafficLightById)
                         .collect(Collectors.toList()),
-                imageService.getImage(crossroad.getImageId())
+                new String(image, StandardCharsets.UTF_8)
         );
 
         return ResponseEntity
@@ -139,10 +160,10 @@ public class CrossroadController {
                 .body(crossroadDescriptionResponse);
     }
 
-    @PostMapping() // TODO: try catch nosuchelement
+    @PostMapping() // TODO: delete objects when error occurs while adding
     public ResponseEntity<Boolean> addCrossroad(
             @RequestParam("description") String crossroadDescriptionRequest,
-            @RequestParam("image") MultipartFile image,
+            @RequestParam("image") String image,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken
     ) {
         String creatorId = jwtUtil.getId(
@@ -246,9 +267,9 @@ public class CrossroadController {
 
     @GetMapping(value = "/{crossroadId}/optimization/{videoId}/{time}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getOptimization( // TODO: change to JSONObject
-                                                   @PathVariable String crossroadId,
-                                                   @PathVariable String videoId,
-                                                   @PathVariable int time
+           @PathVariable String crossroadId,
+           @PathVariable String videoId,
+           @PathVariable int time
     ) {
         String result = "{}";
         try (Socket socket = new Socket(OPTIMIZER_HOST, OPTIMIZER_PORT)) {
@@ -282,6 +303,53 @@ public class CrossroadController {
         return ResponseEntity
                 .ok()
                 .body(result);
+    }
+
+    @DeleteMapping(value = "/{crossroadId}")
+    public ResponseEntity<Boolean> deleteCrossroad(
+            @PathVariable String crossroadId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken
+    ) {
+        String creatorId = jwtUtil.getId(
+                jwtUtil.parseJwtClaims(
+                        jwtToken.split(" ")[1]
+                )
+        );
+
+        Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
+        if (crossroad == null) {
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        } else if (crossroad.getCreatorId().equals(creatorId)) {
+            return ResponseEntity
+                    .status(UNAUTHORIZED)
+                    .build();
+        }
+
+        for (String roadId : crossroad.getRoadIds()) {
+            roadService.deleteRoadById(roadId);
+        }
+
+        for (String collisionId : crossroad.getCollisionIds()) {
+            collisionService.deleteCollisionById(collisionId);
+        }
+
+        for (String connectionId : crossroad.getConnectionIds()) {
+            connectionService.deleteConnectionById(connectionId);
+        }
+
+        for (String trafficLightId : crossroad.getTrafficLightIds()) {
+            trafficLightService.deleteTrafficLightById(trafficLightId);
+        }
+
+        imageService.deleteImageById(crossroad.getImageId());
+
+        crossroadService.deleteCrossroadById(crossroadId);
+
+        return ResponseEntity
+                .ok()
+                .body(true);
     }
 
     private List<List<Integer>> convertJSONArrayToArray(String jsonArray) {

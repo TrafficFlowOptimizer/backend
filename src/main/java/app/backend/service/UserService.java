@@ -42,12 +42,10 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public User addUser(String firstName, String lastName, String username, String email, String password) {
+    public User addUser(String username, String email, String password) {
         try {
             return userRepository.insert(
                     new User(
-                            firstName,
-                            lastName,
                             username,
                             email,
                             password
@@ -68,15 +66,13 @@ public class UserService implements UserDetailsService {
         return user.get();
     }
 
-    public User updateUser(String id, String firstName, String lastName, String username, String email, String password) {
+    public User updateUser(String id, String username, String email, String password) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) {
             return null;
         }
 
         User userToUpdate = user.get();
-        userToUpdate.setFirstName(firstName);
-        userToUpdate.setLastName(lastName);
         userToUpdate.setUsername(username);
         userToUpdate.setEmail(email);
         userToUpdate.setPassword(password);

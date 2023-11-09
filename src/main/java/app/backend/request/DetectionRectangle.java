@@ -1,14 +1,19 @@
 package app.backend.request;
 
+import org.springframework.data.util.Pair;
+
 import java.util.Vector;
 
 public class DetectionRectangle {
     private String id;
-    private Vector<Integer> lowerLeft;
-    private Vector<Integer> upperRight;
+    private String connectionId;
+    private Pair<Integer, Integer> lowerLeft;
+    private Pair<Integer, Integer> upperRight;
 
-    public DetectionRectangle(String id, Vector<Integer> lowerLeft, Vector<Integer> upperRight) {
+    public DetectionRectangle(String id, String connectionId, Pair<Integer,
+            Integer> lowerLeft, Pair<Integer, Integer> upperRight) {
         this.id = id;
+        this.connectionId = connectionId;
         this.lowerLeft = lowerLeft;
         this.upperRight = upperRight;
     }
@@ -21,19 +26,27 @@ public class DetectionRectangle {
         this.id = id;
     }
 
-    public Vector<Integer> getLowerLeft() {
+    public String getConnectionId() {
+        return connectionId;
+    }
+
+    public void setConnectionId(String connectionId) {
+        this.connectionId = connectionId;
+    }
+
+    public Pair<Integer, Integer> getLowerLeft() {
         return lowerLeft;
     }
 
-    public void setLowerLeft(Vector<Integer> lowerLeft) {
+    public void setLowerLeft(Pair<Integer, Integer> lowerLeft) {
         this.lowerLeft = lowerLeft;
     }
 
-    public Vector<Integer> getUpperRight() {
+    public Pair<Integer, Integer> getUpperRight() {
         return upperRight;
     }
 
-    public void setUpperRight(Vector<Integer> upperRight) {
+    public void setUpperRight(Pair<Integer, Integer> upperRight) {
         this.upperRight = upperRight;
     }
 }
