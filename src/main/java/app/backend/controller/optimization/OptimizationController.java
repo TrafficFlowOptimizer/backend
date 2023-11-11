@@ -1,12 +1,14 @@
 package app.backend.controller.optimization;
 
-import app.backend.controller.crossroad.CrossroadsUtils;
+//import app.backend.controller.crossroad.CrossroadsUtils;
+import app.backend.controller.optimization.OptimizationUtils;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.light.TrafficLightType;
 import app.backend.request.optimization.OptimizationRequest;
 import app.backend.response.optimization.OptimizationResultResponse;
 import app.backend.service.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -39,14 +41,12 @@ public class OptimizationController {
     private final TrafficLightService trafficLightService;
     private final CarFlowService carFlowService;
     private final OptimizationUtils optimizationUtils;
-    private final CrossroadsUtils crossroadsUtils;
 
 
     @Autowired
     public OptimizationController(OptimizationService optimizationService,
                                   CrossroadService crossroadService,
                                   OptimizationUtils optimizationUtils,
-                                  CrossroadsUtils crossroadsUtils,
                                   RoadService roadService,
                                   CollisionService collisionService,
                                   ConnectionService connectionService,
@@ -55,7 +55,6 @@ public class OptimizationController {
         this.optimizationService = optimizationService;
         this.crossroadService = crossroadService;
         this.optimizationUtils = optimizationUtils;
-        this.crossroadsUtils = crossroadsUtils;
         this.roadService = roadService;
         this.collisionService = collisionService;
         this.connectionService = connectionService;
@@ -93,12 +92,12 @@ public class OptimizationController {
 //                .body(ret);
 //    }
 
-
-    @PostMapping(value = "/{crossroadId}/{optimizationTime}")
-    public ResponseEntity<String> orderOptimization(@PathVariable String crossroadId, @PathVariable int optimizationTime){
+    //TODO: shouldn't that be sth like body instead of path variable?
+    @PostMapping(value = "/{crossroadId}/{optimizationTime}/{timeIntervalId}")
+    public ResponseEntity<String> orderOptimization(@PathVariable String crossroadId, @PathVariable int optimizationTime, @PathVariable String timeIntervalId){
         OptimizationRequest optimizationRequest;
         try {
-            optimizationRequest = crossroadsUtils.getOptimizationRequest(crossroadId, optimizationTime);
+            optimizationRequest = optimizationUtils.getOptimizationRequest(crossroadId, optimizationTime);
         }
         catch (EntityNotFoundException e){
             return ResponseEntity
@@ -107,21 +106,22 @@ public class OptimizationController {
         }
 //        OptimizationRequest optimizationRequest = new OptimizationRequest();
 
-        String url = "http://" + OPTIMIZER_HOST + "/" + OPTIMIZER_PORT;
+        String url = "http://" + OPTIMIZER_HOST + ":" + OPTIMIZER_PORT;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<OptimizationRequest> requestEntity = new HttpEntity<>(optimizationRequest, headers);
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<String> response;
         try {
-            response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-            //TODO: save response to DB
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+            optimizationUtils.addOptimizationResultsToDb(crossroadId, timeIntervalId, response);
         } catch (HttpClientErrorException exception) {
             return ResponseEntity.status(BAD_REQUEST).body("Invalid data given to optimizer");
         } catch (HttpServerErrorException exception) {
             return ResponseEntity.status(SERVICE_UNAVAILABLE).body("Optimizer unavailable");
+        } catch (JsonProcessingException exception) {
+            return ResponseEntity.status(SERVICE_UNAVAILABLE).body("Problems with saving results to DataBase");
         } catch (UnknownHttpStatusCodeException exception) {
             return ResponseEntity.status(NOT_FOUND).body("Something weird happened");
         }
