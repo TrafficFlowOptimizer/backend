@@ -51,7 +51,7 @@ public class OptimizationUtils {
     }
 
 
-    public OptimizationRequest getOptimizationRequest(String crossroadId, int time) {
+    public OptimizationRequest getOptimizationRequest(String crossroadId, int time) { //TODO: check if light/connection order is preserved
         OptimizationRequest optimizationRequest = new OptimizationRequest();
 
         optimizationRequest.setOptimizationTime(time);
