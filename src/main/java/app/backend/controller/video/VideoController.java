@@ -3,6 +3,7 @@ package app.backend.controller.video;
 import app.backend.document.Video;
 import app.backend.request.DetectionRectangle;
 import app.backend.response.VideoInfoResponse;
+import app.backend.service.CarFlowService;
 import app.backend.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -25,20 +26,23 @@ public class VideoController {
 
     private final VideoService videoService;
     private final VideoUtils videoUtils;
+    private final CarFlowService carFlowService;
 
     @Autowired
-    public VideoController(VideoService videoService, VideoUtils videoUtils) {
+    public VideoController(VideoService videoService, VideoUtils videoUtils, CarFlowService carFlowService) {
         this.videoService = videoService;
         this.videoUtils = videoUtils;
+        this.carFlowService = carFlowService;
     }
 
     @PostMapping(value = "/upload")
     public ResponseEntity<String> upload(
             @RequestParam("file") MultipartFile video,
             @RequestParam("crossroadId") String crossroadId,
-            @RequestParam("timeIntervalId") String timeIntervalId
+            @RequestParam("timeIntervalId") String timeIntervalId,
+            @RequestParam("duration") Integer duration
     ) {
-        String videoId = videoService.store(video, crossroadId, timeIntervalId);
+        String videoId = videoService.store(video, crossroadId, timeIntervalId, duration);
 
         if (videoId != null) {
             return ResponseEntity
@@ -56,13 +60,16 @@ public class VideoController {
         return videoUtils.getSampleFrame(id);
     }
 
-    @GetMapping(value = "/{id}/analysis")
-    public ResponseEntity<String> analyse(
+    @PostMapping(value = "/{id}/analysis")
+    public ResponseEntity<Detection[]> analyse(
             @PathVariable String id,
             @RequestParam int skipFrames,
             @RequestBody List<DetectionRectangle> detectionRectangles
     ) {
-        return videoUtils.analyseVideo(id, skipFrames, detectionRectangles);
+        Detection[] detections = videoUtils.analyseVideo(id, skipFrames, detectionRectangles);
+        return ResponseEntity
+                .ok()
+                .body(detections);
     }
 
     @GetMapping
