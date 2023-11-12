@@ -2,6 +2,7 @@ package app.backend.controller.video;
 
 import app.backend.document.Video;
 import app.backend.request.DetectionRectangle;
+import app.backend.service.CarFlowService;
 import app.backend.service.CrossroadService;
 import app.backend.service.VideoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,11 +47,13 @@ public class VideoUtils {
 
     VideoService videoService;
     CrossroadService crossroadService;
-
+    CarFlowService carFlowService;
     @Autowired
-    public VideoUtils(VideoService videoService, CrossroadService crossroadService) {
+    public VideoUtils(VideoService videoService, CrossroadService crossroadService,
+                      CarFlowService carFlowService) {
         this.crossroadService = crossroadService;
         this.videoService = videoService;
+        this.carFlowService = carFlowService;
     }
 
     private JSONObject createRequestBody(Video video, int skipFrames, List<DetectionRectangle> detectionRectangles){
@@ -82,9 +85,6 @@ public class VideoUtils {
         stream.write(out);
     }
 
-    private void addCarFlowsToCrossroad(String crossroadId, Detection[] detections){
-
-    }
     public Detection[] analyseVideo(String videoId, int skipFrames, List<DetectionRectangle> detectionRectangles) {
         int secondsInMinute = 60;
         HttpURLConnection connection;
@@ -110,10 +110,10 @@ public class VideoUtils {
             for (Detection detection : detections){
                 detection.setDetectedCars((detection.getDetectedCars() * secondsInMinute) / video.getTime());
                 detection.setDetectedBuses((detection.getDetectedBuses() * secondsInMinute) / video.getTime());
+                carFlowService.addCarFlow(detection.getDetectedBuses() + detection.getDetectedCars(), video.getTimeIntervalId(), detection.getConnectionId());
             }
 
             System.out.println("INFO:\n" + responseCode + " " + responseValue);
-
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

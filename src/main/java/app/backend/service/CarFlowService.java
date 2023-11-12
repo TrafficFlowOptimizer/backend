@@ -1,6 +1,7 @@
 package app.backend.service;
 
 import app.backend.document.CarFlow;
+import app.backend.document.Connection;
 import app.backend.repository.CarFlowRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,10 +11,13 @@ import java.util.Optional;
 @Service
 public class CarFlowService {
 
+    ConnectionService connectionService;
+
     private final CarFlowRepository carFlowRepository;
 
     @Autowired
-    public CarFlowService(CarFlowRepository carFlowRepository) {
+    public CarFlowService(CarFlowRepository carFlowRepository, ConnectionService connectionService) {
+        this.connectionService = connectionService;
         this.carFlowRepository = carFlowRepository;
     }
 
@@ -23,11 +27,32 @@ public class CarFlowService {
                 .orElse(null);
     }
 
-    public CarFlow addCarFlow(double carFlow, String timeIntervalId) {
+    public CarFlow addCarFlow(double carFlow, String timeIntervalId, String connectionId) {
+
+        Connection connection = connectionService.getConnectionById(connectionId);
+        Integer version = connection.getCarFlowIds().size();
+        CarFlow newCarFlow = new CarFlow(
+                carFlow,
+                timeIntervalId,
+                version
+        );
+        newCarFlow = carFlowRepository.insert(newCarFlow);
+
+        connection.getCarFlowIds().add(newCarFlow.getId());
+        connectionService.updateConnection(connectionId, connection.getIndex(), connection.getName(),
+                connection.getTrafficLightIds(), connection.getSourceId(), connection.getTargetId(),
+                connection.getCarFlowIds());
+
+        return newCarFlow;
+    }
+
+    //Use only in populationg default Crossroad
+    public CarFlow addCarFlow(double carFlow, String timeIntervalId, Integer version) {
         return carFlowRepository.insert(
                 new CarFlow(
                         carFlow,
-                        timeIntervalId
+                        timeIntervalId,
+                        version
                 )
         );
     }

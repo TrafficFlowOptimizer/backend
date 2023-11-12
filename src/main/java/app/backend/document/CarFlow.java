@@ -16,9 +16,12 @@ public class CarFlow {
     @NotBlank
     private String timeIntervalId;
 
-    public CarFlow(double carFlow, String timeIntervalId) {
+    private Integer version;
+
+    public CarFlow(double carFlow, String timeIntervalId, Integer version) {
         this.carFlow = carFlow;
         this.timeIntervalId = timeIntervalId;
+        this.version = version;
     }
 
     public String getId() {
