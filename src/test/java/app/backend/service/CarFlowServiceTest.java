@@ -53,8 +53,8 @@ class CarFlowServiceTest {
         double flow = 7.0;
         String timeIntervalId = "timeIntervalId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
-        carFlowService.addCarFlow(11, "asdsdaddsds");
+        CarFlow carFlow = carFlowService.addCarFlow(flow, 1, timeIntervalId);
+        carFlowService.addCarFlow(11, 1, "asdsdaddsds");
 
         CarFlow found = carFlowService.getCarFlowById(carFlow.getId());
 
@@ -69,7 +69,7 @@ class CarFlowServiceTest {
         int flow = 7;
         String timeIntervalId = "timeIntervalId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
+        CarFlow carFlow = carFlowService.addCarFlow(flow, 1, timeIntervalId);
 
         assertEquals(1, carFlowService.getCarFlowRepository().count());
         assertEquals(flow, carFlow.getCarFlow());
@@ -81,7 +81,7 @@ class CarFlowServiceTest {
         int flow = 7;
         String timeIntervalId = "timeIntervalId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
+        CarFlow carFlow = carFlowService.addCarFlow(flow, 1, timeIntervalId);
 
         String id = carFlow.getId();
         carFlowService.deleteCarFlowById(id);
@@ -95,7 +95,7 @@ class CarFlowServiceTest {
         int flow = 7;
         String timeIntervalId = "timeIntervalId";
 
-        carFlowService.addCarFlow(flow, timeIntervalId);
+        carFlowService.addCarFlow(flow, 1, timeIntervalId);
         String id = "";
 
         assertNull(carFlowService.deleteCarFlowById(id));
@@ -107,7 +107,7 @@ class CarFlowServiceTest {
         int flow = 7;
         String timeIntervalId = "timeIntervalId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
+        CarFlow carFlow = carFlowService.addCarFlow(flow, 1, timeIntervalId);
 
         String id = carFlow.getId();
         int flowUpdated = 13;
@@ -127,7 +127,7 @@ class CarFlowServiceTest {
         int flow = 7;
         String timeIntervalId = "timeIntervalId";
 
-        carFlowService.addCarFlow(flow, timeIntervalId);
+        carFlowService.addCarFlow(flow, 1, timeIntervalId);
 
         String id = "";
         int flowUpdated = 13;

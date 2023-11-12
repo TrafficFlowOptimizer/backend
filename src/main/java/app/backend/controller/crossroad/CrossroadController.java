@@ -3,7 +3,6 @@ package app.backend.controller.crossroad;
 import app.backend.authentication.JwtUtil;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.request.crossroad.CrossroadDescriptionRequest;
-import app.backend.request.optimization.OptimizationRequest;
 import app.backend.response.crossroad.CrossroadDescriptionResponse;
 import app.backend.service.*;
 import app.backend.service.CollisionService;
@@ -15,8 +14,6 @@ import app.backend.service.RoadService;
 import app.backend.service.TrafficLightService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -28,8 +25,6 @@ import org.springframework.web.client.UnknownHttpStatusCodeException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,17 +39,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
@@ -69,10 +58,6 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @RequestMapping(value = "/crossroad")
 public class CrossroadController {
 
-    @Value("${optimizer.host}")
-    private String OPTIMIZER_HOST;
-    @Value("${optimizer.port}")
-    private int OPTIMIZER_PORT;
     private final CrossroadService crossroadService;
     private final RoadService roadService;
     private final CollisionService collisionService;
@@ -272,45 +257,7 @@ public class CrossroadController {
                 .body(true);
     }
 
-    @GetMapping(value = "/{crossroadId}/optimization/{videoId}/{time}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getOptimization( // TODO: change to JSONObject
-           @PathVariable String crossroadId,
-           @PathVariable String videoId,
-           @PathVariable int time
-    ) {
-        String result = "{}";
-        try (Socket socket = new Socket(OPTIMIZER_HOST, OPTIMIZER_PORT)) {
-            JSONObject jsonData = crossroadsUtils.getJsonData(crossroadId, time);
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(jsonData);
 
-            InputStream optimizerResponse = socket.getInputStream();
-            Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
-            result = s.hasNext() ? s.next() : "";
-
-            String timeIntervalId = crossroadsUtils.getTimeIntervalId(videoId);
-            if (timeIntervalId == null) {
-                return ResponseEntity
-                        .status(NOT_FOUND)
-                        .build();
-            }
-            crossroadsUtils.addOptimizationResultsToDb(crossroadId, timeIntervalId, result);
-            throw new RuntimeException(); //TODO: for now
-//            result = crossroadsUtils.parseOutput(result, crossroadId);
-
-        } catch (Exception e) {
-            try {
-                sleep(time * 1000L);
-                result = Files.readString(Paths.get("temp/newTemplateOutput.json"));
-            } catch (Exception ignored) {
-            }
-        }
-        System.out.println(result);
-
-        return ResponseEntity
-                .ok()
-                .body(result);
-    }
 
     @DeleteMapping(value = "/{crossroadId}")
     public ResponseEntity<Boolean> deleteCrossroad(
@@ -357,94 +304,5 @@ public class CrossroadController {
         return ResponseEntity
                 .ok()
                 .body(true);
-    }
-
-    private List<List<Integer>> convertJSONArrayToArray(String jsonArray) {
-        JSONObject obj = new JSONObject(jsonArray);
-        JSONArray arr = obj.getJSONArray("results");
-        List<List<Integer>> ar = new ArrayList<>();
-        for (int i = 0; i < arr.length(); i++) {
-            List<Integer> row = new ArrayList<>();
-            for (int j = 0; j < arr.getJSONArray(0).length(); j++) {
-                row.add((int) arr.getJSONArray(i).get(j));
-            }
-            ar.add(row);
-        }
-        return ar;
-    }
-
-    @GetMapping(value = "/{crossroadId}/optimization/novid/socket/{time}", produces = MediaType.APPLICATION_JSON_VALUE)
-    // TODO
-    public String getOptimizationWithoutVideoSocket(@PathVariable String crossroadId, @PathVariable int time) {
-
-        // TODO: use OptimizationRequest class and create OptimizationResponse class
-
-        String result = "{results: \"ERROR\"}";
-        try (Socket socket = new Socket(OPTIMIZER_HOST, OPTIMIZER_PORT)) {
-            JSONObject jsonData = crossroadsUtils.getJsonData(crossroadId, time);
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(jsonData);
-
-            InputStream optimizerResponse = socket.getInputStream();
-            Scanner s = new Scanner(optimizerResponse).useDelimiter("\\A");
-            result = s.hasNext() ? s.next() : "";
-            List<List<Integer>> resultArray = convertJSONArrayToArray(result);
-            //TODO: timeIntervalID powinno być jako argument
-
-            optimizationService.addOptimization(crossroadId, "0", resultArray);
-
-            result = getOptimizationResults(crossroadId, "0");
-
-        } catch (Exception e) {
-            try {
-                sleep(time * 1000L);
-                result = Files.readString(Paths.get("temp/newTemplateOutput.json"));
-            } catch (Exception ignored) {
-            }
-        }
-        System.out.println(result);
-
-        return result;
-    }
-
-
-    @GetMapping(value = "/{crossroadId}/optimization/novid/{time}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getOptimizationWithoutVideo(@PathVariable String crossroadId, @PathVariable int time) {
-//        OptimizationRequest optimizationRequest = crossroadsUtils.getOptimizationRequest(crossroadId, time);
-        OptimizationRequest optimizationRequest = new OptimizationRequest();
-
-        String url = "http://localhost:9091/optimization";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<OptimizationRequest> requestEntity = new HttpEntity<>(optimizationRequest, headers);
-        RestTemplate restTemplate = new RestTemplate();
-
-        ResponseEntity<String> response;
-        try {
-            response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-        } catch (HttpClientErrorException exception) {
-            return ResponseEntity.status(BAD_REQUEST).body("Invalid data given to optimizer\n");
-        } catch (HttpServerErrorException exception) {
-            return ResponseEntity.status(SERVICE_UNAVAILABLE).body("Optimizer unavailable\n");
-        } catch (UnknownHttpStatusCodeException exception) {
-            return ResponseEntity.status(NOT_FOUND).body("Something weird happened\n");
-        }
-        return response;
-    }
-
-    @GetMapping(value = "/{crossroadId}/optimization_results", produces = MediaType.APPLICATION_JSON_VALUE) // TODO
-    public String getOptimizationResults(@PathVariable String crossroadId, String timeIntervalID) {
-        try {
-            List<List<Integer>> newestResult = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, timeIntervalID).getResults();
-            List<List<Integer>> secondNewestResult = optimizationService.getSecondNewestOptimizationByCrossroadId(crossroadId, timeIntervalID).getResults();
-            return crossroadsUtils.parseOutput(newestResult, secondNewestResult, crossroadId);
-        } catch (Exception e) {
-            try {
-                return Files.readString(Paths.get("temp/newTemplateOutput.json"));
-            } catch (Exception ignored) {
-                throw new RuntimeException("Error with reading template output.");
-            }
-        }
     }
 }
