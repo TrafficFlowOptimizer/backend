@@ -6,6 +6,8 @@ import app.backend.repository.CarFlowRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -84,5 +86,15 @@ public class CarFlowService {
 
     public CarFlowRepository getCarFlowRepository() {
         return carFlowRepository;
+    }
+
+    public CarFlow getNewestCarFlowByTimeIntervalIdForConnection(String connectionId, String timeIntervalId){
+        return connectionService.getConnectionById(connectionId).getCarFlowIds()
+                .stream()
+                .map(this::getCarFlowById)
+                .filter(carFlow ->
+                        Objects.equals(carFlow.getTimeIntervalId(), timeIntervalId))
+                .max(Comparator.comparing(CarFlow::getVersion))
+                .orElse(null);
     }
 }

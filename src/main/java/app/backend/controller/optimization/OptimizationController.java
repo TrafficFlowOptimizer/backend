@@ -153,7 +153,7 @@ public class OptimizationController {
                 .forEach(connection ->
                         connectionFlowMap.put(
                                 connection.getId(),
-                                connectionService.getNewestCarFlowByTimeIntervalIdForConnection(connection.getId(), timeInterval).getCarFlow()
+                                carFlowService.getNewestCarFlowByTimeIntervalIdForConnection(connection.getId(), timeInterval).getCarFlow()
                         )
                 );
 
