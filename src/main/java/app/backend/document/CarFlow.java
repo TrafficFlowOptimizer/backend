@@ -19,7 +19,7 @@ public class CarFlow {
     @NotBlank
     private String timeIntervalId;
 
-    public CarFlow(double carFlow, int version, String timeIntervalId) {
+    public CarFlow(double carFlow, String timeIntervalId, int version) {
         this.carFlow = carFlow;
         this.version = version;
         this.timeIntervalId = timeIntervalId;
