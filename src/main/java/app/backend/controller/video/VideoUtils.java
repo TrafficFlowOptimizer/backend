@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,6 +39,7 @@ public class VideoUtils {
     public static final String SKIP_FRAMES = "skip_frames";
     public static final String DETECTION_RECTANGLES = "detection_rectangles";
     public static final String TEMP_DIRECTORY_PATH = "temp/";
+    public static final String VIDEO = "video";
 
     VideoService videoService;
 
@@ -71,10 +73,11 @@ public class VideoUtils {
         JSONObject body = new JSONObject();
         body.put(VIDEO_ID, videoId);
         body.put(EXTENSION, video.getType().split("/")[1]); // hopefully Lob lazily loaded; TODO: check in the future
+        body.put(VIDEO, Base64.getEncoder().encodeToString(video.getData()));
         body.put(SKIP_FRAMES, skipFrames);
         body.put(DETECTION_RECTANGLES, detectionRectangles);
 
-        System.out.println("INFO:\n" + body.toString(4));
+//        System.out.println("INFO:\n" + body.toString(4));
 
         byte[] out = body.toString(4).getBytes(StandardCharsets.UTF_8);
         OutputStream stream;

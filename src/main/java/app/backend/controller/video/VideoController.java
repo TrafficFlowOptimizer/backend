@@ -10,14 +10,7 @@ import org.springframework.data.util.Streamable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -67,7 +60,7 @@ public class VideoController {
     public ResponseEntity<String> analyse(
             @PathVariable String id,
             @RequestParam int skipFrames,
-            @RequestParam List<DetectionRectangle> detectionRectangles
+            @RequestBody List<DetectionRectangle> detectionRectangles
     ) {
         return videoUtils.analyseVideo(id, skipFrames, detectionRectangles);
     }
