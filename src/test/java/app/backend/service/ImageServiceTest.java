@@ -94,7 +94,7 @@ public class ImageServiceTest {
                 "originalFilename",
                 "contentType",
                 data
-        ), "", "");
+        ), "", "", 10);
 
         imageService.deleteAll();
 
