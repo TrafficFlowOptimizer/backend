@@ -5,7 +5,6 @@ import app.backend.request.DetectionRectangle;
 import app.backend.service.CarFlowService;
 import app.backend.service.CrossroadService;
 import app.backend.service.VideoService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -16,11 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
@@ -48,6 +42,7 @@ public class VideoUtils {
     VideoService videoService;
     CrossroadService crossroadService;
     CarFlowService carFlowService;
+
     @Autowired
     public VideoUtils(VideoService videoService, CrossroadService crossroadService,
                       CarFlowService carFlowService) {
@@ -56,7 +51,7 @@ public class VideoUtils {
         this.carFlowService = carFlowService;
     }
 
-    private JSONObject createRequestBody(Video video, int skipFrames, List<DetectionRectangle> detectionRectangles){
+    private JSONObject createRequestBody(Video video, int skipFrames, List<DetectionRectangle> detectionRectangles) {
         JSONObject body = new JSONObject();
         body.put(VIDEO_ID, video.getId());
         body.put(EXTENSION, video.getType().split("/")[1]); // hopefully Lob lazily loaded; TODO: check in the future
@@ -90,7 +85,7 @@ public class VideoUtils {
         HttpURLConnection connection;
         Detection[] detections = null;
 
-        try{
+        try {
             connection = setUpConnection();
             Video video = videoService.getVideo(videoId);
             if (video == null) {
@@ -107,7 +102,7 @@ public class VideoUtils {
 
             detections = Detection.getDetections(responseValue);
 
-            for (Detection detection : detections){
+            for (Detection detection : detections) {
                 detection.setDetectedCars((detection.getDetectedCars() * secondsInMinute) / video.getTime());
                 detection.setDetectedBuses((detection.getDetectedBuses() * secondsInMinute) / video.getTime());
                 carFlowService.addCarFlow(detection.getDetectedBuses() + detection.getDetectedCars(), video.getStartTimeId(), detection.getConnectionId());

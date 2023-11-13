@@ -20,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -98,20 +97,19 @@ public class OptimizationController {
 //    }
 
     @PostMapping(value = "/{crossroadId}")
-    public ResponseEntity<String> orderOptimization(@PathVariable String crossroadId, @RequestBody int optimizationTime, @RequestBody Day day, @RequestBody Time time){
+    public ResponseEntity<String> orderOptimization(@PathVariable String crossroadId, @RequestBody int optimizationTime, @RequestBody Day day, @RequestBody Time time) {
         String startTimeId = startTimeService.getStartTimeIdByDayTime(day, time);
 
         boolean mocked = true;//TODO: mocked optimizer FOR DEVELOPMENT ONLY!
-        if(mocked){
+        if (mocked) {
             optimizationUtils.mockResponseToDb(crossroadId, startTimeId);
             return ResponseEntity.status(OK).body("Optimization completed successfully!");
         }
 
         OptimizationRequest optimizationRequest;
         try {
-            optimizationRequest = optimizationUtils.getOptimizationRequest(crossroadId, optimizationTime);
-        }
-        catch (EntityNotFoundException e){
+            optimizationRequest = optimizationUtils.getOptimizationRequest(crossroadId, startTimeId, optimizationTime);
+        } catch (EntityNotFoundException e) {
             return ResponseEntity
                     .status(NOT_FOUND)
                     .body("Error while creating Optimization Request from DB. CrossroadID might be invalid or some other inconsistency in DB");
@@ -142,7 +140,7 @@ public class OptimizationController {
 
 
     @GetMapping(value = "/result/{crossroadId}")
-    public ResponseEntity<OptimizationResultResponse> getOptimizationResult(@PathVariable String crossroadId, @RequestParam Day day, @RequestParam Time time){
+    public ResponseEntity<OptimizationResultResponse> getOptimizationResult(@PathVariable String crossroadId, @RequestParam Day day, @RequestParam Time time) {
         String startTimeId = startTimeService.getStartTimeIdByDayTime(day, time);
 
         HashMap<Integer, List<Integer>> lightsSequenceMapCurrent = new HashMap<>();
@@ -181,8 +179,8 @@ public class OptimizationController {
                 .stream()
                 .map(trafficLightService::getTrafficLightById)
                 .forEach(trafficLight -> lightsSequenceMapCurrent.put(
-                        trafficLight.getIndex(),
-                        result.get(trafficLight.getIndex())
+                                trafficLight.getIndex(),
+                                result.get(trafficLight.getIndex())
                         )
                 );
 
@@ -192,16 +190,16 @@ public class OptimizationController {
                 .stream()
                 .map(connectionService::getConnectionById)
                 .forEach(connection -> connectionsFlowRatioMapCurrent.put(
-                        connection.getIndex(),
-                        connection.getTrafficLightIds()
-                                .stream()
-                                .map(trafficLightId ->
-                                        lightsSequenceMapCurrent.get(trafficLightId)
-                                                .stream()
-                                                .mapToInt(Integer::intValue)
-                                                .sum())
-                                .mapToInt(Integer::intValue)
-                                .sum()/connectionFlowMap.get(connection.getId())
+                                connection.getIndex(),
+                                connection.getTrafficLightIds()
+                                        .stream()
+                                        .map(trafficLightId ->
+                                                lightsSequenceMapCurrent.get(trafficLightId)
+                                                        .stream()
+                                                        .mapToInt(Integer::intValue)
+                                                        .sum())
+                                        .mapToInt(Integer::intValue)
+                                        .sum() / connectionFlowMap.get(connection.getId())
                         )
                 );
 
@@ -243,10 +241,10 @@ public class OptimizationController {
                 .stream()
                 .map(connectionService::getConnectionById)
                 .forEach(connection -> connectionsLightsMap.put(
-                        connection.getIndex(),
-                        connection.getTrafficLightIds()
-                                    .stream()
-                                    .map(trafficLightService::getTrafficLightById).toList()
+                                connection.getIndex(),
+                                connection.getTrafficLightIds()
+                                        .stream()
+                                        .map(trafficLightService::getTrafficLightById).toList()
                         )
                 );
 
@@ -256,16 +254,16 @@ public class OptimizationController {
                 .stream()
                 .map(roadService::getRoadById)
                 .forEach(road -> roadsLightsMap.put(
-                        road.getIndex(),
-                        crossroad.getConnectionIds()
-                                .stream()
-                                .map(connectionService::getConnectionById)
-                                .filter(connection -> Objects.equals(connection.getSourceId(), road.getId()))
-                                .map(Connection::getTrafficLightIds)
-                                .flatMap(List::stream)
-                                .distinct()
-                                .map(trafficLightService::getTrafficLightById)
-                                .toList()
+                                road.getIndex(),
+                                crossroad.getConnectionIds()
+                                        .stream()
+                                        .map(connectionService::getConnectionById)
+                                        .filter(connection -> Objects.equals(connection.getSourceId(), road.getId()))
+                                        .map(Connection::getTrafficLightIds)
+                                        .flatMap(List::stream)
+                                        .distinct()
+                                        .map(trafficLightService::getTrafficLightById)
+                                        .toList()
                         )
                 );
 

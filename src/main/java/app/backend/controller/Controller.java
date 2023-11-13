@@ -3,22 +3,15 @@ package app.backend.controller;
 import app.backend.document.CarFlow;
 import app.backend.document.Collision;
 import app.backend.document.Connection;
-import app.backend.document.time.Day;
-import app.backend.document.time.Time;
-import app.backend.document.time.StartTime;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.crossroad.CrossroadType;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.road.Road;
 import app.backend.document.road.RoadType;
-import app.backend.service.CarFlowService;
-import app.backend.service.CollisionService;
-import app.backend.service.ConnectionService;
-import app.backend.service.CrossroadService;
-import app.backend.service.RoadService;
-import app.backend.service.StartTimeService;
-import app.backend.service.TrafficLightService;
-import app.backend.service.UserService;
+import app.backend.document.time.Day;
+import app.backend.document.time.StartTime;
+import app.backend.document.time.Time;
+import app.backend.service.*;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +19,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
-import static app.backend.document.light.TrafficLightType.ARROW_LEFT;
-import static app.backend.document.light.TrafficLightType.FORWARD;
-import static app.backend.document.light.TrafficLightType.LEFT;
+import static app.backend.document.light.TrafficLightType.*;
 
 @RestController
 public class Controller {

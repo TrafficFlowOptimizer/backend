@@ -14,7 +14,7 @@ public class StartTime {
     private Time time;
 
     public StartTime(Day day, Time time) {
-       this.day = day;
+        this.day = day;
         this.time = time;
     }
 

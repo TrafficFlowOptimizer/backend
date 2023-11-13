@@ -1,8 +1,8 @@
 package app.backend.service;
 
 import app.backend.document.time.Day;
-import app.backend.document.time.Time;
 import app.backend.document.time.StartTime;
+import app.backend.document.time.Time;
 import app.backend.repository.StartTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class StartTimeService {
         );
     }
 
-    public String getStartTimeIdByDayTime(Day day, Time time){
+    public String getStartTimeIdByDayTime(Day day, Time time) {
         return startTimeRepository.findAll()
                 .stream()
                 .filter(stime -> stime.getDay() == day && stime.getTime() == time)

@@ -82,5 +82,7 @@ public class Video {
         this.data = data;
     }
 
-    public Integer getTime() {return time;}
+    public Integer getTime() {
+        return time;
+    }
 }

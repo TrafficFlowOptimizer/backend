@@ -1,20 +1,9 @@
 package app.backend.controller.crossroad;
 
-import app.backend.document.Collision;
-import app.backend.document.Connection;
 import app.backend.document.Video;
-import app.backend.document.crossroad.Crossroad;
-import app.backend.request.optimization.OptimizationRequest;
 import app.backend.service.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
-
-import javax.persistence.EntityNotFoundException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Component

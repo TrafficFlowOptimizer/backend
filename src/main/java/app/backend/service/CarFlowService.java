@@ -88,7 +88,7 @@ public class CarFlowService {
         return carFlowRepository;
     }
 
-    public CarFlow getNewestCarFlowByStartTimeIdForConnection(String connectionId, String startTimeId){
+    public CarFlow getNewestCarFlowByStartTimeIdForConnection(String connectionId, String startTimeId) {
         return connectionService.getConnectionById(connectionId).getCarFlowIds()
                 .stream()
                 .map(this::getCarFlowById)
