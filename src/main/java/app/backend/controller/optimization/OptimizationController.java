@@ -4,6 +4,8 @@ import app.backend.document.Connection;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.light.TrafficLightType;
+import app.backend.document.time.Day;
+import app.backend.document.time.Time;
 import app.backend.request.optimization.OptimizationRequest;
 import app.backend.response.optimization.OptimizationResultResponse;
 import app.backend.service.*;
@@ -40,6 +42,7 @@ public class OptimizationController {
     private final ConnectionService connectionService;
     private final TrafficLightService trafficLightService;
     private final CarFlowService carFlowService;
+    private final StartTimeService startTimeService;
     private final OptimizationUtils optimizationUtils;
 
 
@@ -51,6 +54,7 @@ public class OptimizationController {
                                   CollisionService collisionService,
                                   ConnectionService connectionService,
                                   TrafficLightService trafficLightService,
+                                  StartTimeService startTimeService,
                                   CarFlowService carFlowService) {
         this.optimizationService = optimizationService;
         this.crossroadService = crossroadService;
@@ -59,6 +63,7 @@ public class OptimizationController {
         this.collisionService = collisionService;
         this.connectionService = connectionService;
         this.trafficLightService = trafficLightService;
+        this.startTimeService = startTimeService;
         this.carFlowService = carFlowService;
 
     }
@@ -93,7 +98,9 @@ public class OptimizationController {
 //    }
 
     @PostMapping(value = "/{crossroadId}")
-    public ResponseEntity<String> orderOptimization(@PathVariable String crossroadId, @RequestBody int optimizationTime, @RequestBody String timeIntervalId){
+    public ResponseEntity<String> orderOptimization(@PathVariable String crossroadId, @RequestBody int optimizationTime, @RequestBody Day day, @RequestBody Time time){
+        String startTimeId = startTimeService.getStartTimeIdByDayTime(day, time);
+
         boolean mocked = true;//TODO: mocked optimizer
         OptimizationRequest optimizationRequest;
         try {
@@ -115,12 +122,12 @@ public class OptimizationController {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-            optimizationUtils.addOptimizationResultsToDb(crossroadId, timeIntervalId, response);
+            optimizationUtils.addOptimizationResultsToDb(crossroadId, startTimeId, response);
         } catch (HttpClientErrorException exception) {
             return ResponseEntity.status(BAD_REQUEST).body("Invalid data given to optimizer");
         } catch (HttpServerErrorException exception) {
             if(mocked) {
-                optimizationUtils.mockResponseToDb(crossroadId, timeIntervalId);
+                optimizationUtils.mockResponseToDb(crossroadId, startTimeId);
                 return ResponseEntity.status(OK).body("Optimization completed successfully!");
             }
             return ResponseEntity.status(SERVICE_UNAVAILABLE).body("Optimizer unavailable");
@@ -134,7 +141,9 @@ public class OptimizationController {
 
 
     @GetMapping(value = "/result/{crossroadId}")
-    public ResponseEntity<OptimizationResultResponse> getOptimizationResult(@PathVariable String crossroadId, @RequestParam String timeInterval){
+    public ResponseEntity<OptimizationResultResponse> getOptimizationResult(@PathVariable String crossroadId, @RequestParam Day day, @RequestParam Time time){
+        String startTimeId = startTimeService.getStartTimeIdByDayTime(day, time);
+
         HashMap<Integer, List<Integer>> lightsSequenceMapCurrent = new HashMap<>();
         HashMap<Integer, Double> connectionsFlowRatioMapCurrent = new HashMap<>();
         HashMap<Integer, List<Integer>> lightsSequenceMapPrevious = null;
@@ -159,13 +168,13 @@ public class OptimizationController {
                 .forEach(connection ->
                         connectionFlowMap.put(
                                 connection.getId(),
-                                carFlowService.getNewestCarFlowByTimeIntervalIdForConnection(connection.getId(), timeInterval).getCarFlow()
+                                carFlowService.getNewestCarFlowByStartTimeIdForConnection(connection.getId(), startTimeId).getCarFlow()
                         )
                 );
 
         //  -----------------------------  lightsSequenceMapCurrent  -----------------------------
 
-        List<List<Integer>> result = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, timeInterval).getResults();
+        List<List<Integer>> result = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, startTimeId).getResults();
 
         crossroad.getTrafficLightIds()
                 .stream()
@@ -197,7 +206,7 @@ public class OptimizationController {
 
         //  -----------------------------  lightsSequenceMapPrevious  -----------------------------//TODO
 
-//        List<List<Integer>> result = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, timeInterval).getResults();
+//        List<List<Integer>> result = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, startTime).getResults();
 //
 //        crossroad.getTrafficLightIds()
 //                .stream()

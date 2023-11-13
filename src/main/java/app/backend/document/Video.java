@@ -18,18 +18,18 @@ public class Video {
     private String type;
 
     @NotBlank
-    private String timeIntervalId;
+    private String startTimeId;
 
     private byte[] data;
 
     //Video time in seconds
     private final Integer time;
 
-    public Video(String crossroadId, String name, String type, String timeIntervalId, byte[] data, Integer time) {
+    public Video(String crossroadId, String name, String type, String startTimeId, byte[] data, Integer time) {
         this.crossroadId = crossroadId;
         this.name = name;
         this.type = type;
-        this.timeIntervalId = timeIntervalId;
+        this.startTimeId = startTimeId;
         this.data = data;
         this.time = time;
     }
@@ -66,12 +66,12 @@ public class Video {
         this.type = type;
     }
 
-    public String getTimeIntervalId() {
-        return timeIntervalId;
+    public String getStartTimeId() {
+        return startTimeId;
     }
 
-    public void setTimeIntervalId(String timeIntervalId) {
-        this.timeIntervalId = timeIntervalId;
+    public void setStartTimeId(String startTimeId) {
+        this.startTimeId = startTimeId;
     }
 
     public byte[] getData() {

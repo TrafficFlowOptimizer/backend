@@ -49,13 +49,13 @@ public class CrossroadsUtils {
         this.videoService = videoService;
     }
 
-    public String getTimeIntervalId(String videoId) {
+    public String getStartTimeId(String videoId) {
         Video video = videoService.getVideo(videoId);
         if (video == null) {
             return null;
         }
 
-        return video.getTimeIntervalId();
+        return video.getStartTimeId();
     }
 
 }

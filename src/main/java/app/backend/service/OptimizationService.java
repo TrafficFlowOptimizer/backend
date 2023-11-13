@@ -29,24 +29,24 @@ public class OptimizationService {
                 .orElse(null);
     }
 
-    public Optimization addOptimization(String crossroadId, int version, String timeIntervalId, List<List<Integer>> results) {
+    public Optimization addOptimization(String crossroadId, int version, String startTimeId, List<List<Integer>> results) {
         return optimizationRepository.insert(
                 new Optimization(
                         crossroadId,
                         version,
-                        timeIntervalId,
+                        startTimeId,
                         results
                 )
         );
     }
 
-    public Optimization addOptimization(String crossroadId, String timeIntervalId, List<List<Integer>> results) {
+    public Optimization addOptimization(String crossroadId, String startTimeId, List<List<Integer>> results) {
         int version = getFreeVersionNumber(crossroadId);
         return optimizationRepository.insert(
                 new Optimization(
                         crossroadId,
                         version,
-                        timeIntervalId,
+                        startTimeId,
                         results
                 )
         );
@@ -62,7 +62,7 @@ public class OptimizationService {
         return optimization.get();
     }
 
-    public Optimization updateOptimization(String id, String crossroadId, int version, String timeIntervalId, List<List<Integer>> results) {
+    public Optimization updateOptimization(String id, String crossroadId, int version, String startTimeId, List<List<Integer>> results) {
         Optional<Optimization> optimization = optimizationRepository.findById(id);
         if (optimization.isEmpty()) {
             return null;
@@ -71,7 +71,7 @@ public class OptimizationService {
         Optimization optimizationToUpdate = optimization.get();
         optimizationToUpdate.setCrossroadId(crossroadId);
         optimizationToUpdate.setVersion(version);
-        optimizationToUpdate.setTimeIntervalId(timeIntervalId);
+        optimizationToUpdate.setStartTimeId(startTimeId);
         optimizationToUpdate.setResults(results);
 
         optimizationRepository.save(optimizationToUpdate);
@@ -87,10 +87,10 @@ public class OptimizationService {
                 .collect(Collectors.toList());
     }
 
-    public Iterable<Optimization> getOptimizationsByCrossroadIdAndTimeInterval(String crossroadId, String timeIntervalID) {
+    public Iterable<Optimization> getOptimizationsByCrossroadIdAndStartTime(String crossroadId, String startTimeID) {
         return StreamSupport
                 .stream(optimizationRepository.findAllByCrossroadId(crossroadId).spliterator(), false)
-                .filter(optimization -> Objects.equals(optimization.getTimeIntervalId(), timeIntervalID))
+                .filter(optimization -> Objects.equals(optimization.getStartTimeId(), startTimeID))
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 
@@ -105,8 +105,8 @@ public class OptimizationService {
         return maxVersion.orElse(-1) + 1;
     }
 
-    public Optimization getNewestOptimizationByCrossroadId(String crossroadId, String timeIntervalID) {
-        Iterable<Optimization> optimizations = getOptimizationsByCrossroadIdAndTimeInterval(crossroadId, timeIntervalID);
+    public Optimization getNewestOptimizationByCrossroadId(String crossroadId, String startTimeID) {
+        Iterable<Optimization> optimizations = getOptimizationsByCrossroadIdAndStartTime(crossroadId, startTimeID);
 
         List<Optimization> sorted = StreamSupport
                 .stream(optimizations.spliterator(), false)
@@ -116,8 +116,8 @@ public class OptimizationService {
         return sorted.get(sorted.size() - 1);
     }
 
-    public Optimization getSecondNewestOptimizationByCrossroadId(String crossroadId, String timeIntervalID) {
-        Iterable<Optimization> optimizations = getOptimizationsByCrossroadIdAndTimeInterval(crossroadId, timeIntervalID);
+    public Optimization getSecondNewestOptimizationByCrossroadId(String crossroadId, String startTimeID) {
+        Iterable<Optimization> optimizations = getOptimizationsByCrossroadIdAndStartTime(crossroadId, startTimeID);
 
         List<Optimization> sorted = StreamSupport
                 .stream(optimizations.spliterator(), false)

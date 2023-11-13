@@ -39,10 +39,10 @@ public class VideoController {
     public ResponseEntity<String> upload(
             @RequestParam("file") MultipartFile video,
             @RequestParam("crossroadId") String crossroadId,
-            @RequestParam("timeIntervalId") String timeIntervalId,
+            @RequestParam("startTimeId") String startTimeId,
             @RequestParam("duration") Integer duration
     ) {
-        String videoId = videoService.store(video, crossroadId, timeIntervalId, duration);
+        String videoId = videoService.store(video, crossroadId, startTimeId, duration);
 
         if (videoId != null) {
             return ResponseEntity

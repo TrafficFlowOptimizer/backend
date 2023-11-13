@@ -66,21 +66,21 @@ public class OptimizationServiceTestOnMocks {
 
 
     @Test
-    public void testGetOptimizations_NoMatchingTimeInterval() {
+    public void testGetOptimizations_NoMatchingStartTime() {
         // Setup
         Optimization opt1 = new Optimization("1", 2, "timeB", null);
         Optimization opt2 = new Optimization("1", 3, "timeB", null);
         when(optimizationRepository.findAllByCrossroadId("1")).thenReturn(new LinkedList<>(Arrays.asList(opt1, opt2)));
 
         // Action
-        Iterable<Optimization> result = optimizationService.getOptimizationsByCrossroadIdAndTimeInterval("1", "timeC");
+        Iterable<Optimization> result = optimizationService.getOptimizationsByCrossroadIdAndStartTime("1", "timeC");
 
         // Assertion
         assertFalse(result.iterator().hasNext());
     }
 
     @Test
-    public void testGetOptimizations_MatchingTimeInterval() {
+    public void testGetOptimizations_MatchingStartTime() {
         // Setup
         Optimization opt1 = new Optimization("1", 1, "timeB", null);
         Optimization opt2 = new Optimization("1", 2, "timeB", null);
@@ -88,7 +88,7 @@ public class OptimizationServiceTestOnMocks {
         when(optimizationRepository.findAllByCrossroadId("1")).thenReturn(new LinkedList<>(Arrays.asList(opt1, opt2, opt3)));
 
         // Action
-        Iterable<Optimization> result = optimizationService.getOptimizationsByCrossroadIdAndTimeInterval("1", "timeB");
+        Iterable<Optimization> result = optimizationService.getOptimizationsByCrossroadIdAndStartTime("1", "timeB");
 
         // Assertion
         assertEquals(opt1, ((LinkedList) result).get(0));
@@ -101,7 +101,7 @@ public class OptimizationServiceTestOnMocks {
         when(optimizationRepository.findAllByCrossroadId("1")).thenReturn(Collections.emptyList());
 
         // Action
-        Iterable<Optimization> result = optimizationService.getOptimizationsByCrossroadIdAndTimeInterval("1", "timeB");
+        Iterable<Optimization> result = optimizationService.getOptimizationsByCrossroadIdAndStartTime("1", "timeB");
 
         // Assertion
         assertFalse(result.iterator().hasNext());

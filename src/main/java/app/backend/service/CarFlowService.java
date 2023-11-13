@@ -29,13 +29,13 @@ public class CarFlowService {
                 .orElse(null);
     }
 
-    public CarFlow addCarFlow(double carFlow, String timeIntervalId, String connectionId) {
+    public CarFlow addCarFlow(double carFlow, String startTimeId, String connectionId) {
 
         Connection connection = connectionService.getConnectionById(connectionId);
         Integer version = connection.getCarFlowIds().size();
         CarFlow newCarFlow = new CarFlow(
                 carFlow,
-                timeIntervalId,
+                startTimeId,
                 version
         );
         newCarFlow = carFlowRepository.insert(newCarFlow);
@@ -49,11 +49,11 @@ public class CarFlowService {
     }
 
     //Use only in populationg default Crossroad
-    public CarFlow addCarFlow(double carFlow, String timeIntervalId, Integer version) {
+    public CarFlow addCarFlow(double carFlow, String startTimeId, Integer version) {
         return carFlowRepository.insert(
                 new CarFlow(
                         carFlow,
-                        timeIntervalId,
+                        startTimeId,
                         version
                 )
         );
@@ -69,7 +69,7 @@ public class CarFlowService {
         return carFlow.get();
     }
 
-    public CarFlow updateCarFlow(String id, int carFlowPm, String timeIntervalId) {
+    public CarFlow updateCarFlow(String id, int carFlowPm, String startTimeId) {
         Optional<CarFlow> carFlow = carFlowRepository.findById(id);
         if (carFlow.isEmpty()) {
             return null;
@@ -77,7 +77,7 @@ public class CarFlowService {
 
         CarFlow carFlowToUpdate = carFlow.get();
         carFlowToUpdate.setCarFlow(carFlowPm);
-        carFlowToUpdate.setTimeIntervalId(timeIntervalId);
+        carFlowToUpdate.setStartTimeId(startTimeId);
 
         carFlowRepository.save(carFlowToUpdate);
 
@@ -88,12 +88,12 @@ public class CarFlowService {
         return carFlowRepository;
     }
 
-    public CarFlow getNewestCarFlowByTimeIntervalIdForConnection(String connectionId, String timeIntervalId){
+    public CarFlow getNewestCarFlowByStartTimeIdForConnection(String connectionId, String startTimeId){
         return connectionService.getConnectionById(connectionId).getCarFlowIds()
                 .stream()
                 .map(this::getCarFlowById)
                 .filter(carFlow ->
-                        Objects.equals(carFlow.getTimeIntervalId(), timeIntervalId))
+                        Objects.equals(carFlow.getStartTimeId(), startTimeId))
                 .max(Comparator.comparing(CarFlow::getVersion))
                 .orElse(null);
     }

@@ -18,14 +18,14 @@ public class Optimization {
     private int version;
 
     @NotBlank
-    private String timeIntervalId;
+    private String startTimeId;
 
     private List<List<Integer>> results;
 
-    public Optimization(String crossroadId, int version, String timeIntervalId, List<List<Integer>> results) {
+    public Optimization(String crossroadId, int version, String startTimeId, List<List<Integer>> results) {
         this.crossroadId = crossroadId;
         this.version = version;
-        this.timeIntervalId = timeIntervalId;
+        this.startTimeId = startTimeId;
         this.results = results;
     }
 
@@ -53,12 +53,12 @@ public class Optimization {
         this.version = version;
     }
 
-    public String getTimeIntervalId() {
-        return timeIntervalId;
+    public String getStartTimeId() {
+        return startTimeId;
     }
 
-    public void setTimeIntervalId(String timeIntervalId) {
-        this.timeIntervalId = timeIntervalId;
+    public void setStartTimeId(String startTimeId) {
+        this.startTimeId = startTimeId;
     }
 
     public List<List<Integer>> getResults() {

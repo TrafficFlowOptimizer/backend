@@ -17,12 +17,12 @@ public class CarFlow {
     private int version;
 
     @NotBlank
-    private String timeIntervalId;
+    private String startTimeId;
 
-    public CarFlow(double carFlow, String timeIntervalId, int version) {
+    public CarFlow(double carFlow, String startTimeId, int version) {
         this.carFlow = carFlow;
         this.version = version;
-        this.timeIntervalId = timeIntervalId;
+        this.startTimeId = startTimeId;
     }
 
     public String getId() {
@@ -49,11 +49,11 @@ public class CarFlow {
         this.version = version;
     }
 
-    public String getTimeIntervalId() {
-        return timeIntervalId;
+    public String getStartTimeId() {
+        return startTimeId;
     }
 
-    public void setTimeIntervalId(String timeIntervalId) {
-        this.timeIntervalId = timeIntervalId;
+    public void setStartTimeId(String startTimeId) {
+        this.startTimeId = startTimeId;
     }
 }

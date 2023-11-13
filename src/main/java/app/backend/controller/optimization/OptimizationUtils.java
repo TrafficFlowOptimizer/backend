@@ -161,7 +161,7 @@ public class OptimizationUtils {
         return optimizationRequest;
     }
 
-    public void mockResponseToDb(String crossroadId, String timeIntervalId){
+    public void mockResponseToDb(String crossroadId, String startTimeId){
         List<List<Integer>> sequences = new ArrayList<>();
         Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
         for(int i=0;i<crossroad.getTrafficLightIds().size();i++){
@@ -175,12 +175,12 @@ public class OptimizationUtils {
         optimizationService.addOptimization(
                 crossroadId,
                 optimizationService.getFreeVersionNumber(crossroadId),
-                timeIntervalId,
+                startTimeId,
                 sequences
         );
     }
 
-    public void addOptimizationResultsToDb(String crossroadId, String timeIntervalId, ResponseEntity<String> result) throws JsonProcessingException {
+    public void addOptimizationResultsToDb(String crossroadId, String startTimeId, ResponseEntity<String> result) throws JsonProcessingException {
         HashMap<String, Object> mapping = new ObjectMapper().readValue(result.getBody(), HashMap.class);
 
         List<List<Integer>> sequences = new ArrayList<>(mapping.size());
@@ -196,7 +196,7 @@ public class OptimizationUtils {
         optimizationService.addOptimization(
                 crossroadId,
                 optimizationService.getFreeVersionNumber(crossroadId),
-                timeIntervalId,
+                startTimeId,
                 sequences
         );
     }
