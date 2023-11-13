@@ -101,7 +101,12 @@ public class OptimizationController {
     public ResponseEntity<String> orderOptimization(@PathVariable String crossroadId, @RequestBody int optimizationTime, @RequestBody Day day, @RequestBody Time time){
         String startTimeId = startTimeService.getStartTimeIdByDayTime(day, time);
 
-        boolean mocked = true;//TODO: mocked optimizer
+        boolean mocked = true;//TODO: mocked optimizer FOR DEVELOPMENT ONLY!
+        if(mocked){
+            optimizationUtils.mockResponseToDb(crossroadId, startTimeId);
+            return ResponseEntity.status(OK).body("Optimization completed successfully!");
+        }
+
         OptimizationRequest optimizationRequest;
         try {
             optimizationRequest = optimizationUtils.getOptimizationRequest(crossroadId, optimizationTime);
@@ -109,7 +114,7 @@ public class OptimizationController {
         catch (EntityNotFoundException e){
             return ResponseEntity
                     .status(NOT_FOUND)
-                    .build();
+                    .body("Error while creating Optimization Request from DB. CrossroadID might be invalid or some other inconsistency in DB");
         }
 //        OptimizationRequest optimizationRequest = new OptimizationRequest();
 
@@ -126,10 +131,6 @@ public class OptimizationController {
         } catch (HttpClientErrorException exception) {
             return ResponseEntity.status(BAD_REQUEST).body("Invalid data given to optimizer");
         } catch (HttpServerErrorException exception) {
-            if(mocked) {
-                optimizationUtils.mockResponseToDb(crossroadId, startTimeId);
-                return ResponseEntity.status(OK).body("Optimization completed successfully!");
-            }
             return ResponseEntity.status(SERVICE_UNAVAILABLE).body("Optimizer unavailable");
         } catch (JsonProcessingException exception) {
             return ResponseEntity.status(SERVICE_UNAVAILABLE).body("Problems with saving results to DataBase");
