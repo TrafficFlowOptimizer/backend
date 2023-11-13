@@ -1,7 +1,6 @@
 package app.backend.controller.optimization;
 
-//import app.backend.controller.crossroad.CrossroadsUtils;
-import app.backend.controller.optimization.OptimizationUtils;
+import app.backend.document.Connection;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.light.TrafficLightType;
@@ -22,6 +21,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -92,9 +92,9 @@ public class OptimizationController {
 //                .body(ret);
 //    }
 
-    //TODO: shouldn't that be sth like body instead of path variable?
-    @PostMapping(value = "/{crossroadId}/{optimizationTime}/{timeIntervalId}")
-    public ResponseEntity<String> orderOptimization(@PathVariable String crossroadId, @PathVariable int optimizationTime, @PathVariable String timeIntervalId){
+    @PostMapping(value = "/{crossroadId}")
+    public ResponseEntity<String> orderOptimization(@PathVariable String crossroadId, @RequestBody int optimizationTime, @RequestBody String timeIntervalId){
+        boolean mocked = true;//TODO: mocked optimizer
         OptimizationRequest optimizationRequest;
         try {
             optimizationRequest = optimizationUtils.getOptimizationRequest(crossroadId, optimizationTime);
@@ -119,6 +119,10 @@ public class OptimizationController {
         } catch (HttpClientErrorException exception) {
             return ResponseEntity.status(BAD_REQUEST).body("Invalid data given to optimizer");
         } catch (HttpServerErrorException exception) {
+            if(mocked) {
+                optimizationUtils.mockResponseToDb(crossroadId, timeIntervalId);
+                return ResponseEntity.status(OK).body("Optimization completed successfully!");
+            }
             return ResponseEntity.status(SERVICE_UNAVAILABLE).body("Optimizer unavailable");
         } catch (JsonProcessingException exception) {
             return ResponseEntity.status(SERVICE_UNAVAILABLE).body("Problems with saving results to DataBase");
@@ -129,14 +133,16 @@ public class OptimizationController {
     }
 
 
-    @GetMapping(value = "/result/{crossroadId}/{timeInterval}")//TODO: add previous results to response
-    public ResponseEntity<OptimizationResultResponse> getOptimizationResult(@PathVariable String crossroadId, @PathVariable String timeInterval){
-        HashMap<String, List<Integer>> lightsSequenceMapCurrent = new HashMap<>();
-        HashMap<String, Double> connectionsFlowRatioMapCurrent = new HashMap<>();
-        HashMap<String, List<Integer>> lightsSequenceMapPrevious = null;
-        HashMap<String, Double> connectionsFlowRatioMapPrevious = null;
-        HashMap<String, List<TrafficLight>> connectionsLightsMap = new HashMap<>();
-        HashMap<String, TrafficLightType> lightsDirectionMap = new HashMap<>();
+    @GetMapping(value = "/result/{crossroadId}")
+    public ResponseEntity<OptimizationResultResponse> getOptimizationResult(@PathVariable String crossroadId, @RequestParam String timeInterval){
+        HashMap<Integer, List<Integer>> lightsSequenceMapCurrent = new HashMap<>();
+        HashMap<Integer, Double> connectionsFlowRatioMapCurrent = new HashMap<>();
+        HashMap<Integer, List<Integer>> lightsSequenceMapPrevious = null;
+        HashMap<Integer, Double> connectionsFlowRatioMapPrevious = null;
+
+        HashMap<Integer, List<TrafficLight>> connectionsLightsMap = new HashMap<>();
+        HashMap<Integer, List<TrafficLight>> roadsLightsMap = new HashMap<>();
+        HashMap<Integer, TrafficLightType> lightsDirectionMap = new HashMap<>();
 
         Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
         if (crossroad == null) {
@@ -159,12 +165,14 @@ public class OptimizationController {
 
         //  -----------------------------  lightsSequenceMapCurrent  -----------------------------
 
+        List<List<Integer>> result = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, timeInterval).getResults();
+
         crossroad.getTrafficLightIds()
                 .stream()
                 .map(trafficLightService::getTrafficLightById)
                 .forEach(trafficLight -> lightsSequenceMapCurrent.put(
-                        trafficLight.getId(),
-                        Arrays.asList(0, 0, 0, 1, 1, 1) //TODO: correct retrieving sequences
+                        trafficLight.getIndex(),
+                        result.get(trafficLight.getIndex())
                         )
                 );
 
@@ -174,7 +182,7 @@ public class OptimizationController {
                 .stream()
                 .map(connectionService::getConnectionById)
                 .forEach(connection -> connectionsFlowRatioMapCurrent.put(
-                        connection.getId(),
+                        connection.getIndex(),
                         connection.getTrafficLightIds()
                                 .stream()
                                 .map(trafficLightId ->
@@ -187,16 +195,67 @@ public class OptimizationController {
                         )
                 );
 
+        //  -----------------------------  lightsSequenceMapPrevious  -----------------------------//TODO
+
+//        List<List<Integer>> result = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, timeInterval).getResults();
+//
+//        crossroad.getTrafficLightIds()
+//                .stream()
+//                .map(trafficLightService::getTrafficLightById)
+//                .forEach(trafficLight -> lightsSequenceMapCurrent.put(
+//                        trafficLight.getIndex(),
+//                        result.get(trafficLight.getIndex())
+//                        )
+//                );
+
+        //  -----------------------------  connectionsFlowRatioMapPrevious  -----------------------------//TODO
+
+//        crossroad.getConnectionIds()
+//                .stream()
+//                .map(connectionService::getConnectionById)
+//                .forEach(connection -> connectionsFlowRatioMapCurrent.put(
+//                        connection.getIndex(),
+//                        connection.getTrafficLightIds()
+//                                .stream()
+//                                .map(trafficLightId ->
+//                                        lightsSequenceMapCurrent.get(trafficLightId)
+//                                                .stream()
+//                                                .mapToInt(Integer::intValue)
+//                                                .sum())
+//                                .mapToInt(Integer::intValue)
+//                                .sum()/connectionFlowMap.get(connection.getId())
+//                        )
+//                );
+
         //  -----------------------------  connectionsLightsMap  -----------------------------
 
         crossroad.getConnectionIds()
                 .stream()
                 .map(connectionService::getConnectionById)
                 .forEach(connection -> connectionsLightsMap.put(
-                        connection.getId(),
+                        connection.getIndex(),
                         connection.getTrafficLightIds()
                                     .stream()
                                     .map(trafficLightService::getTrafficLightById).toList()
+                        )
+                );
+
+        //  -----------------------------  roadsLightsMap  -----------------------------
+
+        crossroad.getRoadIds()
+                .stream()
+                .map(roadService::getRoadById)
+                .forEach(road -> roadsLightsMap.put(
+                        road.getIndex(),
+                        crossroad.getConnectionIds()
+                                .stream()
+                                .map(connectionService::getConnectionById)
+                                .filter(connection -> Objects.equals(connection.getSourceId(), road.getId()))
+                                .map(Connection::getTrafficLightIds)
+                                .flatMap(List::stream)
+                                .distinct()
+                                .map(trafficLightService::getTrafficLightById)
+                                .toList()
                         )
                 );
 
@@ -205,7 +264,7 @@ public class OptimizationController {
         crossroad.getTrafficLightIds()
                 .stream()
                 .map(trafficLightService::getTrafficLightById)
-                .forEach(trafficLight -> lightsDirectionMap.put(trafficLight.getId(), trafficLight.getDirection()));
+                .forEach(trafficLight -> lightsDirectionMap.put(trafficLight.getIndex(), trafficLight.getDirection()));
 
         return ResponseEntity
                 .ok()
@@ -214,6 +273,7 @@ public class OptimizationController {
                         lightsSequenceMapPrevious,
                         connectionsFlowRatioMapPrevious,
                         connectionsLightsMap,
+                        roadsLightsMap,
                         lightsDirectionMap));
     }
 }

@@ -79,7 +79,7 @@ public class OptimizationService {
         return optimizationToUpdate;
     }
 
-    public List<Optimization> getOptimizationsByCrossroadId(String crossroadId) {
+    private List<Optimization> getOptimizationsByCrossroadId(String crossroadId) {
         Iterable<Optimization> optimizations = optimizationRepository.findAllByCrossroadId(crossroadId);
 
         return StreamSupport
