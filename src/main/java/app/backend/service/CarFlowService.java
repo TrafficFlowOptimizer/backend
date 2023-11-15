@@ -91,7 +91,9 @@ public class CarFlowService {
     public CarFlow getNewestCarFlowByStartTimeIdForConnection(String connectionId, String startTimeId) {
         return connectionService.getConnectionById(connectionId).getCarFlowIds()
                 .stream()
-                .map(this::getCarFlowById)
+                .map(carFlowRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .filter(carFlow ->
                         Objects.equals(carFlow.getStartTimeId(), startTimeId))
                 .max(Comparator.comparing(CarFlow::getVersion))

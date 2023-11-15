@@ -2,6 +2,8 @@ package app.backend.controller.crossroad;
 
 import app.backend.authentication.JwtUtil;
 import app.backend.document.crossroad.Crossroad;
+import app.backend.document.time.Day;
+import app.backend.document.time.Time;
 import app.backend.request.crossroad.CrossroadDescriptionRequest;
 import app.backend.response.crossroad.CrossroadDescriptionResponse;
 import app.backend.service.*;
@@ -30,6 +32,8 @@ public class CrossroadController {
     private final ConnectionService connectionService;
     private final TrafficLightService trafficLightService;
     private final OptimizationService optimizationService;
+    private final StartTimeService startTimeService;
+    private final CarFlowService carFlowService;
     private final ImageService imageService;
     private final CrossroadsUtils crossroadsUtils;
     private final JwtUtil jwtUtil;
@@ -43,6 +47,8 @@ public class CrossroadController {
             ConnectionService connectionService,
             TrafficLightService trafficLightService,
             OptimizationService optimizationService,
+            StartTimeService startTimeService,
+            CarFlowService carFlowService,
             ImageService imageService,
             CrossroadsUtils crossroadsUtils,
             JwtUtil jwtUtil,
@@ -54,6 +60,8 @@ public class CrossroadController {
         this.connectionService = connectionService;
         this.trafficLightService = trafficLightService;
         this.optimizationService = optimizationService;
+        this.startTimeService = startTimeService;
+        this.carFlowService = carFlowService;
         this.imageService = imageService;
         this.crossroadsUtils = crossroadsUtils;
         this.jwtUtil = jwtUtil;
@@ -129,6 +137,8 @@ public class CrossroadController {
                         jwtToken.split(" ")[1]
                 )
         );
+
+        startTimeService.createStartTimeEnum();
 
         CrossroadDescriptionRequest crossroadDescription;
         try {
@@ -206,7 +216,7 @@ public class CrossroadController {
 
         String imageId = imageService.store(image);
 
-        crossroadService.addCrossroad(
+        Crossroad crossroad = crossroadService.addCrossroad(
                 crossroadDescription.getCrossroad().getName(),
                 crossroadDescription.getCrossroad().getLocation(),
                 creatorId,
@@ -217,6 +227,20 @@ public class CrossroadController {
                 trafficLightsIds,
                 imageId
         );
+
+
+        for(Day day: Day.values()) {
+            for(Time time: Time.values()) {
+                String startTimeId = startTimeService.getStartTimeIdByDayTime(day, time);
+                crossroad.getConnectionIds()
+                        .forEach(
+                                connIds -> connectionService.updateConnectionAddCarFlowId(
+                                        connIds,carFlowService.addCarFlow(10, startTimeId, connIds).getId()
+                                )
+                        );
+                crossroadService.getCrossroadById(crossroad.getId());
+            }
+        }
 
         return ResponseEntity
                 .ok()

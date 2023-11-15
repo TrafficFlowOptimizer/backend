@@ -42,6 +42,16 @@ public class StartTimeService {
                 .orElse(null);
     }
 
+    public void createStartTimeEnum(){
+        if(startTimeRepository.findAll().size()==0) {
+            for (Day day : Day.values()) {
+                for (Time time : Time.values()) {
+                    addStartTime(day, time);
+                }
+            }
+        }
+    }
+
     public StartTime deleteStartTimeById(String id) {
         Optional<StartTime> startTime = startTimeRepository.findById(id);
         if (startTime.isEmpty()) {
