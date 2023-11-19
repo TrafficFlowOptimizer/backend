@@ -51,10 +51,6 @@ import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 @RequestMapping("/optimization")
 public class OptimizationController {
 
-    @Value("${optimizer.host}")
-    private String OPTIMIZER_HOST;
-    @Value("${optimizer.port}")
-    private int OPTIMIZER_PORT;
     private final OptimizationService optimizationService;
     private final CrossroadService crossroadService;
     private final RoadService roadService;
@@ -64,6 +60,10 @@ public class OptimizationController {
     private final CarFlowService carFlowService;
     private final StartTimeService startTimeService;
     private final OptimizationUtils optimizationUtils;
+    @Value("${optimizer.host}")
+    private String OPTIMIZER_HOST;
+    @Value("${optimizer.port}")
+    private int OPTIMIZER_PORT;
 
     @Autowired
     public OptimizationController(
@@ -219,7 +219,7 @@ public class OptimizationController {
                     .map(trafficLightService::getTrafficLightById)
                     .forEach(trafficLight -> lightsSequenceMapCurrent.put(
                                     trafficLight.getIndex(),
-                                    result.get(trafficLight.getIndex()-1)
+                                    result.get(trafficLight.getIndex() - 1)
                             )
                     );
 
@@ -313,8 +313,7 @@ public class OptimizationController {
                     .map(trafficLightService::getTrafficLightById)
                     .forEach(trafficLight -> lightsDirectionMap.put(trafficLight.getIndex(), trafficLight.getDirection()));
 
-        }
-        catch(Exception exception){
+        } catch (Exception exception) {
             System.out.println(exception);
             return ResponseEntity
                     .status(EXPECTATION_FAILED)

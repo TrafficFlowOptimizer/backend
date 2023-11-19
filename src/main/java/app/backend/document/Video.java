@@ -5,25 +5,18 @@ import org.springframework.data.annotation.Id;
 
 public class Video {
 
+    private final int duration; // in seconds
     @Id
     private String id;
-
     @NotBlank
     private String crossroadId;
-
     @NotBlank
     private String name;
-
     @NotBlank
     private String type;
-
     @NotBlank
     private String startTimeId;
-
     private byte[] data;
-
-    //Video time in seconds
-    private final int duration;
 
     public Video(String crossroadId, String name, String type, String startTimeId, byte[] data, int duration) {
         this.crossroadId = crossroadId;

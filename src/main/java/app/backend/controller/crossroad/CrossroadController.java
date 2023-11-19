@@ -245,9 +245,8 @@ public class CrossroadController {
                 imageId
         );
 
-
-        for(Day day: Day.values()) {
-            for(Hour hour : Hour.values()) {
+        for (Day day : Day.values()) {
+            for (Hour hour : Hour.values()) {
                 String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
                 crossroad.getConnectionIds()
                         .forEach(

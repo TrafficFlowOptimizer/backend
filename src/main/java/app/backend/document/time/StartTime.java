@@ -3,7 +3,6 @@ package app.backend.document.time;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-
 @Document(collection = "starttimes")
 public class StartTime {
     @Id

@@ -20,16 +20,15 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RoadServiceTest {
 
+    @Container
+    private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
+            .withExposedPorts(27017);
     private final RoadService roadService;
 
     @Autowired
     public RoadServiceTest(RoadService roadService) {
         this.roadService = roadService;
     }
-
-    @Container
-    private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
-            .withExposedPorts(27017);
 
     @DynamicPropertySource
     static void mongoDbProperties(DynamicPropertyRegistry registry) {

@@ -55,6 +55,16 @@ public class VideoUtils {
         this.carFlowService = carFlowService;
     }
 
+    private static void deleteFiles(String... names) {
+        for (String name : names) {
+            File f = new File(name);
+
+            if (!f.delete()) {
+                System.out.println("WARN: Failed to delete temp file " + name);
+            }
+        }
+    }
+
     private JSONObject createRequestBody(Video video, int skipFrames, List<DetectionRectangle> detectionRectangles) {
         JSONObject body = new JSONObject();
         body.put(VIDEO_ID, video.getId());
@@ -176,16 +186,6 @@ public class VideoUtils {
             return true;
         } catch (IOException e) {
             return false;
-        }
-    }
-
-    private static void deleteFiles(String... names) {
-        for (String name : names) {
-            File f = new File(name);
-
-            if (!f.delete()) {
-                System.out.println("WARN: Failed to delete temp file " + name);
-            }
         }
     }
 }

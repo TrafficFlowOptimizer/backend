@@ -1,8 +1,8 @@
 package app.backend.service;
 
 import app.backend.document.time.Day;
-import app.backend.document.time.StartTime;
 import app.backend.document.time.Hour;
+import app.backend.document.time.StartTime;
 import app.backend.repository.StartTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,6 @@ public class StartTimeService {
     public StartTimeService(StartTimeRepository startTimeRepository) {
         this.startTimeRepository = startTimeRepository;
 
-        // wychodze z domu i potem poszukam jak to powinno lepiej być
         if (startTimeRepository.findAll().isEmpty()) { // if empty instance of DB, then prepopulate
             for (Day day : Day.values()) {
                 for (Hour hour : Hour.values()) {

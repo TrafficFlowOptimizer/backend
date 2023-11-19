@@ -21,20 +21,20 @@ public class Detection {
         return id;
     }
 
-    public int getDetectedCars() {
-        return detectedCars;
-    }
-
-    public int getDetectedBuses() {
-        return detectedBuses;
-    }
-
     public void setId(int id) {
         this.id = id;
     }
 
+    public int getDetectedCars() {
+        return detectedCars;
+    }
+
     public void setDetectedCars(int detectedCars) {
         this.detectedCars = detectedCars;
+    }
+
+    public int getDetectedBuses() {
+        return detectedBuses;
     }
 
     public void setDetectedBuses(int detectedBuses) {

@@ -6,12 +6,11 @@ import app.backend.document.Connection;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.crossroad.CrossroadType;
 import app.backend.document.light.TrafficLight;
-import app.backend.document.light.TrafficLightType;
 import app.backend.document.road.Road;
 import app.backend.document.road.RoadType;
 import app.backend.document.time.Day;
-import app.backend.document.time.StartTime;
 import app.backend.document.time.Hour;
+import app.backend.document.time.StartTime;
 import app.backend.service.CarFlowService;
 import app.backend.service.CollisionService;
 import app.backend.service.ConnectionService;
@@ -41,6 +40,9 @@ import static app.backend.document.light.TrafficLightType.LEFT;
 @RestController
 public class Controller {
 
+    final int numberOfLights = 12;
+    final int numberOfRoads = 12;
+    final int numberOfConnections = 12;
     @Autowired
     UserService userService;
     @Autowired
@@ -88,10 +90,6 @@ public class Controller {
     public String populateDb() {
         return this.populateAll();
     }
-
-    final int numberOfLights = 12;
-    final int numberOfRoads = 12;
-    final int numberOfConnections = 12;
 
     private ArrayList<String> populateLights() {
         ArrayList<String> lightsIDs = new ArrayList<>();

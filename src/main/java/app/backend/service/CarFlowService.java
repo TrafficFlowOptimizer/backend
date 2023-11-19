@@ -13,9 +13,8 @@ import java.util.Optional;
 @Service
 public class CarFlowService {
 
-    ConnectionService connectionService;
-
     private final CarFlowRepository carFlowRepository;
+    ConnectionService connectionService;
 
     @Autowired
     public CarFlowService(CarFlowRepository carFlowRepository, ConnectionService connectionService) {
