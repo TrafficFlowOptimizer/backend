@@ -254,7 +254,8 @@ public class CrossroadController {
                 crossroad.getConnectionIds()
                         .forEach(
                                 connIds -> connectionService.updateConnectionAddCarFlowId(
-                                        connIds,carFlowService.addCarFlow(10, startTimeId, connIds).getId()
+                                        connIds,
+                                        carFlowService.addCarFlow(10, startTimeId, connIds).getId()
                                 )
                         );
                 crossroadService.getCrossroadById(crossroad.getId());
