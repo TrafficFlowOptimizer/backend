@@ -35,7 +35,7 @@ public class StartTimeService {
     public String getStartTimeIdByDayTime(Day day, Hour hour) {
         return startTimeRepository.findAll()
                 .stream()
-                .filter(stime -> stime.getDay() == day && stime.getTime() == hour)
+                .filter(stime -> stime.getDay() == day && stime.getHour() == hour)
                 .map(StartTime::getId).findFirst()
                 .orElse(null);
     }

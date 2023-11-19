@@ -34,11 +34,11 @@ public class StartTime {
         this.day = day;
     }
 
-    public Hour getTime() {
+    public Hour getHour() {
         return hour;
     }
 
-    public void setTime(Hour hour) {
+    public void setHour(Hour hour) {
         this.hour = hour;
     }
 }
