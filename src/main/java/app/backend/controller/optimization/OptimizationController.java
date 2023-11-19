@@ -65,17 +65,18 @@ public class OptimizationController {
     private final StartTimeService startTimeService;
     private final OptimizationUtils optimizationUtils;
 
-
     @Autowired
-    public OptimizationController(OptimizationService optimizationService,
-                                  CrossroadService crossroadService,
-                                  OptimizationUtils optimizationUtils,
-                                  RoadService roadService,
-                                  CollisionService collisionService,
-                                  ConnectionService connectionService,
-                                  TrafficLightService trafficLightService,
-                                  StartTimeService startTimeService,
-                                  CarFlowService carFlowService) {
+    public OptimizationController(
+            OptimizationService optimizationService,
+            CrossroadService crossroadService,
+            OptimizationUtils optimizationUtils,
+            RoadService roadService,
+            CollisionService collisionService,
+            ConnectionService connectionService,
+            TrafficLightService trafficLightService,
+            StartTimeService startTimeService,
+            CarFlowService carFlowService
+    ) {
         this.optimizationService = optimizationService;
         this.crossroadService = crossroadService;
         this.optimizationUtils = optimizationUtils;
@@ -118,16 +119,19 @@ public class OptimizationController {
 //    }
 
     @PostMapping(value = "/{crossroadId}")
-    public ResponseEntity<String> orderOptimization(@PathVariable String crossroadId,
-                                                    @RequestParam int optimizationTime,
-                                                    @RequestParam Day day,
-                                                    @RequestParam Hour hour) {
+    public ResponseEntity<Void> orderOptimization(
+            @PathVariable String crossroadId,
+            @RequestParam int optimizationTime,
+            @RequestParam Day day,
+            @RequestParam Hour hour
+    ) {
         String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
 
         boolean mocked = true;//TODO: mocked optimizer FOR DEVELOPMENT ONLY!
         if (mocked) {
             optimizationUtils.mockResponseToDb(crossroadId, startTimeId);
-            return ResponseEntity.status(OK).body("Optimization completed successfully!");
+            return ResponseEntity
+                    .status(OK).build();
         }
 
         OptimizationRequest optimizationRequest;
@@ -136,7 +140,7 @@ public class OptimizationController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity
                     .status(NOT_FOUND)
-                    .body("Error while creating Optimization Request from DB. CrossroadID might be invalid or some other inconsistency in DB");
+                    .build();
         }
 //        OptimizationRequest optimizationRequest = new OptimizationRequest();
 
@@ -151,20 +155,30 @@ public class OptimizationController {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
             optimizationUtils.addOptimizationResultsToDb(crossroadId, startTimeId, response);
         } catch (HttpClientErrorException exception) {
-            return ResponseEntity.status(BAD_REQUEST).body("Invalid data given to optimizer");
-        } catch (HttpServerErrorException exception) {
-            return ResponseEntity.status(SERVICE_UNAVAILABLE).body("Optimizer unavailable");
-        } catch (JsonProcessingException exception) {
-            return ResponseEntity.status(SERVICE_UNAVAILABLE).body("Problems with saving results to DataBase");
+            return ResponseEntity
+                    .status(BAD_REQUEST)
+                    .build();
+        } catch (HttpServerErrorException | JsonProcessingException exception) {
+            return ResponseEntity
+                    .status(SERVICE_UNAVAILABLE)
+                    .build();
         } catch (UnknownHttpStatusCodeException exception) {
-            return ResponseEntity.status(NOT_FOUND).body("Something weird happened");
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
         }
-        return ResponseEntity.status(OK).body("Optimization completed successfully!");
+        return ResponseEntity
+                .status(OK)
+                .build();
     }
 
 
     @GetMapping(value = "/result/{crossroadId}")
-    public ResponseEntity<OptimizationResultResponse> getOptimizationResult(@PathVariable String crossroadId, @RequestParam Day day, @RequestParam Hour hour) {
+    public ResponseEntity<OptimizationResultResponse> getOptimizationResult(
+            @PathVariable String crossroadId,
+            @RequestParam Day day,
+            @RequestParam Hour hour
+    ) {
         String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
 
         HashMap<Integer, List<Integer>> lightsSequenceMapCurrent = new HashMap<>();
@@ -302,23 +316,29 @@ public class OptimizationController {
         }
         catch(Exception exception){
             System.out.println(exception);
-            return ResponseEntity.status(EXPECTATION_FAILED).body(new OptimizationResultResponse(lightsSequenceMapCurrent,
-                    connectionsFlowRatioMapCurrent,
-                    lightsSequenceMapPrevious,
-                    connectionsFlowRatioMapPrevious,
-                    connectionsLightsMap,
-                    roadsLightsMap,
-                    lightsDirectionMap));
+            return ResponseEntity
+                    .status(EXPECTATION_FAILED)
+                    .body(new OptimizationResultResponse(
+                            lightsSequenceMapCurrent,
+                            connectionsFlowRatioMapCurrent,
+                            lightsSequenceMapPrevious,
+                            connectionsFlowRatioMapPrevious,
+                            connectionsLightsMap,
+                            roadsLightsMap,
+                            lightsDirectionMap)
+                    );
         }
 
         return ResponseEntity
                 .ok()
-                .body(new OptimizationResultResponse(lightsSequenceMapCurrent,
+                .body(new OptimizationResultResponse(
+                        lightsSequenceMapCurrent,
                         connectionsFlowRatioMapCurrent,
                         lightsSequenceMapPrevious,
                         connectionsFlowRatioMapPrevious,
                         connectionsLightsMap,
                         roadsLightsMap,
-                        lightsDirectionMap));
+                        lightsDirectionMap)
+                );
     }
 }
