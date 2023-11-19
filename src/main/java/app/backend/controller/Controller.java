@@ -251,12 +251,8 @@ public class Controller {
         return collisionsIDs;
     }
 
-    private StartTime populateStartTimes() {
-        return startTimeService.addStartTime(Day.MONDAY, Hour.T0800);
-    }
-
     private String populateAll() {
-        StartTime startTime = populateStartTimes();
+        StartTime startTime = startTimeService.getStartTimeByDayTime(Day.MONDAY, Hour.T0800);
         ArrayList<String> lightsIDs = populateLights();
         ArrayList<String> carFlowsIDs = populateCarFlows(startTime);
         ArrayList<String> roadsIDs = populateRoads();

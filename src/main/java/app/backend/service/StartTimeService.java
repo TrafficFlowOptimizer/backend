@@ -15,6 +15,20 @@ public class StartTimeService {
     @Autowired
     public StartTimeService(StartTimeRepository startTimeRepository) {
         this.startTimeRepository = startTimeRepository;
+
+        // wychodze z domu i potem poszukam jak to powinno lepiej być
+        if (startTimeRepository.findAll().isEmpty()) { // if empty instance of DB, then prepopulate
+            for (Day day : Day.values()) {
+                for (Hour hour : Hour.values()) {
+                    startTimeRepository.insert(
+                            new StartTime(
+                                    day,
+                                    hour
+                            )
+                    );
+                }
+            }
+        }
     }
 
     public StartTime getStartTimeById(String id) {
@@ -23,14 +37,23 @@ public class StartTimeService {
                 .orElse(null);
     }
 
-    public StartTime addStartTime(Day day, Hour hour) {
-        return startTimeRepository.insert(
-                new StartTime(
-                        day,
-                        hour
-                )
-        );
+    public StartTime getStartTimeByDayTime(Day day, Hour hour) {
+        return startTimeRepository.findAll()
+                .stream()
+                .filter(stime -> stime.getDay() == day && stime.getHour() == hour)
+                .findFirst()
+                .orElse(null);
     }
+
+// chyba do kosza
+//    public StartTime addStartTime(Day day, Hour hour) {
+//        return startTimeRepository.insert(
+//                new StartTime(
+//                        day,
+//                        hour
+//                )
+//        );
+//    }
 
     public String getStartTimeIdByDayTime(Day day, Hour hour) {
         return startTimeRepository.findAll()
@@ -38,15 +61,5 @@ public class StartTimeService {
                 .filter(stime -> stime.getDay() == day && stime.getHour() == hour)
                 .map(StartTime::getId).findFirst()
                 .orElse(null);
-    }
-
-    public void createStartTimeEnum(){
-        if(startTimeRepository.findAll().size()==0) {
-            for (Day day : Day.values()) {
-                for (Hour hour : Hour.values()) {
-                    addStartTime(day, hour);
-                }
-            }
-        }
     }
 }

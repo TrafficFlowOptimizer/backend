@@ -157,8 +157,6 @@ public class CrossroadController {
                 )
         );
 
-        startTimeService.createStartTimeEnum();
-
         CrossroadDescriptionRequest crossroadDescription;
         try {
             crossroadDescription = jsonMapper.readValue(crossroadDescriptionRequest, CrossroadDescriptionRequest.class);
