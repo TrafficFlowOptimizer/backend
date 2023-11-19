@@ -23,15 +23,15 @@ public class Video {
     private byte[] data;
 
     //Video time in seconds
-    private final Integer time;
+    private final int duration;
 
-    public Video(String crossroadId, String name, String type, String startTimeId, byte[] data, Integer time) {
+    public Video(String crossroadId, String name, String type, String startTimeId, byte[] data, int duration) {
         this.crossroadId = crossroadId;
         this.name = name;
         this.type = type;
         this.startTimeId = startTimeId;
         this.data = data;
-        this.time = time;
+        this.duration = duration;
     }
 
     public String getId() {
@@ -82,7 +82,7 @@ public class Video {
         this.data = data;
     }
 
-    public Integer getTime() {
-        return time;
+    public Integer getDuration() {
+        return duration;
     }
 }

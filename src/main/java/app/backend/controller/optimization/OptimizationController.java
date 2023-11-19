@@ -5,15 +5,31 @@ import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.light.TrafficLightType;
 import app.backend.document.time.Day;
-import app.backend.document.time.Time;
+import app.backend.document.time.Hour;
 import app.backend.request.optimization.OptimizationRequest;
 import app.backend.response.optimization.OptimizationResultResponse;
-import app.backend.service.*;
+import app.backend.service.CarFlowService;
+import app.backend.service.CollisionService;
+import app.backend.service.ConnectionService;
+import app.backend.service.CrossroadService;
+import app.backend.service.OptimizationService;
+import app.backend.service.RoadService;
+import app.backend.service.StartTimeService;
+import app.backend.service.TrafficLightService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -24,7 +40,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.EXPECTATION_FAILED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
+
 
 @RestController
 @RequestMapping("/optimization")
@@ -97,8 +118,11 @@ public class OptimizationController {
 //    }
 
     @PostMapping(value = "/{crossroadId}")
-    public ResponseEntity<String> orderOptimization(@PathVariable String crossroadId, @RequestParam int optimizationTime, @RequestParam Day day, @RequestParam Time time) {
-        String startTimeId = startTimeService.getStartTimeIdByDayTime(day, time);
+    public ResponseEntity<String> orderOptimization(@PathVariable String crossroadId,
+                                                    @RequestParam int optimizationTime,
+                                                    @RequestParam Day day,
+                                                    @RequestParam Hour hour) {
+        String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
 
         boolean mocked = true;//TODO: mocked optimizer FOR DEVELOPMENT ONLY!
         if (mocked) {
@@ -140,8 +164,8 @@ public class OptimizationController {
 
 
     @GetMapping(value = "/result/{crossroadId}")
-    public ResponseEntity<OptimizationResultResponse> getOptimizationResult(@PathVariable String crossroadId, @RequestParam Day day, @RequestParam Time time) {
-        String startTimeId = startTimeService.getStartTimeIdByDayTime(day, time);
+    public ResponseEntity<OptimizationResultResponse> getOptimizationResult(@PathVariable String crossroadId, @RequestParam Day day, @RequestParam Hour hour) {
+        String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
 
         HashMap<Integer, List<Integer>> lightsSequenceMapCurrent = new HashMap<>();
         HashMap<Integer, Double> connectionsFlowRatioMapCurrent = new HashMap<>();

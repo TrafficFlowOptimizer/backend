@@ -6,7 +6,14 @@ import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.light.TrafficLightType;
 import app.backend.request.optimization.OptimizationRequest;
-import app.backend.service.*;
+import app.backend.service.CarFlowService;
+import app.backend.service.CollisionService;
+import app.backend.service.ConnectionService;
+import app.backend.service.CrossroadService;
+import app.backend.service.OptimizationService;
+import app.backend.service.RoadService;
+import app.backend.service.TrafficLightService;
+import app.backend.service.VideoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +22,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component

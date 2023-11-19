@@ -9,9 +9,6 @@ public class Detection {
     private int detectedBuses;
     private String connectionId;
 
-    public Detection() {
-    }
-
     public static Detection[] getDetections(String jsonString) throws JsonProcessingException {
 
         jsonString = jsonString.replaceAll("'", "\"");

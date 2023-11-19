@@ -15,7 +15,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -103,8 +107,8 @@ public class VideoUtils {
             detections = Detection.getDetections(responseValue);
 
             for (Detection detection : detections) {
-                detection.setDetectedCars((detection.getDetectedCars() * secondsInMinute) / video.getTime());
-                detection.setDetectedBuses((detection.getDetectedBuses() * secondsInMinute) / video.getTime());
+                detection.setDetectedCars((detection.getDetectedCars() * secondsInMinute) / video.getDuration());
+                detection.setDetectedBuses((detection.getDetectedBuses() * secondsInMinute) / video.getDuration());
                 carFlowService.addCarFlow(detection.getDetectedBuses() + detection.getDetectedCars(), video.getStartTimeId(), detection.getConnectionId());
             }
 

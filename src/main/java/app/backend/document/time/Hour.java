@@ -1,6 +1,6 @@
 package app.backend.document.time;
 
-public enum Time {
+public enum Hour {
     T0000,
     T0100,
     T0200,

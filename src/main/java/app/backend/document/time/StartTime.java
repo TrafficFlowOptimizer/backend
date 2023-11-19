@@ -4,18 +4,18 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 
-@Document("starttimes")
+@Document(collection = "starttimes")
 public class StartTime {
     @Id
     private String id;
 
     private Day day;
 
-    private Time time;
+    private Hour hour;
 
-    public StartTime(Day day, Time time) {
+    public StartTime(Day day, Hour hour) {
         this.day = day;
-        this.time = time;
+        this.hour = hour;
     }
 
     public String getId() {
@@ -34,11 +34,11 @@ public class StartTime {
         this.day = day;
     }
 
-    public Time getTime() {
-        return time;
+    public Hour getTime() {
+        return hour;
     }
 
-    public void setTime(Time time) {
-        this.time = time;
+    public void setTime(Hour hour) {
+        this.hour = hour;
     }
 }

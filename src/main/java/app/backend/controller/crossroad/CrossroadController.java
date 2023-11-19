@@ -3,23 +3,42 @@ package app.backend.controller.crossroad;
 import app.backend.authentication.JwtUtil;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.time.Day;
-import app.backend.document.time.Time;
+import app.backend.document.time.Hour;
 import app.backend.request.crossroad.CrossroadDescriptionRequest;
 import app.backend.response.crossroad.CrossroadDescriptionResponse;
-import app.backend.service.*;
+import app.backend.service.CarFlowService;
+import app.backend.service.CollisionService;
+import app.backend.service.ConnectionService;
+import app.backend.service.CrossroadService;
+import app.backend.service.ImageService;
+import app.backend.service.OptimizationService;
+import app.backend.service.RoadService;
+import app.backend.service.StartTimeService;
+import app.backend.service.TrafficLightService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
 
 @RestController
 @CrossOrigin("*")
@@ -230,8 +249,8 @@ public class CrossroadController {
 
 
         for(Day day: Day.values()) {
-            for(Time time: Time.values()) {
-                String startTimeId = startTimeService.getStartTimeIdByDayTime(day, time);
+            for(Hour hour : Hour.values()) {
+                String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
                 crossroad.getConnectionIds()
                         .forEach(
                                 connIds -> connectionService.updateConnectionAddCarFlowId(

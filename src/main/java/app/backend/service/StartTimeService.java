@@ -2,12 +2,10 @@ package app.backend.service;
 
 import app.backend.document.time.Day;
 import app.backend.document.time.StartTime;
-import app.backend.document.time.Time;
+import app.backend.document.time.Hour;
 import app.backend.repository.StartTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class StartTimeService {
@@ -25,19 +23,19 @@ public class StartTimeService {
                 .orElse(null);
     }
 
-    public StartTime addStartTime(Day day, Time time) {
+    public StartTime addStartTime(Day day, Hour hour) {
         return startTimeRepository.insert(
                 new StartTime(
                         day,
-                        time
+                        hour
                 )
         );
     }
 
-    public String getStartTimeIdByDayTime(Day day, Time time) {
+    public String getStartTimeIdByDayTime(Day day, Hour hour) {
         return startTimeRepository.findAll()
                 .stream()
-                .filter(stime -> stime.getDay() == day && stime.getTime() == time)
+                .filter(stime -> stime.getDay() == day && stime.getTime() == hour)
                 .map(StartTime::getId).findFirst()
                 .orElse(null);
     }
@@ -45,35 +43,10 @@ public class StartTimeService {
     public void createStartTimeEnum(){
         if(startTimeRepository.findAll().size()==0) {
             for (Day day : Day.values()) {
-                for (Time time : Time.values()) {
-                    addStartTime(day, time);
+                for (Hour hour : Hour.values()) {
+                    addStartTime(day, hour);
                 }
             }
         }
-    }
-
-    public StartTime deleteStartTimeById(String id) {
-        Optional<StartTime> startTime = startTimeRepository.findById(id);
-        if (startTime.isEmpty()) {
-            return null;
-        }
-
-        startTimeRepository.deleteById(id);
-        return startTime.get();
-    }
-
-    public StartTime updateStartTime(String id, Day day, Time time) {
-        Optional<StartTime> startTime = startTimeRepository.findById(id);
-        if (startTime.isEmpty()) {
-            return null;
-        }
-
-        StartTime startTimeToUpdate = startTime.get();
-        startTimeToUpdate.setDay(day);
-        startTimeToUpdate.setTime(time);
-
-        startTimeRepository.save(startTimeToUpdate);
-
-        return startTimeToUpdate;
     }
 }
