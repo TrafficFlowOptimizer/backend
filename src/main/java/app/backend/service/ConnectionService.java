@@ -81,6 +81,25 @@ public class ConnectionService {
         return connectionToUpdate;
     }
 
+    public Connection updateConnectionAddCarFlowId(
+            String id,
+            String carFlowID
+    ) {
+        Optional<Connection> connection = connectionRepository.findById(id);
+        if (connection.isEmpty()) {
+            return null;
+        }
+
+        Connection connectionToUpdate = connection.get();
+        List<String> carFlowIDs = connectionToUpdate.getCarFlowIds();
+        carFlowIDs.add(carFlowID);
+        connectionToUpdate.setCarFlowIds(carFlowIDs);
+
+        connectionRepository.save(connectionToUpdate);
+
+        return connectionToUpdate;
+    }
+
     public ConnectionRepository getConnectionRepository() {
         return connectionRepository;
     }

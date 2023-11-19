@@ -19,16 +19,15 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CollisionServiceTest {
 
+    @Container
+    private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
+            .withExposedPorts(27017);
     private final CollisionService collisionService;
 
     @Autowired
     public CollisionServiceTest(CollisionService collisionService) {
         this.collisionService = collisionService;
     }
-
-    @Container
-    private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
-            .withExposedPorts(27017);
 
     @DynamicPropertySource
     static void mongoDbProperties(DynamicPropertyRegistry registry) {

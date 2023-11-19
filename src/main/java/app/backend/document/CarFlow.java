@@ -13,12 +13,16 @@ public class CarFlow {
     @PositiveOrZero
     private double carFlow;
 
-    @NotBlank
-    private String timeIntervalId;
+    @PositiveOrZero
+    private int version;
 
-    public CarFlow(double carFlow, String timeIntervalId) {
+    @NotBlank
+    private String startTimeId;
+
+    public CarFlow(double carFlow, String startTimeId, int version) {
         this.carFlow = carFlow;
-        this.timeIntervalId = timeIntervalId;
+        this.version = version;
+        this.startTimeId = startTimeId;
     }
 
     public String getId() {
@@ -37,11 +41,19 @@ public class CarFlow {
         this.carFlow = carFlowPm;
     }
 
-    public String getTimeIntervalId() {
-        return timeIntervalId;
+    public int getVersion() {
+        return version;
     }
 
-    public void setTimeIntervalId(String timeIntervalId) {
-        this.timeIntervalId = timeIntervalId;
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public String getStartTimeId() {
+        return startTimeId;
+    }
+
+    public void setStartTimeId(String startTimeId) {
+        this.startTimeId = startTimeId;
     }
 }

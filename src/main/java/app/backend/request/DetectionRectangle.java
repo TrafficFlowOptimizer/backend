@@ -2,8 +2,6 @@ package app.backend.request;
 
 import org.springframework.data.util.Pair;
 
-import java.util.Vector;
-
 public class DetectionRectangle {
     private String id;
     private String connectionId;

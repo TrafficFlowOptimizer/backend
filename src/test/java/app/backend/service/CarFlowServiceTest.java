@@ -19,16 +19,15 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CarFlowServiceTest {
 
+    @Container
+    private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
+            .withExposedPorts(27017);
     private final CarFlowService carFlowService;
 
     @Autowired
     public CarFlowServiceTest(CarFlowService carFlowService) {
         this.carFlowService = carFlowService;
     }
-
-    @Container
-    private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
-            .withExposedPorts(27017);
 
     @DynamicPropertySource
     static void mongoDbProperties(DynamicPropertyRegistry registry) {
@@ -51,37 +50,37 @@ class CarFlowServiceTest {
     @Test
     public void getCarFlowById_properCarFlow_correctCarFlow() {
         double flow = 7.0;
-        String timeIntervalId = "timeIntervalId";
+        String startTimeId = "startTimeId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
-        carFlowService.addCarFlow(11, "asdsdaddsds");
+        CarFlow carFlow = carFlowService.addCarFlow(flow, startTimeId, 1);
+        carFlowService.addCarFlow(11, "asdsdaddsds", 1);
 
         CarFlow found = carFlowService.getCarFlowById(carFlow.getId());
 
         assertEquals(2, carFlowService.getCarFlowRepository().count());
         assertNotNull(found);
         assertEquals(flow, found.getCarFlow());
-        assertEquals(timeIntervalId, found.getTimeIntervalId());
+        assertEquals(startTimeId, found.getStartTimeId());
     }
 
     @Test
     public void addCarFlow_properCarFlow_carFlowAdded() {
         int flow = 7;
-        String timeIntervalId = "timeIntervalId";
+        String startTimeId = "startTimeId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
+        CarFlow carFlow = carFlowService.addCarFlow(flow, startTimeId, 1);
 
         assertEquals(1, carFlowService.getCarFlowRepository().count());
         assertEquals(flow, carFlow.getCarFlow());
-        assertEquals(timeIntervalId, carFlow.getTimeIntervalId());
+        assertEquals(startTimeId, carFlow.getStartTimeId());
     }
 
     @Test
     public void deleteCarFlowById_properCarFlow_carFlowDeleted() {
         int flow = 7;
-        String timeIntervalId = "timeIntervalId";
+        String startTimeId = "startTimeId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
+        CarFlow carFlow = carFlowService.addCarFlow(flow, startTimeId, 1);
 
         String id = carFlow.getId();
         carFlowService.deleteCarFlowById(id);
@@ -93,9 +92,9 @@ class CarFlowServiceTest {
     @Test
     public void deleteCarFlowById_improperCarFlow_carFlowNotFound() {
         int flow = 7;
-        String timeIntervalId = "timeIntervalId";
+        String startTimeId = "startTimeId";
 
-        carFlowService.addCarFlow(flow, timeIntervalId);
+        carFlowService.addCarFlow(flow, startTimeId, 1);
         String id = "";
 
         assertNull(carFlowService.deleteCarFlowById(id));
@@ -105,35 +104,35 @@ class CarFlowServiceTest {
     @Test
     public void updateCarFlow_properCarFlow_carFlowUpdated() {
         int flow = 7;
-        String timeIntervalId = "timeIntervalId";
+        String startTimeId = "startTimeId";
 
-        CarFlow carFlow = carFlowService.addCarFlow(flow, timeIntervalId);
+        CarFlow carFlow = carFlowService.addCarFlow(flow, startTimeId, 1);
 
         String id = carFlow.getId();
         int flowUpdated = 13;
-        String timeIntervalIdUpdated = "updt";
+        String startTimeIdUpdated = "updt";
 
-        carFlowService.updateCarFlow(id, flowUpdated, timeIntervalIdUpdated);
+        carFlowService.updateCarFlow(id, flowUpdated, startTimeIdUpdated);
         CarFlow updated = carFlowService.getCarFlowById(id);
 
         assertEquals(1, carFlowService.getCarFlowRepository().count());
         assertNotNull(updated);
         assertEquals(flowUpdated, updated.getCarFlow());
-        assertEquals(timeIntervalIdUpdated, updated.getTimeIntervalId());
+        assertEquals(startTimeIdUpdated, updated.getStartTimeId());
     }
 
     @Test
     public void updateCarFlow_improperCarFlow_carFlowNotFound() {
         int flow = 7;
-        String timeIntervalId = "timeIntervalId";
+        String startTimeId = "startTimeId";
 
-        carFlowService.addCarFlow(flow, timeIntervalId);
+        carFlowService.addCarFlow(flow, startTimeId, 1);
 
         String id = "";
         int flowUpdated = 13;
-        String timeIntervalIdUpdated = "updt";
+        String startTimeIdUpdated = "updt";
 
-        assertNull(carFlowService.updateCarFlow(id, flowUpdated, timeIntervalIdUpdated));
+        assertNull(carFlowService.updateCarFlow(id, flowUpdated, startTimeIdUpdated));
         assertNull(carFlowService.deleteCarFlowById(id));
         assertEquals(1, carFlowService.getCarFlowRepository().count());
     }

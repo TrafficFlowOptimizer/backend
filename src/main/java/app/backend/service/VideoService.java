@@ -28,11 +28,12 @@ public class VideoService {
         this.gridFsOperations = gridFsOperations;
     }
 
-    public String store(MultipartFile file, String crossroadId, String timeIntervalId) {
+    public String store(MultipartFile file, String crossroadId, String startTimeId, Integer duration) {
         DBObject metadata = new BasicDBObject();
         metadata.put("crossroadId", crossroadId);
-        metadata.put("timeIntervalId", timeIntervalId);
+        metadata.put("startTimeId", startTimeId);
         metadata.put("type", file.getContentType());
+        metadata.put("duration", duration);
 
         ObjectId objectId;
         try {
@@ -58,8 +59,9 @@ public class VideoService {
                         file.getMetadata().get("crossroadId").toString(),
                         file.getFilename(),
                         file.getMetadata().get("type").toString(),
-                        file.getMetadata().get("timeIntervalId").toString(),
-                        gridFsOperations.getResource(file).getInputStream().readAllBytes()
+                        file.getMetadata().get("startTimeId").toString(),
+                        gridFsOperations.getResource(file).getInputStream().readAllBytes(),
+                        Integer.valueOf(file.getMetadata().get("duration").toString())
                 );
                 video.setId(file.getId().toString());
             } catch (IOException e) {

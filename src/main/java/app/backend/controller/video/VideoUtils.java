@@ -2,6 +2,8 @@ package app.backend.controller.video;
 
 import app.backend.document.Video;
 import app.backend.request.DetectionRectangle;
+import app.backend.service.CarFlowService;
+import app.backend.service.CrossroadService;
 import app.backend.service.VideoService;
 import org.json.JSONObject;
 import org.opencv.core.Mat;
@@ -42,63 +44,90 @@ public class VideoUtils {
     public static final String VIDEO = "video";
 
     VideoService videoService;
+    CrossroadService crossroadService;
+    CarFlowService carFlowService;
 
     @Autowired
-    public VideoUtils(VideoService videoService) {
+    public VideoUtils(VideoService videoService, CrossroadService crossroadService,
+                      CarFlowService carFlowService) {
+        this.crossroadService = crossroadService;
         this.videoService = videoService;
+        this.carFlowService = carFlowService;
     }
 
-    public ResponseEntity<String> analyseVideo(String videoId, int skipFrames, List<DetectionRectangle> detectionRectangles) {
-        HttpURLConnection connection;
-        try {
-            URL url = new URL("http://localhost:8081/analysis"); // TODO: get from variable from environment
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-        } catch (IOException e) {
-            return ResponseEntity
-                    .status(INTERNAL_SERVER_ERROR)
-                    .build();
-        }
-        connection.setDoOutput(true);
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("Accept", "application/json");
+    private static void deleteFiles(String... names) {
+        for (String name : names) {
+            File f = new File(name);
 
-        Video video = videoService.getVideo(videoId);
-        if (video == null) {
-            return ResponseEntity
-                    .status(NOT_FOUND)
-                    .build();
+            if (!f.delete()) {
+                System.out.println("WARN: Failed to delete temp file " + name);
+            }
         }
+    }
 
+    private JSONObject createRequestBody(Video video, int skipFrames, List<DetectionRectangle> detectionRectangles) {
         JSONObject body = new JSONObject();
-        body.put(VIDEO_ID, videoId);
+        body.put(VIDEO_ID, video.getId());
         body.put(EXTENSION, video.getType().split("/")[1]); // hopefully Lob lazily loaded; TODO: check in the future
         body.put(VIDEO, Base64.getEncoder().encodeToString(video.getData()));
         body.put(SKIP_FRAMES, skipFrames);
         body.put(DETECTION_RECTANGLES, detectionRectangles);
 
-//        System.out.println("INFO:\n" + body.toString(4));
+        return body;
+    }
 
+    private HttpURLConnection setUpConnection() throws IOException {
+        HttpURLConnection connection;
+        URL url = new URL("http://localhost:8081/analysis"); // TODO: get from variable from environment
+        connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Accept", "application/json");
+        return connection;
+    }
+
+    private void sendAnalyseRequestToCarRecognition(HttpURLConnection connection, JSONObject body) throws IOException {
         byte[] out = body.toString(4).getBytes(StandardCharsets.UTF_8);
-        OutputStream stream;
+        OutputStream stream = connection.getOutputStream();
+        stream.write(out);
+    }
+
+    public Detection[] analyseVideo(String videoId, int skipFrames, List<DetectionRectangle> detectionRectangles) {
+        int secondsInMinute = 60;
+        HttpURLConnection connection;
+        Detection[] detections = null;
+
         try {
-            stream = connection.getOutputStream();
-            stream.write(out);
+            connection = setUpConnection();
+            Video video = videoService.getVideo(videoId);
+            if (video == null) {
+                throw new RuntimeException("No video with id: " + videoId);
+            }
+
+            JSONObject body = createRequestBody(video, skipFrames, detectionRectangles);
+
+            sendAnalyseRequestToCarRecognition(connection, body);
 
             int responseCode = connection.getResponseCode();
             String responseValue = new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             connection.disconnect();
 
-            System.out.println("INFO:\n" + responseCode + " " + responseValue);
+            detections = Detection.getDetections(responseValue);
 
-            return ResponseEntity
-                    .status(responseCode)
-                    .body(responseValue);
+            for (Detection detection : detections) {
+                detection.setDetectedCars((detection.getDetectedCars() * secondsInMinute) / video.getDuration());
+                detection.setDetectedBuses((detection.getDetectedBuses() * secondsInMinute) / video.getDuration());
+                carFlowService.addCarFlow(detection.getDetectedBuses() + detection.getDetectedCars(), video.getStartTimeId(), detection.getConnectionId());
+            }
+
+            System.out.println("INFO:\n" + responseCode + " " + responseValue);
         } catch (IOException e) {
-            return ResponseEntity
-                    .status(INTERNAL_SERVER_ERROR)
-                    .build();
+            System.out.println(e.getMessage());
         }
+
+        return detections;
     }
 
     public ResponseEntity<InputStreamResource> getSampleFrame(String videoId) {
@@ -157,16 +186,6 @@ public class VideoUtils {
             return true;
         } catch (IOException e) {
             return false;
-        }
-    }
-
-    private static void deleteFiles(String... names) {
-        for (String name : names) {
-            File f = new File(name);
-
-            if (!f.delete()) {
-                System.out.println("WARN: Failed to delete temp file " + name);
-            }
         }
     }
 }
