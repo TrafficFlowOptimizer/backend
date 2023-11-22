@@ -127,7 +127,7 @@ public class OptimizationController {
     ) {
         String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
 
-        boolean mocked = true;//TODO: mocked optimizer FOR DEVELOPMENT ONLY!
+        boolean mocked = false;//TODO: mocked optimizer FOR DEVELOPMENT ONLY!
         if (mocked) {
             optimizationUtils.mockResponseToDb(crossroadId, startTimeId);
             return ResponseEntity

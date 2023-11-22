@@ -204,6 +204,15 @@ public class OptimizationUtils {
 
             optimizationRequest.setMaxConnectionsFromOneEntrance(maxConnectionsFromOneEntrance);
 
+            //  -----------------------------  intermediate capacities  -----------------------------
+
+            List<List<Integer>> intermediatesCapacities = new ArrayList<>();
+
+            //TODO
+
+            optimizationRequest.setintermediatesCapacities(intermediatesCapacities);
+            optimizationRequest.setintermediatesCount(intermediatesCapacities.size());
+
             //  -----------------------------  fixed values  -----------------------------
 
             optimizationRequest.setTimeUnitsInMinute(60);

@@ -22,12 +22,14 @@ public class OptimizationRequest {
     private List<TrafficLightType> lightsType;
     private int maxConnectionsFromOneEntrance;
     private List<List<Integer>> connections;
+    private List<List<Integer>> intermediatesCapacities;
+    private int intermediatesCount;
     private int scaling;
     
 
 
     public OptimizationRequest() {
-        this(0, 0, new ArrayList<>(), 0, new ArrayList<>(), 0, new ArrayList<>(), 0, new ArrayList<>(), 0, 0, 0, new ArrayList<>(), 0, new ArrayList<>(), 0);
+        this(0, 0, new ArrayList<>(), 0, new ArrayList<>(), 0, new ArrayList<>(), 0, new ArrayList<>(), 0, 0, 0, new ArrayList<>(), 0, new ArrayList<>(), new ArrayList<>(), 0, 0);
     }
 
     public OptimizationRequest(
@@ -46,6 +48,8 @@ public class OptimizationRequest {
             List<TrafficLightType> lightsType,
             int maxConnectionsFromOneEntrance,
             List<List<Integer>> connections,
+            List<List<Integer>> intermediatesCapacities,
+            int intermediatesCount,
             int scaling
     ) {
         this.optimizationTime = optimizationTime;
@@ -63,6 +67,8 @@ public class OptimizationRequest {
         this.lightsType = lightsType;
         this.maxConnectionsFromOneEntrance = maxConnectionsFromOneEntrance;
         this.connections = connections;
+        this.intermediatesCapacities = intermediatesCapacities;
+        this.intermediatesCount = intermediatesCount;
         this.scaling = scaling;
     }
 
@@ -184,6 +190,22 @@ public class OptimizationRequest {
 
     public void setConnections(List<List<Integer>> connections) {
         this.connections = connections;
+    }
+
+    public List<List<Integer>> getintermediatesCapacities() {
+        return intermediatesCapacities;
+    }
+
+    public void setintermediatesCapacities(List<List<Integer>> intermediatesCapacities) {
+        this.intermediatesCapacities = intermediatesCapacities;
+    }
+
+    public int getintermediatesCount() {
+        return intermediatesCount;
+    }
+
+    public void setintermediatesCount(int intermediatesCount) {
+        this.intermediatesCount = intermediatesCount;
     }
 
     public int getScaling() {
