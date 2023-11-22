@@ -24,7 +24,9 @@ import org.springframework.stereotype.Component;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -111,15 +113,23 @@ public class OptimizationUtils {
                                             Collectors.toList())
                             )
                     );
+            List<List<Integer>> lightCollisions = collisionsPartitioned.get(true)
+                    .stream()
+                    .map(pair -> Arrays.asList(pair.getFirst(), pair.getSecond()))
+                    .toList();
+            optimizationRequest.setLightCollisions(lightCollisions);
+            optimizationRequest.setLightCollisionsCount(lightCollisions.size());
 
-            optimizationRequest.setLightCollisions(collisionsPartitioned.get(true));
-            optimizationRequest.setLightCollisionsCount(collisionsPartitioned.get(true).size());
-            optimizationRequest.setHeavyCollisions(collisionsPartitioned.get(false));
-            optimizationRequest.setHeavyCollisionsCount(collisionsPartitioned.get(false).size());
+            List<List<Integer>> heavyCollisions = collisionsPartitioned.get(false)
+                    .stream()
+                    .map(pair -> Arrays.asList(pair.getFirst(), pair.getSecond()))
+                    .toList();
+            optimizationRequest.setHeavyCollisions(heavyCollisions);
+            optimizationRequest.setHeavyCollisionsCount(heavyCollisions.size());
 
-            //  -----------------------------  connections  -----------------------------
+            //  ------------------------  road connections lights  ------------------------
             List<String> connections = crossroad.getConnectionIds();
-            List<List<Integer>> roadConnections = connections
+            List<List<Integer>> roadsConnectionsLights = connections
                     .stream()
                     .map(connectionId ->
                             Arrays.asList(
@@ -134,8 +144,8 @@ public class OptimizationUtils {
                             )
                     ).toList();
 
-            optimizationRequest.setRoadsConnections(roadConnections);
-            optimizationRequest.setConnectionsCount(roadConnections.size());
+            optimizationRequest.setRoadsConnectionsLights(roadsConnectionsLights);
+            optimizationRequest.setConnectionsCount(roadsConnectionsLights.size());
 
             //  -----------------------------  car flow  -----------------------------
             List<Double> carFlows = connections
@@ -156,10 +166,49 @@ public class OptimizationUtils {
 
             optimizationRequest.setLightsCount(lights.size());
 
+            //  -----------------------------  connections  -----------------------------
+            HashMap<String, List<String>> roadsMap = new HashMap<>();
+            connections
+                    .stream()
+                    .map(connectionService::getConnectionById)
+                    .forEach(connection -> {
+                        List<String> currentSources = roadsMap.get(connection.getSourceId());
+                        if(currentSources==null){
+                            roadsMap.put(connection.getSourceId(), Collections.singletonList(connection.getId()));
+                        }else{
+                            currentSources.add(connection.getId());
+                            roadsMap.put(connection.getSourceId(), currentSources);
+                        }
+                    });
+
+            List<List<Integer>> connections_ = new ArrayList<>();
+            for(int i=0;i<crossroad.getRoadIds().size();i++){
+                connections_.add(new ArrayList<>());
+            }
+
+            int maxConnectionsFromOneEntrance = 0;
+            for(String sourceId : roadsMap.keySet()){
+                maxConnectionsFromOneEntrance = Math.max(maxConnectionsFromOneEntrance, roadsMap.get(sourceId).size());
+                for(String connectionId : roadsMap.get(sourceId)){
+                    connections_
+                            .get(roadService.getRoadById(sourceId).getIndex()-1)
+                            .add(connectionService.getConnectionById(connectionId).getIndex());
+                }
+            }
+            for(List<Integer> sources : connections_){
+                while(sources.size()<maxConnectionsFromOneEntrance){
+                    sources.add(-1);
+                }
+            }
+            optimizationRequest.setConnections(connections_);
+
+            optimizationRequest.setMaxConnectionsFromOneEntrance(maxConnectionsFromOneEntrance);
+
             //  -----------------------------  fixed values  -----------------------------
 
             optimizationRequest.setTimeUnitsInMinute(60);
             optimizationRequest.setNumberOfTimeUnits(60);
+            optimizationRequest.setScaling(3);
 
             List<TrafficLightType> setLightsType = crossroad.getTrafficLightIds().stream()
                     .map(trafficLightService::getTrafficLightById)
@@ -193,16 +242,12 @@ public class OptimizationUtils {
     }
 
     public void addOptimizationResultsToDb(String crossroadId, String startTimeId, ResponseEntity<String> result) throws JsonProcessingException {
-        HashMap<String, Object> mapping = new ObjectMapper().readValue(result.getBody(), HashMap.class);
-
-        List<List<Integer>> sequences = new ArrayList<>(mapping.size());
-        for (int i = 0; i < mapping.size(); i++) {
-            String sequenceAsString = mapping.get(String.valueOf(i + 1)).toString();
-            List<Integer> list = new ArrayList<>();
-            for (int idx = 1; idx < sequenceAsString.length(); idx += 3) {
-                list.add(Integer.parseInt(String.valueOf(sequenceAsString.charAt(idx))));
-            }
-            sequences.add(list);
+        LinkedHashMap<String, List<Integer>> mapping
+                = (LinkedHashMap<String, List<Integer>>) new ObjectMapper().readValue(result.getBody(), HashMap.class)
+                .get("lights_sequences");
+        List<List<Integer>> sequences = new ArrayList<>();
+        for (int i = 1; i <= mapping.size(); i++) {
+            sequences.add(mapping.get(String.valueOf(i)));
         }
 
         optimizationService.addOptimization(

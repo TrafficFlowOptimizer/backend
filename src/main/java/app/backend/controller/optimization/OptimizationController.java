@@ -144,7 +144,7 @@ public class OptimizationController {
         }
 //        OptimizationRequest optimizationRequest = new OptimizationRequest();
 
-        String url = "http://" + OPTIMIZER_HOST + ":" + OPTIMIZER_PORT;
+        String url = "http://" + OPTIMIZER_HOST + ":" + OPTIMIZER_PORT + "/optimization";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 

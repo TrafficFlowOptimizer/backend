@@ -9,37 +9,44 @@ import java.util.List;
 public class OptimizationRequest {
     private int optimizationTime;
     private int roadsCount;
-    private List<Pair<Integer, Integer>> lightCollisions;
+    private List<List<Integer>> lightCollisions;
     private int lightCollisionsCount;
-    private List<Pair<Integer, Integer>> heavyCollisions;
+    private List<List<Integer>> heavyCollisions;
     private int heavyCollisionsCount;
-    private List<List<Integer>> roadsConnections;
+    private List<List<Integer>> roadsConnectionsLights;
     private int connectionsCount;
     private List<Double> carFlowPerMinute;
     private int lightsCount;
     private int timeUnitsInMinute;
     private int numberOfTimeUnits;
     private List<TrafficLightType> lightsType;
+    private int maxConnectionsFromOneEntrance;
+    private List<List<Integer>> connections;
+    private int scaling;
+    
 
 
     public OptimizationRequest() {
-        this(0, 0, new ArrayList<>(), 0, new ArrayList<>(), 0, new ArrayList<>(), 0, new ArrayList<>(), 0, 0, 0, new ArrayList<>());
+        this(0, 0, new ArrayList<>(), 0, new ArrayList<>(), 0, new ArrayList<>(), 0, new ArrayList<>(), 0, 0, 0, new ArrayList<>(), 0, new ArrayList<>(), 0);
     }
 
     public OptimizationRequest(
             int optimizationTime,
             int roadsCount,
-            List<Pair<Integer, Integer>> lightCollisions,
+            List<List<Integer>> lightCollisions,
             int lightCollisionsCount,
-            List<Pair<Integer, Integer>> heavyCollisions,
+            List<List<Integer>> heavyCollisions,
             int heavyCollisionsCount,
-            List<List<Integer>> roadsConnections,
+            List<List<Integer>> roadsConnectionsLights,
             int connectionsCount,
             List<Double> carFlowPerMinute,
             int lightsCount,
             int timeUnitsInMinute,
             int numberOfTimeUnits,
-            List<TrafficLightType> lightsType
+            List<TrafficLightType> lightsType,
+            int maxConnectionsFromOneEntrance,
+            List<List<Integer>> connections,
+            int scaling
     ) {
         this.optimizationTime = optimizationTime;
         this.roadsCount = roadsCount;
@@ -47,13 +54,16 @@ public class OptimizationRequest {
         this.lightCollisionsCount = lightCollisionsCount;
         this.heavyCollisions = heavyCollisions;
         this.heavyCollisionsCount = heavyCollisionsCount;
-        this.roadsConnections = roadsConnections;
+        this.roadsConnectionsLights = roadsConnectionsLights;
         this.connectionsCount = connectionsCount;
         this.carFlowPerMinute = carFlowPerMinute;
         this.lightsCount = lightsCount;
         this.timeUnitsInMinute = timeUnitsInMinute;
         this.numberOfTimeUnits = numberOfTimeUnits;
         this.lightsType = lightsType;
+        this.maxConnectionsFromOneEntrance = maxConnectionsFromOneEntrance;
+        this.connections = connections;
+        this.scaling = scaling;
     }
 
     public int getOptimizationTime() {
@@ -72,11 +82,11 @@ public class OptimizationRequest {
         this.roadsCount = roadsCount;
     }
 
-    public List<Pair<Integer, Integer>> getLightCollisions() {
+    public List<List<Integer>> getLightCollisions() {
         return lightCollisions;
     }
 
-    public void setLightCollisions(List<Pair<Integer, Integer>> lightCollisions) {
+    public void setLightCollisions(List<List<Integer>> lightCollisions) {
         this.lightCollisions = lightCollisions;
     }
 
@@ -88,11 +98,11 @@ public class OptimizationRequest {
         this.lightCollisionsCount = lightCollisionsCount;
     }
 
-    public List<Pair<Integer, Integer>> getHeavyCollisions() {
+    public List<List<Integer>> getHeavyCollisions() {
         return heavyCollisions;
     }
 
-    public void setHeavyCollisions(List<Pair<Integer, Integer>> heavyCollisions) {
+    public void setHeavyCollisions(List<List<Integer>> heavyCollisions) {
         this.heavyCollisions = heavyCollisions;
     }
 
@@ -104,12 +114,12 @@ public class OptimizationRequest {
         this.heavyCollisionsCount = heavyCollisionsCount;
     }
 
-    public List<List<Integer>> getRoadsConnections() {
-        return roadsConnections;
+    public List<List<Integer>> getRoadsConnectionsLights() {
+        return roadsConnectionsLights;
     }
 
-    public void setRoadsConnections(List<List<Integer>> roadsConnections) {
-        this.roadsConnections = roadsConnections;
+    public void setRoadsConnectionsLights(List<List<Integer>> roadsConnectionsLights) {
+        this.roadsConnectionsLights = roadsConnectionsLights;
     }
 
     public int getConnectionsCount() {
@@ -158,5 +168,29 @@ public class OptimizationRequest {
 
     public void setLightsType(List<TrafficLightType> lightsType) {
         this.lightsType = lightsType;
+    }
+
+    public int getMaxConnectionsFromOneEntrance() {
+        return maxConnectionsFromOneEntrance;
+    }
+
+    public void setMaxConnectionsFromOneEntrance(int maxConnectionsFromOneEntrance) {
+        this.maxConnectionsFromOneEntrance = maxConnectionsFromOneEntrance;
+    }
+
+    public List<List<Integer>> getConnections() {
+        return connections;
+    }
+
+    public void setConnections(List<List<Integer>> connections) {
+        this.connections = connections;
+    }
+
+    public int getScaling() {
+        return scaling;
+    }
+
+    public void setScaling(int scaling) {
+        this.scaling = scaling;
     }
 }
