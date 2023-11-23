@@ -108,12 +108,9 @@ public class OptimizationService {
     public Optimization getNewestOptimizationByCrossroadId(String crossroadId, String startTimeID) {
         Iterable<Optimization> optimizations = getOptimizationsByCrossroadIdAndStartTime(crossroadId, startTimeID);
 
-        List<Optimization> sorted = StreamSupport
+        return StreamSupport
                 .stream(optimizations.spliterator(), false)
-                .sorted(Comparator.comparingInt(Optimization::getVersion))
-                .toList();
-
-        return sorted.get(sorted.size() - 1);
+                .max(Comparator.comparingInt(Optimization::getVersion)).orElseGet(null);
     }
 
     public Optimization getSecondNewestOptimizationByCrossroadId(String crossroadId, String startTimeID) {

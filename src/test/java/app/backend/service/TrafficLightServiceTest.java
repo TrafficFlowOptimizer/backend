@@ -1,7 +1,7 @@
 package app.backend.service;
 
 import app.backend.document.light.TrafficLight;
-import app.backend.document.light.TrafficLightType;
+import app.backend.document.light.TrafficLightDirection;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +12,9 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static app.backend.document.light.TrafficLightType.FORWARD;
-import static app.backend.document.light.TrafficLightType.LEFT;
-import static app.backend.document.light.TrafficLightType.RIGHT;
+import static app.backend.document.light.TrafficLightDirection.FORWARD;
+import static app.backend.document.light.TrafficLightDirection.LEFT;
+import static app.backend.document.light.TrafficLightDirection.RIGHT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -48,7 +48,7 @@ class TrafficLightServiceTest {
     void getAndGetTrafficLightById_properTrafficLight_correctTrafficLight() {
         trafficLightService.addTrafficLight(0, FORWARD);
         int index = 1;
-        TrafficLightType direction = LEFT;
+        TrafficLightDirection direction = LEFT;
         TrafficLight trafficLight = trafficLightService.addTrafficLight(index, direction);
         trafficLightService.addTrafficLight(2, RIGHT);
 

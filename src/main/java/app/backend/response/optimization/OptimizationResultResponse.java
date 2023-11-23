@@ -1,7 +1,7 @@
 package app.backend.response.optimization;
 
 import app.backend.document.light.TrafficLight;
-import app.backend.document.light.TrafficLightType;
+import app.backend.document.light.TrafficLightDirection;
 import jakarta.annotation.Nullable;
 
 import java.util.HashMap;
@@ -17,7 +17,7 @@ public class OptimizationResultResponse {
     private HashMap<Integer, Double> connectionsFlowRatioMapPrevious;
     private HashMap<Integer, List<TrafficLight>> connectionsLightsMap;
     private HashMap<Integer, List<TrafficLight>> roadsLightsMap;
-    private HashMap<Integer, TrafficLightType> lightsDirectionMap;
+    private HashMap<Integer, TrafficLightDirection> lightsDirectionMap;
 
     public OptimizationResultResponse(HashMap<Integer, List<Integer>> lightsSequenceMapCurrent,
                                       HashMap<Integer, Double> connectionsFlowRatioMapCurrent,
@@ -25,7 +25,7 @@ public class OptimizationResultResponse {
                                       HashMap<Integer, Double> connectionsFlowRatioMapPrevious,
                                       HashMap<Integer, List<TrafficLight>> connectionsLightsMap,
                                       HashMap<Integer, List<TrafficLight>> roadsLightsMap,
-                                      HashMap<Integer, TrafficLightType> lightsDirectionMap) {
+                                      HashMap<Integer, TrafficLightDirection> lightsDirectionMap) {
         this.lightsSequenceMapCurrent = lightsSequenceMapCurrent;
         this.connectionsFlowRatioMapCurrent = connectionsFlowRatioMapCurrent;
         this.lightsSequenceMapPrevious = lightsSequenceMapPrevious;
@@ -83,11 +83,11 @@ public class OptimizationResultResponse {
         this.roadsLightsMap = roadsLightsMap;
     }
 
-    public HashMap<Integer, TrafficLightType> getLightsDirectionMap() {
+    public HashMap<Integer, TrafficLightDirection> getLightsDirectionMap() {
         return lightsDirectionMap;
     }
 
-    public void setLightsDirectionMap(HashMap<Integer, TrafficLightType> lightsDirectionMap) {
+    public void setLightsDirectionMap(HashMap<Integer, TrafficLightDirection> lightsDirectionMap) {
         this.lightsDirectionMap = lightsDirectionMap;
     }
 }

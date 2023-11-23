@@ -185,7 +185,7 @@ public class CrossroadController {
                 .stream()
                 .map(trafficLightRequest -> trafficLightService.addTrafficLight(
                         trafficLightRequest.getIndex(),
-                        trafficLightRequest.getType()
+                        trafficLightRequest.getDirection()
                 ).getId())
                 .collect(Collectors.toList());
 

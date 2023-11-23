@@ -1,7 +1,7 @@
 package app.backend.service;
 
 import app.backend.document.light.TrafficLight;
-import app.backend.document.light.TrafficLightType;
+import app.backend.document.light.TrafficLightDirection;
 import app.backend.repository.TrafficLightRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class TrafficLightService {
                 .orElse(null);
     }
 
-    public TrafficLight addTrafficLight(int index, TrafficLightType type) {
+    public TrafficLight addTrafficLight(int index, TrafficLightDirection type) {
         return trafficLightRepository.insert(
                 new TrafficLight(
                         index,
@@ -43,7 +43,7 @@ public class TrafficLightService {
         return trafficLight.get();
     }
 
-    public TrafficLight updateTrafficLight(String id, int index, TrafficLightType type) {
+    public TrafficLight updateTrafficLight(String id, int index, TrafficLightDirection type) {
         Optional<TrafficLight> trafficLight = trafficLightRepository.findById(id);
         if (trafficLight.isEmpty()) {
             return null;

@@ -4,7 +4,7 @@ import app.backend.document.Collision;
 import app.backend.document.Connection;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
-import app.backend.document.light.TrafficLightType;
+import app.backend.document.light.TrafficLightDirection;
 import app.backend.request.optimization.OptimizationRequest;
 import app.backend.service.CarFlowService;
 import app.backend.service.CollisionService;
@@ -176,8 +176,9 @@ public class OptimizationUtils {
                         if(currentSources==null){
                             roadsMap.put(connection.getSourceId(), Collections.singletonList(connection.getId()));
                         }else{
-                            currentSources.add(connection.getId());
-                            roadsMap.put(connection.getSourceId(), currentSources);
+                            List<String> newSources = new ArrayList<>(currentSources);
+                            newSources.add(connection.getId());
+                            roadsMap.put(connection.getSourceId(), newSources);
                         }
                     });
 
@@ -219,7 +220,7 @@ public class OptimizationUtils {
             optimizationRequest.setNumberOfTimeUnits(60);
             optimizationRequest.setScaling(3);
 
-            List<TrafficLightType> setLightsType = crossroad.getTrafficLightIds().stream()
+            List<TrafficLightDirection> setLightsType = crossroad.getTrafficLightIds().stream()
                     .map(trafficLightService::getTrafficLightById)
                     .map(TrafficLight::getDirection)
                     .toList();

@@ -1,16 +1,14 @@
 package app.backend.request.crossroad;
 
-import app.backend.document.light.TrafficLightType;
+import app.backend.document.light.TrafficLightDirection;
 
 public class TrafficLightRequest {
     private int index;
-    private String name;
-    private TrafficLightType type;
+    private TrafficLightDirection direction;
 
-    public TrafficLightRequest(int index, String name, TrafficLightType type) {
+    public TrafficLightRequest(int index, TrafficLightDirection direction) {
         this.index = index;
-        this.name = name;
-        this.type = type;
+        this.direction = direction;
     }
 
     public int getIndex() {
@@ -21,19 +19,11 @@ public class TrafficLightRequest {
         this.index = index;
     }
 
-    public String getName() {
-        return name;
+    public TrafficLightDirection getDirection() {
+        return direction;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public TrafficLightType getType() {
-        return type;
-    }
-
-    public void setType(TrafficLightType type) {
-        this.type = type;
+    public void setDirection(TrafficLightDirection direction) {
+        this.direction = direction;
     }
 }

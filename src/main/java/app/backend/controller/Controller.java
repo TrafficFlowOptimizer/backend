@@ -32,9 +32,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-import static app.backend.document.light.TrafficLightType.ARROW_LEFT;
-import static app.backend.document.light.TrafficLightType.FORWARD;
-import static app.backend.document.light.TrafficLightType.LEFT;
+import static app.backend.document.light.TrafficLightDirection.ARROW_LEFT;
+import static app.backend.document.light.TrafficLightDirection.FORWARD;
+import static app.backend.document.light.TrafficLightDirection.LEFT;
 
 
 @RestController

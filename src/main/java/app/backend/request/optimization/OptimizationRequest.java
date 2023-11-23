@@ -1,7 +1,6 @@
 package app.backend.request.optimization;
 
-import app.backend.document.light.TrafficLightType;
-import org.springframework.data.util.Pair;
+import app.backend.document.light.TrafficLightDirection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ public class OptimizationRequest {
     private int lightsCount;
     private int timeUnitsInMinute;
     private int numberOfTimeUnits;
-    private List<TrafficLightType> lightsType;
+    private List<TrafficLightDirection> lightsType;
     private int maxConnectionsFromOneEntrance;
     private List<List<Integer>> connections;
     private List<List<Integer>> intermediatesCapacities;
@@ -45,7 +44,7 @@ public class OptimizationRequest {
             int lightsCount,
             int timeUnitsInMinute,
             int numberOfTimeUnits,
-            List<TrafficLightType> lightsType,
+            List<TrafficLightDirection> lightsType,
             int maxConnectionsFromOneEntrance,
             List<List<Integer>> connections,
             List<List<Integer>> intermediatesCapacities,
@@ -168,11 +167,11 @@ public class OptimizationRequest {
         this.numberOfTimeUnits = numberOfTimeUnits;
     }
 
-    public List<TrafficLightType> getLightsType() {
+    public List<TrafficLightDirection> getLightsType() {
         return lightsType;
     }
 
-    public void setLightsType(List<TrafficLightType> lightsType) {
+    public void setLightsType(List<TrafficLightDirection> lightsType) {
         this.lightsType = lightsType;
     }
 

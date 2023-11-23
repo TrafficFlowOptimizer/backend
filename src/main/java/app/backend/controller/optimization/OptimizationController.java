@@ -3,7 +3,7 @@ package app.backend.controller.optimization;
 import app.backend.document.Connection;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
-import app.backend.document.light.TrafficLightType;
+import app.backend.document.light.TrafficLightDirection;
 import app.backend.document.time.Day;
 import app.backend.document.time.Hour;
 import app.backend.request.optimization.OptimizationRequest;
@@ -188,7 +188,7 @@ public class OptimizationController {
 
         HashMap<Integer, List<TrafficLight>> connectionsLightsMap = new HashMap<>();
         HashMap<Integer, List<TrafficLight>> roadsLightsMap = new HashMap<>();
-        HashMap<Integer, TrafficLightType> lightsDirectionMap = new HashMap<>();
+        HashMap<Integer, TrafficLightDirection> lightsDirectionMap = new HashMap<>();
 
         try {
             Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
@@ -211,7 +211,7 @@ public class OptimizationController {
                     );
 
             //  -----------------------------  lightsSequenceMapCurrent  -----------------------------
-
+            //TODO: dorobić jakieś info zwrotne, jeśli nie było optymalizacji to nie możesz podejrzeć wyników
             List<List<Integer>> result = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, startTimeId).getResults();
 
             crossroad.getTrafficLightIds()

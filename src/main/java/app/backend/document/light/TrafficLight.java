@@ -14,9 +14,9 @@ public class TrafficLight {
     private int index;
 
     @NotNull
-    private TrafficLightType direction;
+    private TrafficLightDirection direction;
 
-    public TrafficLight(int index, @NotNull TrafficLightType direction) {
+    public TrafficLight(int index, @NotNull TrafficLightDirection direction) {
         this.index = index;
         this.direction = direction;
     }
@@ -37,11 +37,11 @@ public class TrafficLight {
         this.index = index;
     }
 
-    public @NotNull TrafficLightType getDirection() {
+    public @NotNull TrafficLightDirection getDirection() {
         return direction;
     }
 
-    public void setDirection(@NotNull TrafficLightType direction) {
+    public void setDirection(@NotNull TrafficLightDirection direction) {
         this.direction = direction;
     }
 }
