@@ -48,6 +48,11 @@ public class AuthController {
     @PostMapping(value = "/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         Authentication authentication;
+        if (userService.getUserByUsername(loginRequest.getUsername()) == null){
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        }
         try {
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -63,11 +68,6 @@ public class AuthController {
 
         String id = authentication.getName();
         User user = userService.getUserById(id);
-        if (user == null) {
-            return ResponseEntity
-                    .status(NOT_FOUND)
-                    .build();
-        }
         String token = jwtUtil.createToken(user);
 
         return ResponseEntity
