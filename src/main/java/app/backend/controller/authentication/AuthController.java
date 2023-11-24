@@ -7,6 +7,7 @@ import app.backend.response.auth.LoginResponse;
 import app.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,9 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+import static org.springframework.http.HttpStatus.*;
 
 
 @Controller
@@ -77,17 +76,23 @@ public class AuthController {
 
     @PostMapping(value = "/register")
     public ResponseEntity<Boolean> register(@RequestBody @Valid User user) {
-        if (userService.addUser(
-                user.getUsername(),
-                user.getEmail(),
-                passwordEncoder.encode(user.getPassword())
-        ) != null) {
+        try {
+            if (userService.addUser(
+                    user.getUsername(),
+                    user.getEmail(),
+                    passwordEncoder.encode(user.getPassword())
+            ) != null) {
+                return ResponseEntity
+                        .ok()
+                        .body(true);
+            } else {
+                return ResponseEntity
+                        .status(UNPROCESSABLE_ENTITY)
+                        .body(false);
+            }
+        }catch (DuplicateKeyException e){
             return ResponseEntity
-                    .ok()
-                    .body(true);
-        } else {
-            return ResponseEntity
-                    .status(UNPROCESSABLE_ENTITY)
+                    .status(CONFLICT)
                     .body(false);
         }
     }

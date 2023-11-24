@@ -52,7 +52,7 @@ public class UserService implements UserDetailsService {
                     )
             );
         } catch (DuplicateKeyException e) {
-            return null;
+            throw e;
         }
     }
 
