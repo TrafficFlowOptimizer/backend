@@ -221,7 +221,6 @@ public class OptimizationController {
                     );
 
             //  -----------------------------  lightsSequenceMapCurrent  -----------------------------
-            //TODO: dorobić jakieś info zwrotne, jeśli nie było optymalizacji to nie możesz podejrzeć wyników
             Optimization optimizationCurrent = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, startTimeId);
             if (optimizationCurrent == null) {
                 return ResponseEntity
