@@ -124,7 +124,7 @@ public class OptimizationService {
         if (sorted.size() > 1) {
             return sorted.get(sorted.size() - 2);
         }
-        return sorted.get(sorted.size() - 1);
+        return null;
     }
 
     public OptimizationRepository getOptimizationRepository() {

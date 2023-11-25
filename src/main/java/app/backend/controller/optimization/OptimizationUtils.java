@@ -232,13 +232,52 @@ public class OptimizationUtils {
         return optimizationRequest;
     }
 
-    public void mockResponseToDb(String crossroadId, String startTimeId) {
+    public void mockResponseToDb(String crossroadId, String startTimeId, OptimizationResultMock mockVersion) {
+        switch (mockVersion) {
+            case RANDOM -> mockRandom(crossroadId, startTimeId);
+            case LIGHT_BY_LIGHT -> mockLightByLight(crossroadId, startTimeId);
+        }
+    }
+
+    private void mockRandom(String crossroadId, String startTimeId){
         List<List<Integer>> sequences = new ArrayList<>();
         Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
         for (int i = 0; i < crossroad.getTrafficLightIds().size(); i++) {
             List<Integer> list = new ArrayList<>();
             for (int j = 0; j < 60; j++) {
-                list.add((j + 10 * i) % 60 < 30 ? 0 : 1);
+                double random = Math.random();
+                if(random<0.25) {
+                    list.add(1);
+                }
+                else{
+                    list.add(0);
+                }
+            }
+            sequences.add(list);
+        }
+
+        optimizationService.addOptimization(
+                crossroadId,
+                optimizationService.getFreeVersionNumber(crossroadId),
+                startTimeId,
+                sequences
+        );
+    }
+
+    private void mockLightByLight(String crossroadId, String startTimeId){
+        List<List<Integer>> sequences = new ArrayList<>();
+        Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
+        int lightInterval = (int) Math.floor(60.0/crossroad.getTrafficLightIds().size());
+        int lightsCount = crossroad.getTrafficLightIds().size();
+        for (int i = 0; i < lightsCount; i++) {
+            List<Integer> list = new ArrayList<>();
+            for (int j = 0; j < 60; j++) {
+                if(lightInterval * i <= j && j < lightInterval * (i+1)) {
+                    list.add(1);
+                }
+                else{
+                    list.add(0);
+                }
             }
             sequences.add(list);
         }
