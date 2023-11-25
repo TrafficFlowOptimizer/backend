@@ -41,8 +41,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import static app.backend.controller.optimization.OptimizationResultMock.RANDOM;
 import static app.backend.controller.optimization.OptimizationResultMock.LIGHT_BY_LIGHT;
+import static app.backend.controller.optimization.OptimizationResultMock.RANDOM;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.EXPECTATION_FAILED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -133,10 +133,10 @@ public class OptimizationController {
         //TODO: mocked optimizer FOR DEVELOPMENT ONLY!
         boolean mocked = true;
         OptimizationResultMock optimizationResultMock = null;
-        switch (optimizationTime){
-            case 1 -> optimizationResultMock=RANDOM;
+        switch (optimizationTime) {
+            case 1 -> optimizationResultMock = RANDOM;
             case -1 -> mocked = false;
-            case default -> optimizationResultMock=LIGHT_BY_LIGHT;
+            case default -> optimizationResultMock = LIGHT_BY_LIGHT;
         }
         if (mocked) {
             optimizationUtils.mockResponseToDb(crossroadId, startTimeId, optimizationResultMock);
@@ -222,14 +222,20 @@ public class OptimizationController {
 
             //  -----------------------------  lightsSequenceMapCurrent  -----------------------------
             //TODO: dorobić jakieś info zwrotne, jeśli nie było optymalizacji to nie możesz podejrzeć wyników
-            List<List<Integer>> resultCurrent = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, startTimeId).getResults();
+            Optimization optimizationCurrent = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, startTimeId);
+            if (optimizationCurrent == null) {
+                return ResponseEntity
+                        .status(NOT_FOUND)
+                        .build();
+            }
+            List<List<Integer>> resultCurrent = optimizationCurrent.getResults();
 
             crossroad.getTrafficLightIds()
                     .stream()
                     .map(trafficLightService::getTrafficLightById)
                     .forEach(trafficLight -> lightsSequenceMapCurrent.put(
                                     trafficLight.getIndex(),
-                            resultCurrent.get(trafficLight.getIndex() - 1)
+                                    resultCurrent.get(trafficLight.getIndex() - 1)
                             )
                     );
 
@@ -252,25 +258,25 @@ public class OptimizationController {
                             )
                     );
 
-            //  -----------------------------  lightsSequenceMapPrevious  -----------------------------//TODO
+            //  -----------------------------  lightsSequenceMapPrevious  -----------------------------
 
-            Optimization optimization = optimizationService.getSecondNewestOptimizationByCrossroadId(crossroadId, startTimeId);
-            if(optimization!=null){
-                List<List<Integer>> resultPrevious = optimization.getResults();
+            Optimization optimizationPrevious = optimizationService.getSecondNewestOptimizationByCrossroadId(crossroadId, startTimeId);
+            if (optimizationPrevious != null) {
+                List<List<Integer>> resultPrevious = optimizationPrevious.getResults();
 
                 crossroad.getTrafficLightIds()
                         .stream()
                         .map(trafficLightService::getTrafficLightById)
                         .forEach(trafficLight -> lightsSequenceMapPrevious.put(
                                         trafficLight.getIndex(),
-                                        resultPrevious.get(trafficLight.getIndex()-1)
+                                        resultPrevious.get(trafficLight.getIndex() - 1)
                                 )
                         );
             }
 
-            //  -----------------------------  connectionsFlowRatioMapPrevious  -----------------------------//TODO
+            //  -----------------------------  connectionsFlowRatioMapPrevious  -----------------------------
 
-            if(optimization!=null) {
+            if (optimizationPrevious != null) {
                 crossroad.getConnectionIds()
                         .stream()
                         .map(connectionService::getConnectionById)
