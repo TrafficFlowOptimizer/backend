@@ -19,7 +19,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 
 @Controller
@@ -47,7 +50,7 @@ public class AuthController {
     @PostMapping(value = "/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         Authentication authentication;
-        if (userService.getUserByUsername(loginRequest.getUsername()) == null){
+        if (userService.getUserByUsername(loginRequest.getUsername()) == null) {
             return ResponseEntity
                     .status(NOT_FOUND)
                     .build();
@@ -90,7 +93,7 @@ public class AuthController {
                         .status(UNPROCESSABLE_ENTITY)
                         .body(false);
             }
-        }catch (DuplicateKeyException e){
+        } catch (DuplicateKeyException e) {
             return ResponseEntity
                     .status(CONFLICT)
                     .body(false);
