@@ -10,6 +10,7 @@ import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +48,9 @@ public class VideoUtils {
     CrossroadService crossroadService;
     CarFlowService carFlowService;
 
+    @Value("${cr.password}")
+    String CR_PASSWORD;
+
     @Autowired
     public VideoUtils(VideoService videoService, CrossroadService crossroadService,
                       CarFlowService carFlowService) {
@@ -78,7 +82,7 @@ public class VideoUtils {
 
     private HttpURLConnection setUpConnection() throws IOException {
         HttpURLConnection connection;
-        URL url = new URL("http://localhost:8081/analysis"); // TODO: get from variable from environment
+        URL url = new URL("http://localhost:8081/analysis?password="+CR_PASSWORD); // TODO: get from variable from environment
         connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
 
