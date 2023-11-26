@@ -44,6 +44,11 @@ public class VideoUtils {
     public static final String TEMP_DIRECTORY_PATH = "temp/";
     public static final String VIDEO = "video";
 
+    @Value("${analyzer.host}")
+    public String ANALYZER_HOST;
+    @Value("${analyzer.port}")
+    public String ANALYZER_PORT;
+
     VideoService videoService;
     CrossroadService crossroadService;
     CarFlowService carFlowService;
@@ -82,7 +87,7 @@ public class VideoUtils {
 
     private HttpURLConnection setUpConnection() throws IOException {
         HttpURLConnection connection;
-        URL url = new URL("http://localhost:8081/analysis?password="+CR_PASSWORD); // TODO: get from variable from environment
+        URL url = new URL("http://" + ANALYZER_HOST + ":" + ANALYZER_PORT + "/analysis?password=" + CR_PASSWORD);
         connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
 

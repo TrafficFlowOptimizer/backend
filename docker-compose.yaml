@@ -7,6 +7,8 @@ services:
     environment:
       - MONGO_HOST=mongodb
       - MONGO_PORT=27017
+      - CR_HOST=opencv-python-server
+      - CR_PORT=8081
       - OPTIMIZER_HOST=minizinc-python-server
       - OPTIMIZER_PORT=9091
     networks:

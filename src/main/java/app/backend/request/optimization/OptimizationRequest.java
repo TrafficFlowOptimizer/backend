@@ -24,7 +24,6 @@ public class OptimizationRequest {
     private List<List<Integer>> intermediatesCapacities;
     private int intermediatesCount;
     private int scaling;
-    
 
 
     public OptimizationRequest() {

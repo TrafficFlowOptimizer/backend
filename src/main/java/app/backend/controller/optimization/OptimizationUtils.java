@@ -173,9 +173,9 @@ public class OptimizationUtils {
                     .map(connectionService::getConnectionById)
                     .forEach(connection -> {
                         List<String> currentSources = roadsMap.get(connection.getSourceId());
-                        if(currentSources==null){
+                        if (currentSources == null) {
                             roadsMap.put(connection.getSourceId(), Collections.singletonList(connection.getId()));
-                        }else{
+                        } else {
                             List<String> newSources = new ArrayList<>(currentSources);
                             newSources.add(connection.getId());
                             roadsMap.put(connection.getSourceId(), newSources);
@@ -183,21 +183,21 @@ public class OptimizationUtils {
                     });
 
             List<List<Integer>> connections_ = new ArrayList<>();
-            for(int i=0;i<crossroad.getRoadIds().size();i++){
+            for (int i = 0; i < crossroad.getRoadIds().size(); i++) {
                 connections_.add(new ArrayList<>());
             }
 
             int maxConnectionsFromOneEntrance = 0;
-            for(String sourceId : roadsMap.keySet()){
+            for (String sourceId : roadsMap.keySet()) {
                 maxConnectionsFromOneEntrance = Math.max(maxConnectionsFromOneEntrance, roadsMap.get(sourceId).size());
-                for(String connectionId : roadsMap.get(sourceId)){
+                for (String connectionId : roadsMap.get(sourceId)) {
                     connections_
-                            .get(roadService.getRoadById(sourceId).getIndex()-1)
+                            .get(roadService.getRoadById(sourceId).getIndex() - 1)
                             .add(connectionService.getConnectionById(connectionId).getIndex());
                 }
             }
-            for(List<Integer> sources : connections_){
-                while(sources.size()<maxConnectionsFromOneEntrance){
+            for (List<Integer> sources : connections_) {
+                while (sources.size() < maxConnectionsFromOneEntrance) {
                     sources.add(-1);
                 }
             }
@@ -232,13 +232,50 @@ public class OptimizationUtils {
         return optimizationRequest;
     }
 
-    public void mockResponseToDb(String crossroadId, String startTimeId) {
+    public void mockResponseToDb(String crossroadId, String startTimeId, OptimizationResultMock mockVersion) {
+        switch (mockVersion) {
+            case RANDOM -> mockRandom(crossroadId, startTimeId);
+            case LIGHT_BY_LIGHT -> mockLightByLight(crossroadId, startTimeId);
+        }
+    }
+
+    private void mockRandom(String crossroadId, String startTimeId) {
         List<List<Integer>> sequences = new ArrayList<>();
         Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
         for (int i = 0; i < crossroad.getTrafficLightIds().size(); i++) {
             List<Integer> list = new ArrayList<>();
             for (int j = 0; j < 60; j++) {
-                list.add((j + 10 * i) % 60 < 30 ? 0 : 1);
+                double random = Math.random();
+                if (random < 0.25) {
+                    list.add(1);
+                } else {
+                    list.add(0);
+                }
+            }
+            sequences.add(list);
+        }
+
+        optimizationService.addOptimization(
+                crossroadId,
+                optimizationService.getFreeVersionNumber(crossroadId),
+                startTimeId,
+                sequences
+        );
+    }
+
+    private void mockLightByLight(String crossroadId, String startTimeId) {
+        List<List<Integer>> sequences = new ArrayList<>();
+        Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
+        int lightInterval = (int) Math.floor(60.0 / crossroad.getTrafficLightIds().size());
+        int lightsCount = crossroad.getTrafficLightIds().size();
+        for (int i = 0; i < lightsCount; i++) {
+            List<Integer> list = new ArrayList<>();
+            for (int j = 0; j < 60; j++) {
+                if (lightInterval * i <= j && j < lightInterval * (i + 1)) {
+                    list.add(1);
+                } else {
+                    list.add(0);
+                }
             }
             sequences.add(list);
         }
