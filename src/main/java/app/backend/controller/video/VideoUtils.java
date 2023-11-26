@@ -53,6 +53,9 @@ public class VideoUtils {
     CrossroadService crossroadService;
     CarFlowService carFlowService;
 
+    @Value("${cr.password}")
+    String CR_PASSWORD;
+
     @Autowired
     public VideoUtils(VideoService videoService, CrossroadService crossroadService,
                       CarFlowService carFlowService) {
@@ -84,7 +87,7 @@ public class VideoUtils {
 
     private HttpURLConnection setUpConnection() throws IOException {
         HttpURLConnection connection;
-        URL url = new URL("http://" + ANALYZER_HOST + ":" + ANALYZER_PORT + "/analysis");
+        URL url = new URL("http://" + ANALYZER_HOST + ":" + ANALYZER_PORT + "/analysis?password=" + CR_PASSWORD);
         connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
 
