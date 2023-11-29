@@ -37,7 +37,6 @@ import static app.backend.document.light.TrafficLightDirection.FORWARD;
 import static app.backend.document.light.TrafficLightDirection.LEFT;
 
 
-
 @RestController
 public class Controller {
 

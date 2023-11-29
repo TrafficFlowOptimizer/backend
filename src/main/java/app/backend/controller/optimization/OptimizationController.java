@@ -136,7 +136,7 @@ public class OptimizationController {
         switch (optimizationTime) {
             case 1 -> optimizationResultMock = RANDOM;
             case -1 -> mocked = false;
-            case default -> optimizationResultMock = LIGHT_BY_LIGHT;
+            default -> optimizationResultMock = LIGHT_BY_LIGHT;
         }
         if (mocked) {
             optimizationUtils.mockResponseToDb(crossroadId, startTimeId, optimizationResultMock);

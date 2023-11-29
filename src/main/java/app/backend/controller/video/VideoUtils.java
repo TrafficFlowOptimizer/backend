@@ -10,6 +10,7 @@ import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,9 +44,17 @@ public class VideoUtils {
     public static final String TEMP_DIRECTORY_PATH = "temp/";
     public static final String VIDEO = "video";
 
+    @Value("${analyzer.host}")
+    public String ANALYZER_HOST;
+    @Value("${analyzer.port}")
+    public String ANALYZER_PORT;
+
     VideoService videoService;
     CrossroadService crossroadService;
     CarFlowService carFlowService;
+
+    @Value("${cr.password}")
+    String CR_PASSWORD;
 
     @Autowired
     public VideoUtils(VideoService videoService, CrossroadService crossroadService,
@@ -78,7 +87,7 @@ public class VideoUtils {
 
     private HttpURLConnection setUpConnection() throws IOException {
         HttpURLConnection connection;
-        URL url = new URL("http://localhost:8081/analysis"); // TODO: get from variable from environment
+        URL url = new URL("http://" + ANALYZER_HOST + ":" + ANALYZER_PORT + "/analysis?password=" + CR_PASSWORD);
         connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
 
