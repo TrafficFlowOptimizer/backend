@@ -199,6 +199,10 @@ public class OptimizationController {
         HashMap<Integer, List<TrafficLight>> connectionsLightsMap = new HashMap<>();
         HashMap<Integer, List<TrafficLight>> roadsLightsMap = new HashMap<>();
         HashMap<Integer, TrafficLightDirection> lightsDirectionMap = new HashMap<>();
+        HashMap<Integer, Double> connectionsFlowMap = new HashMap<>();
+        HashMap<Integer, Integer> connectionsRoadMap = new HashMap<>();
+        HashMap<Integer, Double> roadsFlowMap = new HashMap<>();
+        HashMap<Integer, Double> connectionChanceToPickMap = new HashMap<>();
 
         try {
             Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
@@ -208,19 +212,21 @@ public class OptimizationController {
                         .build();
             }
 
-            HashMap<String, Double> connectionFlowMap = new HashMap<>();
+
+            //  -----------------------------  connectionsFlowMap  -----------------------------
 
             crossroad.getConnectionIds()
                     .stream()
                     .map(connectionService::getConnectionById)
                     .forEach(connection ->
-                            connectionFlowMap.put(
-                                    connection.getId(),
+                            connectionsFlowMap.put(
+                                    connection.getIndex(),
                                     carFlowService.getNewestCarFlowByStartTimeIdForConnection(connection.getId(), startTimeId).getCarFlow()
                             )
                     );
 
             //  -----------------------------  lightsSequenceMapCurrent  -----------------------------
+
             Optimization optimizationCurrent = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, startTimeId);
             if (optimizationCurrent == null) {
                 return ResponseEntity
@@ -253,7 +259,7 @@ public class OptimizationController {
                                                             .mapToInt(Integer::intValue)
                                                             .sum())
                                             .mapToInt(Integer::intValue)
-                                            .sum() / connectionFlowMap.get(connection.getId())
+                                            .sum() / connectionsFlowMap.get(connection.getIndex())
                             )
                     );
 
@@ -289,7 +295,7 @@ public class OptimizationController {
                                                                 .mapToInt(Integer::intValue)
                                                                 .sum())
                                                 .mapToInt(Integer::intValue)
-                                                .sum() / connectionFlowMap.get(connection.getId())
+                                                .sum() / connectionsFlowMap.get(connection.getIndex())
                                 )
                         );
             }
@@ -333,6 +339,56 @@ public class OptimizationController {
                     .map(trafficLightService::getTrafficLightById)
                     .forEach(trafficLight -> lightsDirectionMap.put(trafficLight.getIndex(), trafficLight.getDirection()));
 
+            //  -----------------------------  connectionsRoadMap  -----------------------------
+
+            crossroad.getConnectionIds()
+                    .stream()
+                    .map(connectionService::getConnectionById)
+                    .forEach(connection -> connectionsRoadMap.put(connection.getIndex(), roadService.getRoadById(connection.getSourceId()).getIndex()));
+
+            //  -----------------------------  roadsFlowMap  -----------------------------
+
+            crossroad.getRoadIds()
+                    .stream()
+                    .map(roadService::getRoadById)
+                    .forEach(road -> {
+                        double summedFlow = connectionService.getConnectionsOutByRoadId(crossroadId, road.getId())
+                                .stream()
+                                .map(connection ->
+                                        carFlowService.getNewestCarFlowByStartTimeIdForConnection(
+                                                connection.getId(),
+                                                startTimeId
+                                        ).getCarFlow()
+                                )
+                                .mapToDouble(Double::doubleValue)
+                                .sum();
+                        roadsFlowMap.put(road.getIndex(), summedFlow);
+                    });
+
+            //  -----------------------------  connectionChanceToPickMap  -----------------------------
+
+            crossroad.getRoadIds()
+                    .stream()
+                    .map(roadService::getRoadById)
+                    .forEach(road -> {
+                        HashMap<Integer, Double> connectionCarFlowMap = new HashMap<>();
+                        connectionService.getConnectionsOutByRoadId(crossroadId, road.getId())
+                                .forEach(connection ->
+                                        connectionCarFlowMap.put(
+                                                connection.getIndex(),
+                                                carFlowService.getNewestCarFlowByStartTimeIdForConnection(
+                                                        connection.getId(),
+                                                        startTimeId
+                                                ).getCarFlow()
+                                        )
+                                );
+                        for(int connectionIndex : connectionCarFlowMap.keySet()){
+                            connectionChanceToPickMap.put(
+                                    connectionIndex,
+                                    connectionCarFlowMap.get(connectionIndex)/roadsFlowMap.get(road.getIndex()));
+                        }
+                    });
+
         } catch (Exception exception) {
             System.out.println(exception);
             return ResponseEntity
@@ -344,7 +400,11 @@ public class OptimizationController {
                             connectionsFlowRatioMapPrevious,
                             connectionsLightsMap,
                             roadsLightsMap,
-                            lightsDirectionMap)
+                            lightsDirectionMap,
+                            connectionsFlowMap,
+                            connectionsRoadMap,
+                            roadsFlowMap,
+                            connectionChanceToPickMap)
                     );
         }
 
@@ -357,7 +417,11 @@ public class OptimizationController {
                         connectionsFlowRatioMapPrevious,
                         connectionsLightsMap,
                         roadsLightsMap,
-                        lightsDirectionMap)
+                        lightsDirectionMap,
+                        connectionsFlowMap,
+                        connectionsRoadMap,
+                        roadsFlowMap,
+                        connectionChanceToPickMap)
                 );
     }
 }

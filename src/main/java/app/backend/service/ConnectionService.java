@@ -6,16 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class ConnectionService {
 
     private final ConnectionRepository connectionRepository;
+    private final CrossroadService crossroadService;
 
     @Autowired
-    public ConnectionService(ConnectionRepository connectionRepository) {
+    public ConnectionService(ConnectionRepository connectionRepository, CrossroadService crossroadService) {
         this.connectionRepository = connectionRepository;
+        this.crossroadService = crossroadService;
     }
 
     public Connection getConnectionById(String id) {
@@ -98,6 +101,16 @@ public class ConnectionService {
         connectionRepository.save(connectionToUpdate);
 
         return connectionToUpdate;
+    }
+
+    public List<Connection> getConnectionsOutByRoadId(String crossroadId, String roadId){
+        return crossroadService.getCrossroadById(crossroadId).getConnectionIds()
+                .stream()
+                .map(connectionRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(connection -> Objects.equals(connection.getSourceId(), roadId))
+                .toList();
     }
 
     public ConnectionRepository getConnectionRepository() {
