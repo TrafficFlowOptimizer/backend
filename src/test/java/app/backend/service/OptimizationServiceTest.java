@@ -13,7 +13,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.util.ArrayList;
 import java.util.List;
 
+import static app.backend.document.time.Day.MONDAY;
+import static app.backend.document.time.Hour.T0000;
+import static app.backend.document.time.Hour.T0100;
+import static app.backend.document.time.Hour.T0200;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -24,6 +29,8 @@ class OptimizationServiceTest {
             .withExposedPorts(27017);
     @Autowired
     private OptimizationService optimizationService;
+    @Autowired
+    private StartTimeService startTimeService;
 
     @DynamicPropertySource
     static void mongoDbProperties(DynamicPropertyRegistry registry) {
@@ -34,6 +41,7 @@ class OptimizationServiceTest {
     @AfterEach
     public void cleanUpEach() {
         optimizationService.getOptimizationRepository().deleteAll();
+        startTimeService.startTimeRepository().deleteAll();
     }
 
     @Test
@@ -47,16 +55,19 @@ class OptimizationServiceTest {
             results.add(row);
         }
 
-        optimizationService.addOptimization("0", 0, "10", results);
-        optimizationService.addOptimization("0", 2, "11", results);
-        optimizationService.addOptimization("0", 3, "12", results);
-        optimizationService.addOptimization("0", 4, "12", results);
-        optimizationService.addOptimization("1", 1, "11", results);
+        String startTimeId1 = startTimeService.addStartTime(MONDAY, T0000).getId();
+        String startTimeId2 = startTimeService.addStartTime(MONDAY, T0100).getId();
+        String startTimeId3 = startTimeService.addStartTime(MONDAY, T0200).getId();
+        optimizationService.addOptimization("0", 0, startTimeId1, results);
+        optimizationService.addOptimization("0", 1, startTimeId1, results);
+        optimizationService.addOptimization("0", 3, startTimeId2, results);
+        optimizationService.addOptimization("0", 2, startTimeId3, results);
+        optimizationService.addOptimization("1", 1, startTimeId3, results);
 
 
-        assertEquals(2, optimizationService.getNewestOptimizationByCrossroadId("0", "11").getVersion());
-        assertEquals(4, optimizationService.getNewestOptimizationByCrossroadId("0", "12").getVersion());
-        assertEquals(1, optimizationService.getNewestOptimizationByCrossroadId("1", "11").getVersion());
+        assertEquals(1, optimizationService.getNewestOptimizationByCrossroadId("0", startTimeId1).getVersion());
+        assertEquals(3, optimizationService.getNewestOptimizationByCrossroadId("0", startTimeId2).getVersion());
+        assertEquals(1, optimizationService.getNewestOptimizationByCrossroadId("1", startTimeId3).getVersion());
     }
 
     @Test
@@ -70,15 +81,18 @@ class OptimizationServiceTest {
             results.add(row);
         }
 
-        optimizationService.addOptimization("0", 0, "10", results);
-        optimizationService.addOptimization("0", 2, "11", results);
-        optimizationService.addOptimization("0", 3, "12", results);
-        optimizationService.addOptimization("0", 4, "12", results);
-        optimizationService.addOptimization("1", 1, "11", results);
+        String startTimeId1 = startTimeService.addStartTime(MONDAY, T0000).getId();
+        String startTimeId2 = startTimeService.addStartTime(MONDAY, T0100).getId();
+        String startTimeId3 = startTimeService.addStartTime(MONDAY, T0200).getId();
+        optimizationService.addOptimization("0", 0, startTimeId1, results);
+        optimizationService.addOptimization("0", 1, startTimeId1, results);
+        optimizationService.addOptimization("0", 1, startTimeId2, results);
+        optimizationService.addOptimization("0", 0, startTimeId2, results);
+        optimizationService.addOptimization("0", 1, startTimeId3, results);
 
 
-        assertEquals(2, optimizationService.getSecondNewestOptimizationByCrossroadId("0", "11").getVersion());
-        assertEquals(3, optimizationService.getSecondNewestOptimizationByCrossroadId("0", "12").getVersion());
-        assertEquals(1, optimizationService.getSecondNewestOptimizationByCrossroadId("1", "11").getVersion());
+        assertEquals(0, optimizationService.getSecondNewestOptimizationByCrossroadId("0", startTimeId1).getVersion());
+        assertEquals(0, optimizationService.getSecondNewestOptimizationByCrossroadId("0", startTimeId2).getVersion());
+        assertNull(optimizationService.getSecondNewestOptimizationByCrossroadId("0", startTimeId3));
     }
 }

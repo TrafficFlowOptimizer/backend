@@ -44,15 +44,14 @@ public class StartTimeService {
                 .orElse(null);
     }
 
-// chyba do kosza
-//    public StartTime addStartTime(Day day, Hour hour) {
-//        return startTimeRepository.insert(
-//                new StartTime(
-//                        day,
-//                        hour
-//                )
-//        );
-//    }
+    public StartTime addStartTime(Day day, Hour hour) {
+        return startTimeRepository.insert(
+                new StartTime(
+                        day,
+                        hour
+                )
+        );
+    }
 
     public String getStartTimeIdByDayTime(Day day, Hour hour) {
         return startTimeRepository.findAll()
@@ -61,4 +60,9 @@ public class StartTimeService {
                 .map(StartTime::getId).findFirst()
                 .orElse(null);
     }
+
+    public StartTimeRepository startTimeRepository() {
+        return startTimeRepository;
+    }
+
 }
