@@ -148,7 +148,7 @@ public class OptimizationUtils {
             optimizationRequest.setConnectionsCount(roadsConnectionsLights.size());
 
             //  -----------------------------  car flow  -----------------------------
-            List<Double> carFlows = connections
+            List<Double> carFlows = connections //TODO: double or integer?
                     .stream()
                     .map(connectionId -> {
                         try {

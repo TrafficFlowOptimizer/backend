@@ -110,7 +110,7 @@ public class OptimizationService {
 
         return StreamSupport
                 .stream(optimizations.spliterator(), false)
-                .max(Comparator.comparingInt(Optimization::getVersion)).orElseGet(null);
+                .max(Comparator.comparingInt(Optimization::getVersion)).orElse(null);
     }
 
     public Optimization getSecondNewestOptimizationByCrossroadId(String crossroadId, String startTimeID) {
