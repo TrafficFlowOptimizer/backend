@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 
@@ -145,7 +146,7 @@ public class CrossroadController {
                 .body(crossroadDescriptionResponse);
     }
 
-    @PostMapping() // TODO: delete objects when error occurs while adding
+    @PostMapping()
     public ResponseEntity<Boolean> addCrossroad(
             @RequestParam("description") String crossroadDescriptionRequest,
             @RequestParam("image") String image,
@@ -281,7 +282,7 @@ public class CrossroadController {
             return ResponseEntity
                     .status(NOT_FOUND)
                     .build();
-        } else if (crossroad.getCreatorId().equals(creatorId)) {
+        } else if (!crossroad.getCreatorId().equals(creatorId)) {
             return ResponseEntity
                     .status(UNAUTHORIZED)
                     .build();
