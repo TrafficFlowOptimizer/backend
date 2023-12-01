@@ -2,7 +2,6 @@ package app.backend.response.optimization;
 
 import app.backend.document.light.TrafficLight;
 import app.backend.document.light.TrafficLightDirection;
-import jakarta.annotation.Nullable;
 
 import java.util.HashMap;
 import java.util.List;

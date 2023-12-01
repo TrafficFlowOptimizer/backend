@@ -382,10 +382,10 @@ public class OptimizationController {
                                                 ).getCarFlow()
                                         )
                                 );
-                        for(int connectionIndex : connectionCarFlowMap.keySet()){
+                        for (int connectionIndex : connectionCarFlowMap.keySet()) {
                             connectionChanceToPickMap.put(
                                     connectionIndex,
-                                    connectionCarFlowMap.get(connectionIndex)/roadsFlowMap.get(road.getIndex()));
+                                    connectionCarFlowMap.get(connectionIndex) / roadsFlowMap.get(road.getIndex()));
                         }
                     });
 

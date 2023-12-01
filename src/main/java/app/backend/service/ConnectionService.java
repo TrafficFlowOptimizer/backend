@@ -103,7 +103,7 @@ public class ConnectionService {
         return connectionToUpdate;
     }
 
-    public List<Connection> getConnectionsOutByRoadId(String crossroadId, String roadId){
+    public List<Connection> getConnectionsOutByRoadId(String crossroadId, String roadId) {
         return crossroadService.getCrossroadById(crossroadId).getConnectionIds()
                 .stream()
                 .map(connectionRepository::findById)
