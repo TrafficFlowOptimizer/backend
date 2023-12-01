@@ -11,9 +11,7 @@ public class OptimizationResultResponse {
 
     private HashMap<Integer, List<Integer>> lightsSequenceMapCurrent;
     private HashMap<Integer, Double> connectionsFlowRatioMapCurrent;
-    @Nullable
     private HashMap<Integer, List<Integer>> lightsSequenceMapPrevious;
-    @Nullable
     private HashMap<Integer, Double> connectionsFlowRatioMapPrevious;
     private HashMap<Integer, List<TrafficLight>> connectionsLightsMap;
     private HashMap<Integer, List<TrafficLight>> roadsLightsMap;
