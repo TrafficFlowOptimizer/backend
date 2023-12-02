@@ -211,8 +211,8 @@ public class OptimizationUtils {
 
             //TODO
 
-            optimizationRequest.setintermediatesCapacities(intermediatesCapacities);
-            optimizationRequest.setintermediatesCount(intermediatesCapacities.size());
+            optimizationRequest.setIntermediatesCapacities(intermediatesCapacities);
+            optimizationRequest.setIntermediatesCount(intermediatesCapacities.size());
 
             //  -----------------------------  fixed values  -----------------------------
 

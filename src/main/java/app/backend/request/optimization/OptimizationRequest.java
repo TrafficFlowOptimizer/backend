@@ -1,6 +1,8 @@
 package app.backend.request.optimization;
 
 import app.backend.document.light.TrafficLightDirection;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -190,19 +192,19 @@ public class OptimizationRequest {
         this.connections = connections;
     }
 
-    public List<List<Integer>> getintermediatesCapacities() {
+    public List<List<Integer>> getIntermediatesCapacities() {
         return intermediatesCapacities;
     }
 
-    public void setintermediatesCapacities(List<List<Integer>> intermediatesCapacities) {
+    public void setIntermediatesCapacities(List<List<Integer>> intermediatesCapacities) {
         this.intermediatesCapacities = intermediatesCapacities;
     }
 
-    public int getintermediatesCount() {
+    public int getIntermediatesCount() {
         return intermediatesCount;
     }
 
-    public void setintermediatesCount(int intermediatesCount) {
+    public void setIntermediatesCount(int intermediatesCount) {
         this.intermediatesCount = intermediatesCount;
     }
 
