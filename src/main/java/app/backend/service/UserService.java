@@ -1,6 +1,6 @@
 package app.backend.service;
 
-import app.backend.document.User;
+import app.backend.document.user.User;
 import app.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;

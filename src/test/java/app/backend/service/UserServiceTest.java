@@ -1,6 +1,6 @@
 package app.backend.service;
 
-import app.backend.document.User;
+import app.backend.document.user.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

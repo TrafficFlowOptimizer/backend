@@ -1,6 +1,6 @@
 package app.backend.authentication;
 
-import app.backend.document.User;
+import app.backend.document.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;
