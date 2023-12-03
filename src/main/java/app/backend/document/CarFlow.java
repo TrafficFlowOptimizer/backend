@@ -11,7 +11,7 @@ public class CarFlow {
     private String id;
 
     @PositiveOrZero
-    private double carFlow;
+    private int carFlow;
 
     @PositiveOrZero
     private int version;
@@ -19,7 +19,7 @@ public class CarFlow {
     @NotBlank
     private String startTimeId;
 
-    public CarFlow(double carFlow, String startTimeId, int version) {
+    public CarFlow(int carFlow, String startTimeId, int version) {
         this.carFlow = carFlow;
         this.version = version;
         this.startTimeId = startTimeId;
@@ -37,7 +37,7 @@ public class CarFlow {
         return carFlow;
     }
 
-    public void setCarFlow(double carFlowPm) {
+    public void setCarFlow(int carFlowPm) {
         this.carFlow = carFlowPm;
     }
 
