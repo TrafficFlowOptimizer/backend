@@ -1,6 +1,6 @@
 package app.backend.controller.user;
 
-import app.backend.document.User;
+import app.backend.document.user.User;
 import app.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

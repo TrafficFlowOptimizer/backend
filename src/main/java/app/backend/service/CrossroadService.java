@@ -54,6 +54,14 @@ public class CrossroadService {
                 .collect(Collectors.toList());
     }
 
+    public List<Crossroad> getAllCrossroads(){
+        Iterable<Crossroad> crossroads = crossroadRepository.findAll();
+
+        return StreamSupport
+                .stream(crossroads.spliterator(), false)
+                .collect(Collectors.toList());
+    }
+
     public Crossroad addCrossroad(String name, String location, String ownerId, CrossroadType type, List<String> roadIDs, List<String> collisionIDs, List<String> connectionIds, List<String> trafficLightIds, String imageId) {
         return crossroadRepository.insert(
                 new Crossroad(
