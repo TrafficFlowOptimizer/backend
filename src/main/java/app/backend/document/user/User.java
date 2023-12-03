@@ -1,4 +1,4 @@
-package app.backend.document;
+package app.backend.document.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -23,11 +23,13 @@ public class User {
 
     @NotBlank
     private String password;
+    private Role role;
 
     public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.role = Role.USER;
     }
 
     public String getId() {
@@ -60,5 +62,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
