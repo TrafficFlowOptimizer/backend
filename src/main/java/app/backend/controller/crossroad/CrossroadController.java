@@ -8,7 +8,16 @@ import app.backend.document.user.Role;
 import app.backend.document.user.User;
 import app.backend.request.crossroad.CrossroadDescriptionRequest;
 import app.backend.response.crossroad.CrossroadDescriptionResponse;
-import app.backend.service.*;
+import app.backend.service.CrossroadService;
+import app.backend.service.RoadService;
+import app.backend.service.CollisionService;
+import app.backend.service.ConnectionService;
+import app.backend.service.TrafficLightService;
+import app.backend.service.OptimizationService;
+import app.backend.service.StartTimeService;
+import app.backend.service.CarFlowService;
+import app.backend.service.ImageService;
+import app.backend.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +57,10 @@ public class CrossroadController {
     private final StartTimeService startTimeService;
     private final CarFlowService carFlowService;
     private final ImageService imageService;
+    private final UserService userService;
     private final CrossroadsUtils crossroadsUtils;
     private final JwtUtil jwtUtil;
     private final ObjectMapper jsonMapper;
-    private final UserService userService;
 
     @Autowired
     public CrossroadController(
@@ -64,10 +73,10 @@ public class CrossroadController {
             StartTimeService startTimeService,
             CarFlowService carFlowService,
             ImageService imageService,
+            UserService userService,
             CrossroadsUtils crossroadsUtils,
             JwtUtil jwtUtil,
-            ObjectMapper jsonMapper,
-            UserService userService
+            ObjectMapper jsonMapper
     ) {
         this.crossroadService = crossroadService;
         this.roadService = roadService;
