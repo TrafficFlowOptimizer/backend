@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
 
@@ -146,13 +147,12 @@ public class OptimizationController {
 
         OptimizationRequest optimizationRequest;
         try {
-            optimizationRequest = optimizationUtils.getOptimizationRequest(crossroadId, startTimeId, optimizationTime);
+            optimizationRequest = optimizationUtils.getOptimizationRequest(crossroadId, startTimeId, optimizationTime, 3);
         } catch (EntityNotFoundException e) {
             return ResponseEntity
                     .status(NOT_FOUND)
                     .build();
         }
-//        OptimizationRequest optimizationRequest = new OptimizationRequest();
 
         String url = "http://" + OPTIMIZER_HOST + ":" + OPTIMIZER_PORT + "/optimization";
         HttpHeaders headers = new HttpHeaders();
@@ -168,7 +168,16 @@ public class OptimizationController {
             return ResponseEntity
                     .status(BAD_REQUEST)
                     .build();
-        } catch (HttpServerErrorException | JsonProcessingException exception) {
+        } catch (HttpServerErrorException exception) {
+            if (exception.getStatusCode().value() == 515) {
+                return ResponseEntity
+                        .status(515)
+                        .build();
+            }
+            return ResponseEntity
+                    .status(SERVICE_UNAVAILABLE)
+                    .build();
+        } catch (JsonProcessingException | ResourceAccessException exception) {
             return ResponseEntity
                     .status(SERVICE_UNAVAILABLE)
                     .build();

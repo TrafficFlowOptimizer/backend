@@ -1,76 +1,74 @@
 package app.backend.request.optimization;
 
 import app.backend.document.light.TrafficLightDirection;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class OptimizationRequest {
     private int optimizationTime;
-    private int roadsCount;
-    private List<List<Integer>> lightCollisions;
-    private int lightCollisionsCount;
-    private List<List<Integer>> heavyCollisions;
-    private int heavyCollisionsCount;
-    private List<List<Integer>> roadsConnectionsLights;
-    private int connectionsCount;
-    private List<Double> carFlowPerMinute;
-    private int lightsCount;
-    private int timeUnitsInMinute;
-    private int numberOfTimeUnits;
-    private List<TrafficLightDirection> lightsType;
-    private int maxConnectionsFromOneEntrance;
-    private List<List<Integer>> connections;
-    private List<List<Integer>> intermediatesCapacities;
-    private int intermediatesCount;
     private int scaling;
+    private List<TrafficLightDirection> lightsTypes;
 
+    private int timeUnitsInMinute;
+    private int timeUnitCount;
+    private int lightCount;
+    private int roadCount;
+    private int connectionCount;
+    private int collisionCount;
+
+    private List<Integer> roadCapacities;
+    private List<Integer> expectedCarFlow;
+    private List<List<Integer>> connectionLights;
+    private List<List<Integer>> roadConnectionsIn;
+    private List<List<Integer>> roadConnectionsOut;
+    private List<Integer> isCollisionImportant;
+    private List<List<Integer>> collisionConnections;
+    private List<Integer> isConnectionFromIntermediate;
 
     public OptimizationRequest() {
-        this(0, 0, new ArrayList<>(), 0, new ArrayList<>(), 0, new ArrayList<>(), 0, new ArrayList<>(), 0, 0, 0, new ArrayList<>(), 0, new ArrayList<>(), new ArrayList<>(), 0, 0);
+        this(0, 0, new ArrayList<>(), 0, 0, 0, 0, 0, 0, new ArrayList<>(), new ArrayList<>(),
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
     public OptimizationRequest(
             int optimizationTime,
-            int roadsCount,
-            List<List<Integer>> lightCollisions,
-            int lightCollisionsCount,
-            List<List<Integer>> heavyCollisions,
-            int heavyCollisionsCount,
-            List<List<Integer>> roadsConnectionsLights,
-            int connectionsCount,
-            List<Double> carFlowPerMinute,
-            int lightsCount,
+            int scaling,
+            List<TrafficLightDirection> lightsTypes,
             int timeUnitsInMinute,
-            int numberOfTimeUnits,
-            List<TrafficLightDirection> lightsType,
-            int maxConnectionsFromOneEntrance,
-            List<List<Integer>> connections,
-            List<List<Integer>> intermediatesCapacities,
-            int intermediatesCount,
-            int scaling
+            int timeUnitCount,
+            int lightCount,
+            int roadCount,
+            int connectionCount,
+            int collisionCount,
+            List<Integer> roadCapacities,
+            List<Integer> expectedCarFlow,
+            List<List<Integer>> connectionLights,
+            List<List<Integer>> roadConnectionsIn,
+            List<List<Integer>> roadConnectionsOut,
+            List<Integer> isCollisionImportant,
+            List<List<Integer>> collisionConnections,
+            List<Integer> isConnectionFromIntermediate
     ) {
         this.optimizationTime = optimizationTime;
-        this.roadsCount = roadsCount;
-        this.lightCollisions = lightCollisions;
-        this.lightCollisionsCount = lightCollisionsCount;
-        this.heavyCollisions = heavyCollisions;
-        this.heavyCollisionsCount = heavyCollisionsCount;
-        this.roadsConnectionsLights = roadsConnectionsLights;
-        this.connectionsCount = connectionsCount;
-        this.carFlowPerMinute = carFlowPerMinute;
-        this.lightsCount = lightsCount;
-        this.timeUnitsInMinute = timeUnitsInMinute;
-        this.numberOfTimeUnits = numberOfTimeUnits;
-        this.lightsType = lightsType;
-        this.maxConnectionsFromOneEntrance = maxConnectionsFromOneEntrance;
-        this.connections = connections;
-        this.intermediatesCapacities = intermediatesCapacities;
-        this.intermediatesCount = intermediatesCount;
         this.scaling = scaling;
+        this.lightsTypes = lightsTypes;
+        this.timeUnitsInMinute = timeUnitsInMinute;
+        this.timeUnitCount = timeUnitCount;
+        this.lightCount = lightCount;
+        this.roadCount = roadCount;
+        this.connectionCount = connectionCount;
+        this.collisionCount = collisionCount;
+        this.roadCapacities = roadCapacities;
+        this.expectedCarFlow = expectedCarFlow;
+        this.connectionLights = connectionLights;
+        this.roadConnectionsIn = roadConnectionsIn;
+        this.roadConnectionsOut = roadConnectionsOut;
+        this.isCollisionImportant = isCollisionImportant;
+        this.collisionConnections = collisionConnections;
+        this.isConnectionFromIntermediate = isConnectionFromIntermediate;
     }
+
 
     public int getOptimizationTime() {
         return optimizationTime;
@@ -80,76 +78,20 @@ public class OptimizationRequest {
         this.optimizationTime = optimizationTime;
     }
 
-    public int getRoadsCount() {
-        return roadsCount;
+    public int getScaling() {
+        return scaling;
     }
 
-    public void setRoadsCount(int roadsCount) {
-        this.roadsCount = roadsCount;
+    public void setScaling(int scaling) {
+        this.scaling = scaling;
     }
 
-    public List<List<Integer>> getLightCollisions() {
-        return lightCollisions;
+    public List<TrafficLightDirection> getLightsTypes() {
+        return lightsTypes;
     }
 
-    public void setLightCollisions(List<List<Integer>> lightCollisions) {
-        this.lightCollisions = lightCollisions;
-    }
-
-    public int getLightCollisionsCount() {
-        return lightCollisionsCount;
-    }
-
-    public void setLightCollisionsCount(int lightCollisionsCount) {
-        this.lightCollisionsCount = lightCollisionsCount;
-    }
-
-    public List<List<Integer>> getHeavyCollisions() {
-        return heavyCollisions;
-    }
-
-    public void setHeavyCollisions(List<List<Integer>> heavyCollisions) {
-        this.heavyCollisions = heavyCollisions;
-    }
-
-    public int getHeavyCollisionsCount() {
-        return heavyCollisionsCount;
-    }
-
-    public void setHeavyCollisionsCount(int heavyCollisionsCount) {
-        this.heavyCollisionsCount = heavyCollisionsCount;
-    }
-
-    public List<List<Integer>> getRoadsConnectionsLights() {
-        return roadsConnectionsLights;
-    }
-
-    public void setRoadsConnectionsLights(List<List<Integer>> roadsConnectionsLights) {
-        this.roadsConnectionsLights = roadsConnectionsLights;
-    }
-
-    public int getConnectionsCount() {
-        return connectionsCount;
-    }
-
-    public void setConnectionsCount(int connectionsCount) {
-        this.connectionsCount = connectionsCount;
-    }
-
-    public List<Double> getCarFlowPerMinute() {
-        return carFlowPerMinute;
-    }
-
-    public void setCarFlowPerMinute(List<Double> carFlowPerMinute) {
-        this.carFlowPerMinute = carFlowPerMinute;
-    }
-
-    public int getLightsCount() {
-        return lightsCount;
-    }
-
-    public void setLightsCount(int lightsCount) {
-        this.lightsCount = lightsCount;
+    public void setLightsTypes(List<TrafficLightDirection> lightsTypes) {
+        this.lightsTypes = lightsTypes;
     }
 
     public int getTimeUnitsInMinute() {
@@ -160,59 +102,107 @@ public class OptimizationRequest {
         this.timeUnitsInMinute = timeUnitsInMinute;
     }
 
-    public int getNumberOfTimeUnits() {
-        return numberOfTimeUnits;
+    public int getTimeUnitCount() {
+        return timeUnitCount;
     }
 
-    public void setNumberOfTimeUnits(int numberOfTimeUnits) {
-        this.numberOfTimeUnits = numberOfTimeUnits;
+    public void setTimeUnitCount(int timeUnitCount) {
+        this.timeUnitCount = timeUnitCount;
     }
 
-    public List<TrafficLightDirection> getLightsType() {
-        return lightsType;
+    public int getLightCount() {
+        return lightCount;
     }
 
-    public void setLightsType(List<TrafficLightDirection> lightsType) {
-        this.lightsType = lightsType;
+    public void setLightCount(int lightCount) {
+        this.lightCount = lightCount;
     }
 
-    public int getMaxConnectionsFromOneEntrance() {
-        return maxConnectionsFromOneEntrance;
+    public int getRoadCount() {
+        return roadCount;
     }
 
-    public void setMaxConnectionsFromOneEntrance(int maxConnectionsFromOneEntrance) {
-        this.maxConnectionsFromOneEntrance = maxConnectionsFromOneEntrance;
+    public void setRoadCount(int roadCount) {
+        this.roadCount = roadCount;
     }
 
-    public List<List<Integer>> getConnections() {
-        return connections;
+    public int getConnectionCount() {
+        return connectionCount;
     }
 
-    public void setConnections(List<List<Integer>> connections) {
-        this.connections = connections;
+    public void setConnectionCount(int connectionCount) {
+        this.connectionCount = connectionCount;
     }
 
-    public List<List<Integer>> getIntermediatesCapacities() {
-        return intermediatesCapacities;
+    public int getCollisionCount() {
+        return collisionCount;
     }
 
-    public void setIntermediatesCapacities(List<List<Integer>> intermediatesCapacities) {
-        this.intermediatesCapacities = intermediatesCapacities;
+    public void setCollisionCount(int collisionCount) {
+        this.collisionCount = collisionCount;
     }
 
-    public int getIntermediatesCount() {
-        return intermediatesCount;
+    public List<Integer> getRoadCapacities() {
+        return roadCapacities;
     }
 
-    public void setIntermediatesCount(int intermediatesCount) {
-        this.intermediatesCount = intermediatesCount;
+    public void setRoadCapacities(List<Integer> roadCapacities) {
+        this.roadCapacities = roadCapacities;
     }
 
-    public int getScaling() {
-        return scaling;
+    public List<Integer> getExpectedCarFlow() {
+        return expectedCarFlow;
     }
 
-    public void setScaling(int scaling) {
-        this.scaling = scaling;
+    public void setExpectedCarFlow(List<Integer> expectedCarFlow) {
+        this.expectedCarFlow = expectedCarFlow;
+    }
+
+    public List<List<Integer>> getConnectionLights() {
+        return connectionLights;
+    }
+
+    public void setConnectionLights(List<List<Integer>> connectionLights) {
+        this.connectionLights = connectionLights;
+    }
+
+    public List<List<Integer>> getRoadConnectionsIn() {
+        return roadConnectionsIn;
+    }
+
+    public void setRoadConnectionsIn(List<List<Integer>> roadConnectionsIn) {
+        this.roadConnectionsIn = roadConnectionsIn;
+    }
+
+    public List<List<Integer>> getRoadConnectionsOut() {
+        return roadConnectionsOut;
+    }
+
+    public void setRoadConnectionsOut(List<List<Integer>> roadConnectionsOut) {
+        this.roadConnectionsOut = roadConnectionsOut;
+    }
+
+    public List<Integer> getIsCollisionImportant() {
+        return isCollisionImportant;
+    }
+
+    public void setIsCollisionImportant(List<Integer> isCollisionImportant) {
+        this.isCollisionImportant = isCollisionImportant;
+    }
+
+    public List<List<Integer>> getCollisionConnections() {
+        return collisionConnections;
+    }
+
+    public void setCollisionConnections(List<List<Integer>> collisionConnections) {
+        this.collisionConnections = collisionConnections;
+    }
+
+    public List<Integer> getIsConnectionFromIntermediate() {
+        return isConnectionFromIntermediate;
+    }
+
+    public void setIsConnectionFromIntermediate(List<Integer> isConnectionFromIntermediate) {
+        this.isConnectionFromIntermediate = isConnectionFromIntermediate;
     }
 }
