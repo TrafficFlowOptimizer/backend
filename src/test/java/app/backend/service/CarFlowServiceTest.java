@@ -49,7 +49,7 @@ class CarFlowServiceTest {
 
     @Test
     public void getCarFlowById_properCarFlow_correctCarFlow() {
-        double flow = 7.0;
+        int flow = 7;
         String startTimeId = "startTimeId";
 
         CarFlow carFlow = carFlowService.addCarFlow(flow, startTimeId, 1);

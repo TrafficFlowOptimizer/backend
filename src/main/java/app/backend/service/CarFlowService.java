@@ -28,10 +28,10 @@ public class CarFlowService {
                 .orElse(null);
     }
 
-    public CarFlow addCarFlow(double carFlow, String startTimeId, String connectionId) {
+    public CarFlow addCarFlow(int carFlow, String startTimeId, String connectionId) {
 
         Connection connection = connectionService.getConnectionById(connectionId);
-        Integer version = connection.getCarFlowIds().size();
+        int version = connection.getCarFlowIds().size();
         CarFlow newCarFlow = new CarFlow(
                 carFlow,
                 startTimeId,
@@ -48,7 +48,7 @@ public class CarFlowService {
     }
 
     //Use only in populationg default Crossroad
-    public CarFlow addCarFlow(double carFlow, String startTimeId, Integer version) {
+    public CarFlow addCarFlow(int carFlow, String startTimeId, Integer version) {
         return carFlowRepository.insert(
                 new CarFlow(
                         carFlow,

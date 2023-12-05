@@ -1,7 +1,7 @@
 package app.backend.controller.authentication;
 
 import app.backend.authentication.JwtUtil;
-import app.backend.document.User;
+import app.backend.document.user.User;
 import app.backend.request.auth.LoginRequest;
 import app.backend.response.auth.LoginResponse;
 import app.backend.service.UserService;
