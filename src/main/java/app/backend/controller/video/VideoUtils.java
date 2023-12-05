@@ -128,7 +128,7 @@ public class VideoUtils {
             for (Detection detection : detections) {
                 detection.setDetectedCars((detection.getDetectedCars() * secondsInMinute) / video.getDuration());
                 detection.setDetectedBuses((detection.getDetectedBuses() * secondsInMinute) / video.getDuration());
-                carFlowService.addCarFlow(detection.getDetectedBuses() + detection.getDetectedCars(), video.getStartTimeId(), detection.getConnectionId());
+                carFlowService.addCarFlow(detection.getDetectedBuses()*3 + detection.getDetectedCars(), video.getStartTimeId(), detection.getConnectionId());
             }
 
             System.out.println("INFO:\n" + responseCode + " " + responseValue);
