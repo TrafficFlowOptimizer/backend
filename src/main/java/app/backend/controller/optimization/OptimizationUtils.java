@@ -14,7 +14,6 @@ import app.backend.service.CrossroadService;
 import app.backend.service.OptimizationService;
 import app.backend.service.RoadService;
 import app.backend.service.TrafficLightService;
-import app.backend.service.VideoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +38,6 @@ public class OptimizationUtils {
     private final ConnectionService connectionService;
     private final CarFlowService carFlowService;
     private final OptimizationService optimizationService;
-    private final VideoService videoService;
 
 
     @Autowired
@@ -50,8 +48,7 @@ public class OptimizationUtils {
             TrafficLightService trafficLightService,
             ConnectionService connectionService,
             CarFlowService carFlowService,
-            OptimizationService optimizationService,
-            VideoService videoService
+            OptimizationService optimizationService
     ) {
         this.crossroadService = crossroadService;
         this.roadService = roadService;
@@ -60,7 +57,6 @@ public class OptimizationUtils {
         this.connectionService = connectionService;
         this.carFlowService = carFlowService;
         this.optimizationService = optimizationService;
-        this.videoService = videoService;
     }
 
     public OptimizationRequest getOptimizationRequest(String crossroadId, String startTimeId, int time, int scaling) { //TODO: check if light/connection order is preserved
@@ -144,7 +140,7 @@ public class OptimizationUtils {
                             currentConnections.add(connection.getIndex());
                             roadConnectionsInMap.put(targetIdx, currentConnections);
                         } else {
-                            roadConnectionsInMap.put(targetIdx, Arrays.asList(connection.getIndex()));
+                            roadConnectionsInMap.put(targetIdx, List.of(connection.getIndex()));
                         }
                         int sourceIdx = roadService.getRoadById(connection.getSourceId()).getIndex();
                         if (roadConnectionsOutMap.containsKey(sourceIdx)) {
@@ -153,7 +149,7 @@ public class OptimizationUtils {
                             currentConnections.add(connection.getIndex());
                             roadConnectionsOutMap.put(sourceIdx, currentConnections);
                         } else {
-                            roadConnectionsOutMap.put(sourceIdx, Arrays.asList(connection.getIndex()));
+                            roadConnectionsOutMap.put(sourceIdx, List.of(connection.getIndex()));
                         }
                     });
 
@@ -195,8 +191,8 @@ public class OptimizationUtils {
                     .map(connectionService::getConnectionById)
                     .sorted(Comparator.comparingInt(Connection::getIndex))
                     .map(connection -> {
-                        try {//TODO: usunąć poniższe "(int)" po zmianie bazki
-                            return (int) carFlowService.getNewestCarFlowByStartTimeIdForConnection(connection.getId(), startTimeId).getCarFlow();
+                        try {
+                            return carFlowService.getNewestCarFlowByStartTimeIdForConnection(connection.getId(), startTimeId).getCarFlow();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

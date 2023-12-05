@@ -230,7 +230,7 @@ public class OptimizationController {
                     .forEach(connection ->
                             connectionsFlowMap.put(
                                     connection.getIndex(),
-                                    carFlowService.getNewestCarFlowByStartTimeIdForConnection(connection.getId(), startTimeId).getCarFlow()
+                                    (double) carFlowService.getNewestCarFlowByStartTimeIdForConnection(connection.getId(), startTimeId).getCarFlow()
                             )
                     );
 
@@ -369,7 +369,7 @@ public class OptimizationController {
                                                 startTimeId
                                         ).getCarFlow()
                                 )
-                                .mapToDouble(Double::doubleValue)
+                                .mapToInt(Integer::intValue)
                                 .sum();
                         roadsFlowMap.put(road.getIndex(), summedFlow);
                     });
@@ -385,7 +385,7 @@ public class OptimizationController {
                                 .forEach(connection ->
                                         connectionCarFlowMap.put(
                                                 connection.getIndex(),
-                                                carFlowService.getNewestCarFlowByStartTimeIdForConnection(
+                                                (double) carFlowService.getNewestCarFlowByStartTimeIdForConnection(
                                                         connection.getId(),
                                                         startTimeId
                                                 ).getCarFlow()
