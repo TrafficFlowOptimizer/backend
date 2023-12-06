@@ -38,6 +38,7 @@ public class OptimizationUtils {
     private final ConnectionService connectionService;
     private final CarFlowService carFlowService;
     private final OptimizationService optimizationService;
+    private final ObjectMapper objectMapper;
 
 
     @Autowired
@@ -48,7 +49,8 @@ public class OptimizationUtils {
             TrafficLightService trafficLightService,
             ConnectionService connectionService,
             CarFlowService carFlowService,
-            OptimizationService optimizationService
+            OptimizationService optimizationService,
+            ObjectMapper objectMapper
     ) {
         this.crossroadService = crossroadService;
         this.roadService = roadService;
@@ -57,6 +59,7 @@ public class OptimizationUtils {
         this.connectionService = connectionService;
         this.carFlowService = carFlowService;
         this.optimizationService = optimizationService;
+        this.objectMapper = objectMapper;
     }
 
     public OptimizationRequest getOptimizationRequest(String crossroadId, String startTimeId, int time, int scaling) { //TODO: check if light/connection order is preserved
@@ -302,8 +305,7 @@ public class OptimizationUtils {
     }
 
     public void addOptimizationResultsToDb(String crossroadId, String startTimeId, ResponseEntity<String> result) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<List<Integer>> resultList = objectMapper.readValue(result.getBody(), new TypeReference<List<List<Integer>>>() {
+        List<List<Integer>> resultList = objectMapper.readValue(result.getBody(), new TypeReference<>() {
         });
 
         optimizationService.addOptimization(

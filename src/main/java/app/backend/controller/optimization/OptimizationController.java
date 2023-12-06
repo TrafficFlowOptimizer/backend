@@ -68,6 +68,8 @@ public class OptimizationController {
     private String OPTIMIZER_HOST;
     @Value("${optimizer.port}")
     private int OPTIMIZER_PORT;
+    @Value("${optimizer.optimization_time_period_scaling}")
+    private final int OPTIMIZATION_TIME_PERIOD_SCALING = 3;
 
     @Autowired
     public OptimizationController(
@@ -147,7 +149,7 @@ public class OptimizationController {
 
         OptimizationRequest optimizationRequest;
         try {
-            optimizationRequest = optimizationUtils.getOptimizationRequest(crossroadId, startTimeId, optimizationTime, 3);
+            optimizationRequest = optimizationUtils.getOptimizationRequest(crossroadId, startTimeId, optimizationTime, OPTIMIZATION_TIME_PERIOD_SCALING);
         } catch (EntityNotFoundException e) {
             return ResponseEntity
                     .status(NOT_FOUND)
