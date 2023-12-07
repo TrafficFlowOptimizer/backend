@@ -54,7 +54,7 @@ public class CrossroadService {
                 .collect(Collectors.toList());
     }
 
-    public List<Crossroad> getAllCrossroads(){
+    public List<Crossroad> getAllCrossroads() {
         Iterable<Crossroad> crossroads = crossroadRepository.findAll();
 
         return StreamSupport

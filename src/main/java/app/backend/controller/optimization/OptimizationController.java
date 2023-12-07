@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
 
@@ -67,6 +68,8 @@ public class OptimizationController {
     private String OPTIMIZER_HOST;
     @Value("${optimizer.port}")
     private int OPTIMIZER_PORT;
+    @Value("${optimizer.optimization_time_period_scaling}")
+    private final int OPTIMIZATION_TIME_PERIOD_SCALING = 3;
 
     @Autowired
     public OptimizationController(
@@ -146,13 +149,12 @@ public class OptimizationController {
 
         OptimizationRequest optimizationRequest;
         try {
-            optimizationRequest = optimizationUtils.getOptimizationRequest(crossroadId, startTimeId, optimizationTime);
+            optimizationRequest = optimizationUtils.getOptimizationRequest(crossroadId, startTimeId, optimizationTime, OPTIMIZATION_TIME_PERIOD_SCALING);
         } catch (EntityNotFoundException e) {
             return ResponseEntity
                     .status(NOT_FOUND)
                     .build();
         }
-//        OptimizationRequest optimizationRequest = new OptimizationRequest();
 
         String url = "http://" + OPTIMIZER_HOST + ":" + OPTIMIZER_PORT + "/optimization";
         HttpHeaders headers = new HttpHeaders();
@@ -168,7 +170,16 @@ public class OptimizationController {
             return ResponseEntity
                     .status(BAD_REQUEST)
                     .build();
-        } catch (HttpServerErrorException | JsonProcessingException exception) {
+        } catch (HttpServerErrorException exception) {
+            if (exception.getStatusCode().value() == 515) {
+                return ResponseEntity
+                        .status(515)
+                        .build();
+            }
+            return ResponseEntity
+                    .status(SERVICE_UNAVAILABLE)
+                    .build();
+        } catch (JsonProcessingException | ResourceAccessException exception) {
             return ResponseEntity
                     .status(SERVICE_UNAVAILABLE)
                     .build();
@@ -221,7 +232,7 @@ public class OptimizationController {
                     .forEach(connection ->
                             connectionsFlowMap.put(
                                     connection.getIndex(),
-                                    carFlowService.getNewestCarFlowByStartTimeIdForConnection(connection.getId(), startTimeId).getCarFlow()
+                                    (double) carFlowService.getNewestCarFlowByStartTimeIdForConnection(connection.getId(), startTimeId).getCarFlow()
                             )
                     );
 
@@ -360,7 +371,7 @@ public class OptimizationController {
                                                 startTimeId
                                         ).getCarFlow()
                                 )
-                                .mapToDouble(Double::doubleValue)
+                                .mapToInt(Integer::intValue)
                                 .sum();
                         roadsFlowMap.put(road.getIndex(), summedFlow);
                     });
@@ -376,7 +387,7 @@ public class OptimizationController {
                                 .forEach(connection ->
                                         connectionCarFlowMap.put(
                                                 connection.getIndex(),
-                                                carFlowService.getNewestCarFlowByStartTimeIdForConnection(
+                                                (double) carFlowService.getNewestCarFlowByStartTimeIdForConnection(
                                                         connection.getId(),
                                                         startTimeId
                                                 ).getCarFlow()

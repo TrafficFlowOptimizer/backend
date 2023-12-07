@@ -33,7 +33,7 @@ public class CarFlow {
         this.id = id;
     }
 
-    public double getCarFlow() {
+    public int getCarFlow() {
         return carFlow;
     }
 

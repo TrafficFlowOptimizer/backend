@@ -5,6 +5,7 @@ import app.backend.document.Connection;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.light.TrafficLightDirection;
+import app.backend.document.road.Road;
 import app.backend.request.optimization.OptimizationRequest;
 import app.backend.service.CarFlowService;
 import app.backend.service.CollisionService;
@@ -13,11 +14,10 @@ import app.backend.service.CrossroadService;
 import app.backend.service.OptimizationService;
 import app.backend.service.RoadService;
 import app.backend.service.TrafficLightService;
-import app.backend.service.VideoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -25,12 +25,9 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 public class OptimizationUtils {
@@ -41,7 +38,7 @@ public class OptimizationUtils {
     private final ConnectionService connectionService;
     private final CarFlowService carFlowService;
     private final OptimizationService optimizationService;
-    private final VideoService videoService;
+    private final ObjectMapper objectMapper;
 
 
     @Autowired
@@ -53,7 +50,7 @@ public class OptimizationUtils {
             ConnectionService connectionService,
             CarFlowService carFlowService,
             OptimizationService optimizationService,
-            VideoService videoService
+            ObjectMapper objectMapper
     ) {
         this.crossroadService = crossroadService;
         this.roadService = roadService;
@@ -62,11 +59,10 @@ public class OptimizationUtils {
         this.connectionService = connectionService;
         this.carFlowService = carFlowService;
         this.optimizationService = optimizationService;
-        this.videoService = videoService;
+        this.objectMapper = objectMapper;
     }
 
-
-    public OptimizationRequest getOptimizationRequest(String crossroadId, String startTimeId, int time) { //TODO: check if light/connection order is preserved
+    public OptimizationRequest getOptimizationRequest(String crossroadId, String startTimeId, int time, int scaling) { //TODO: check if light/connection order is preserved
         OptimizationRequest optimizationRequest = new OptimizationRequest();
 
         optimizationRequest.setOptimizationTime(time);
@@ -79,152 +75,172 @@ public class OptimizationUtils {
             }
 
             //  -----------------------------  roads  -----------------------------
-            List<Integer> roads = crossroad.getRoadIds().stream().map(roadId -> roadService.getRoadById(roadId).getIndex()).toList();
-            optimizationRequest.setRoadsCount(roads.size());
+
+            List<Integer> roadCapacities = crossroad.getRoadIds()
+                    .stream()
+                    .map(roadService::getRoadById)
+                    .sorted(Comparator.comparingInt(Road::getIndex))
+                    .map(road -> {
+                        return road.getCapacity() == -1 ? 0 : road.getCapacity();
+                    })
+                    .toList();
+
+            optimizationRequest.setRoadCapacities(roadCapacities);
+            optimizationRequest.setRoadCount(roadCapacities.size());
 
             //  -----------------------------  collisions  -----------------------------
-            Map<Boolean, List<Pair<Integer, Integer>>> collisionsPartitioned = crossroad
+
+            List<Integer> isCollisionImportant = crossroad
                     .getCollisionIds()
                     .stream()
                     .map(collisionService::getCollisionById)
-                    .collect(
-                            Collectors.partitioningBy(
-                                    Collision::getBothCanBeOn,
-                                    Collectors.flatMapping(collision -> {
-                                                String connection1Id = collision.getConnection1Id();
-                                                String connection2Id = collision.getConnection2Id();
+                    .sorted(Comparator.comparingInt(Collision::getIndex))
+                    .map(collision -> {
+                        return collision.getBothCanBeOn() ? 0 : 1;
 
-                                                Connection connection1 = connectionService.getConnectionById(connection1Id);
-                                                Connection connection2 = connectionService.getConnectionById(connection2Id);
-
-                                                List<Pair<Integer, Integer>> lights = new LinkedList<>();
-                                                for (String trafficLight1Id : connection1.getTrafficLightIds()) {
-                                                    for (String trafficLight2Id : connection2.getTrafficLightIds()) {
-                                                        lights.add(
-                                                                Pair.of(
-                                                                        trafficLightService.getTrafficLightById(trafficLight1Id).getIndex(),
-                                                                        trafficLightService.getTrafficLightById(trafficLight2Id).getIndex()
-                                                                )
-                                                        );
-                                                    }
-                                                }
-                                                return lights.stream();
-                                            },
-                                            Collectors.toList())
-                            )
-                    );
-            List<List<Integer>> lightCollisions = collisionsPartitioned.get(true)
-                    .stream()
-                    .map(pair -> Arrays.asList(pair.getFirst(), pair.getSecond()))
+                    })
                     .toList();
-            optimizationRequest.setLightCollisions(lightCollisions);
-            optimizationRequest.setLightCollisionsCount(lightCollisions.size());
 
-            List<List<Integer>> heavyCollisions = collisionsPartitioned.get(false)
+            List<List<Integer>> CollisionConnections = crossroad
+                    .getCollisionIds()
                     .stream()
-                    .map(pair -> Arrays.asList(pair.getFirst(), pair.getSecond()))
+                    .map(collisionService::getCollisionById)
+                    .sorted(Comparator.comparingInt(Collision::getIndex))
+                    .map(collision -> {
+                        String connection1Id = collision.getConnection1Id();
+                        String connection2Id = collision.getConnection2Id();
+
+                        Connection connection1 = connectionService.getConnectionById(connection1Id);
+                        Connection connection2 = connectionService.getConnectionById(connection2Id);
+                        return Arrays.asList(connection1.getIndex(), connection2.getIndex());
+                    })
                     .toList();
-            optimizationRequest.setHeavyCollisions(heavyCollisions);
-            optimizationRequest.setHeavyCollisionsCount(heavyCollisions.size());
+
+            optimizationRequest.setIsCollisionImportant(isCollisionImportant);
+            optimizationRequest.setCollisionConnections(CollisionConnections);
+            optimizationRequest.setCollisionCount(CollisionConnections.size());
 
             //  ------------------------  road connections lights  ------------------------
-            List<String> connections = crossroad.getConnectionIds();
-            List<List<Integer>> roadsConnectionsLights = connections
-                    .stream()
-                    .map(connectionId ->
-                            Arrays.asList(
-                                    roadService.getRoadById(connectionService.getConnectionById(connectionId).getSourceId()).getIndex(),
-                                    roadService.getRoadById(connectionService.getConnectionById(connectionId).getTargetId()).getIndex(),
-                                    connectionService.getConnectionById(connectionId).getTrafficLightIds().size() > 0
-                                            ? trafficLightService.getTrafficLightById(connectionService.getConnectionById(connectionId).getTrafficLightIds().get(0)).getIndex() :
-                                            -1,
-                                    connectionService.getConnectionById(connectionId).getTrafficLightIds().size() > 1
-                                            ? trafficLightService.getTrafficLightById(connectionService.getConnectionById(connectionId).getTrafficLightIds().get(1)).getIndex() :
-                                            -1
-                            )
-                    ).toList();
 
-            optimizationRequest.setRoadsConnectionsLights(roadsConnectionsLights);
-            optimizationRequest.setConnectionsCount(roadsConnectionsLights.size());
+            List<String> connections = crossroad.getConnectionIds();
+            List<Road> roads = crossroad.getRoadIds().stream().map(roadService::getRoadById).toList();
+
+            HashMap<Integer, List<Integer>> roadConnectionsInMap = new HashMap<>();
+            HashMap<Integer, List<Integer>> roadConnectionsOutMap = new HashMap<>();
+            List<Integer> isConnectionFromIntermediate = new ArrayList<>();
+
+
+            connections.stream()
+                    .map(connectionService::getConnectionById)
+                    .sorted(Comparator.comparingInt(Connection::getIndex))
+                    .forEach(connection -> {
+                        isConnectionFromIntermediate.add(roadService.getRoadById(connection.getSourceId()).getCapacity() == -1 ? 0 : 1);
+
+                        int targetIdx = roadService.getRoadById(connection.getTargetId()).getIndex();
+                        if (roadConnectionsInMap.containsKey(targetIdx)) {
+                            List<Integer> currentConnections = new ArrayList<>();
+                            currentConnections.addAll(roadConnectionsInMap.get(targetIdx));
+                            currentConnections.add(connection.getIndex());
+                            roadConnectionsInMap.put(targetIdx, currentConnections);
+                        } else {
+                            roadConnectionsInMap.put(targetIdx, List.of(connection.getIndex()));
+                        }
+                        int sourceIdx = roadService.getRoadById(connection.getSourceId()).getIndex();
+                        if (roadConnectionsOutMap.containsKey(sourceIdx)) {
+                            List<Integer> currentConnections = new ArrayList<>();
+                            currentConnections.addAll(roadConnectionsOutMap.get(sourceIdx));
+                            currentConnections.add(connection.getIndex());
+                            roadConnectionsOutMap.put(sourceIdx, currentConnections);
+                        } else {
+                            roadConnectionsOutMap.put(sourceIdx, List.of(connection.getIndex()));
+                        }
+                    });
+
+            List<List<Integer>> roadConnectionsIn = new ArrayList<>();
+            for (Road road : roads) {
+                List<Integer> newCons = new ArrayList<>();
+                if (roadConnectionsInMap.containsKey(road.getIndex())) {
+                    newCons = new ArrayList<>(roadConnectionsInMap.get(road.getIndex()));
+                }
+                while (newCons.size() < 3) {
+                    newCons.add(0);
+                }
+                roadConnectionsIn.add(newCons);
+            }
+
+            List<List<Integer>> roadConnectionsOut = new ArrayList<>();
+            for (Road road : roads) {
+                List<Integer> newCons = new ArrayList<>();
+                if (roadConnectionsOutMap.containsKey(road.getIndex())) {
+                    newCons = new ArrayList<>(roadConnectionsOutMap.get(road.getIndex()));
+                }
+                while (newCons.size() < 3) {
+                    newCons.add(0);
+                }
+                roadConnectionsOut.add(newCons);
+            }
+
+            Collections.reverse(isConnectionFromIntermediate);
+            optimizationRequest.setIsConnectionFromIntermediate(isConnectionFromIntermediate);
+
+            optimizationRequest.setRoadConnectionsIn(roadConnectionsIn);
+            optimizationRequest.setRoadConnectionsOut(roadConnectionsOut);
+            optimizationRequest.setConnectionCount(connections.size());
 
             //  -----------------------------  car flow  -----------------------------
-            List<Double> carFlows = connections //TODO: double or integer?
+
+            List<Integer> carFlows = new ArrayList<>(connections
                     .stream()
-                    .map(connectionId -> {
+                    .map(connectionService::getConnectionById)
+                    .sorted(Comparator.comparingInt(Connection::getIndex))
+                    .map(connection -> {
                         try {
-                            return carFlowService.getNewestCarFlowByStartTimeIdForConnection(connectionId, startTimeId).getCarFlow();
+                            return carFlowService.getNewestCarFlowByStartTimeIdForConnection(connection.getId(), startTimeId).getCarFlow();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                         return null;
-                    }).toList();
+                    }).toList());
 
-            optimizationRequest.setCarFlowPerMinute(carFlows);
+            Collections.reverse(carFlows);
+            optimizationRequest.setExpectedCarFlow(carFlows);
 
             //  -----------------------------  lights  -----------------------------
-            List<String> lights = crossroad.getTrafficLightIds();
 
-            optimizationRequest.setLightsCount(lights.size());
-
-            //  -----------------------------  connections  -----------------------------
-            HashMap<String, List<String>> roadsMap = new HashMap<>();
-            connections
+            List<List<Integer>> connectionsLights = new ArrayList<>(connections
                     .stream()
                     .map(connectionService::getConnectionById)
-                    .forEach(connection -> {
-                        List<String> currentSources = roadsMap.get(connection.getSourceId());
-                        if (currentSources == null) {
-                            roadsMap.put(connection.getSourceId(), Collections.singletonList(connection.getId()));
-                        } else {
-                            List<String> newSources = new ArrayList<>(currentSources);
-                            newSources.add(connection.getId());
-                            roadsMap.put(connection.getSourceId(), newSources);
+                    .sorted(Comparator.comparingInt(Connection::getIndex))
+                    .map(connection -> {
+                        List<Integer> lights = new ArrayList<>(connection.getTrafficLightIds()
+                                .stream()
+                                .map(trafficLightService::getTrafficLightById)
+                                .map(TrafficLight::getIndex)
+                                .toList());
+                        while (lights.size() < 3) {
+                            lights.add(0);
                         }
-                    });
+                        return lights;
+                    })
+                    .toList());
 
-            List<List<Integer>> connections_ = new ArrayList<>();
-            for (int i = 0; i < crossroad.getRoadIds().size(); i++) {
-                connections_.add(new ArrayList<>());
-            }
+            List<String> lights = crossroad.getTrafficLightIds();
 
-            int maxConnectionsFromOneEntrance = 0;
-            for (String sourceId : roadsMap.keySet()) {
-                maxConnectionsFromOneEntrance = Math.max(maxConnectionsFromOneEntrance, roadsMap.get(sourceId).size());
-                for (String connectionId : roadsMap.get(sourceId)) {
-                    connections_
-                            .get(roadService.getRoadById(sourceId).getIndex() - 1)
-                            .add(connectionService.getConnectionById(connectionId).getIndex());
-                }
-            }
-            for (List<Integer> sources : connections_) {
-                while (sources.size() < maxConnectionsFromOneEntrance) {
-                    sources.add(-1);
-                }
-            }
-            optimizationRequest.setConnections(connections_);
-
-            optimizationRequest.setMaxConnectionsFromOneEntrance(maxConnectionsFromOneEntrance);
-
-            //  -----------------------------  intermediate capacities  -----------------------------
-
-            List<List<Integer>> intermediatesCapacities = new ArrayList<>();
-
-            //TODO
-
-            optimizationRequest.setIntermediatesCapacities(intermediatesCapacities);
-            optimizationRequest.setIntermediatesCount(intermediatesCapacities.size());
+            Collections.reverse(connectionsLights);
+            optimizationRequest.setConnectionLights(connectionsLights);
+            optimizationRequest.setLightCount(lights.size());
 
             //  -----------------------------  fixed values  -----------------------------
 
             optimizationRequest.setTimeUnitsInMinute(60);
-            optimizationRequest.setNumberOfTimeUnits(60);
-            optimizationRequest.setScaling(3);
+            optimizationRequest.setTimeUnitCount(60);
+            optimizationRequest.setScaling(scaling);
 
             List<TrafficLightDirection> setLightsType = crossroad.getTrafficLightIds().stream()
                     .map(trafficLightService::getTrafficLightById)
                     .map(TrafficLight::getDirection)
                     .toList();
-            optimizationRequest.setLightsType(setLightsType);
+            optimizationRequest.setLightsTypes(setLightsType);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -267,8 +283,8 @@ public class OptimizationUtils {
         List<List<Integer>> sequences = new ArrayList<>();
         Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
         int lightInterval = (int) Math.floor(60.0 / crossroad.getTrafficLightIds().size());
-        int lightsCount = crossroad.getTrafficLightIds().size();
-        for (int i = 0; i < lightsCount; i++) {
+        int lightCount = crossroad.getTrafficLightIds().size();
+        for (int i = 0; i < lightCount; i++) {
             List<Integer> list = new ArrayList<>();
             for (int j = 0; j < 60; j++) {
                 if (lightInterval * i <= j && j < lightInterval * (i + 1)) {
@@ -289,19 +305,14 @@ public class OptimizationUtils {
     }
 
     public void addOptimizationResultsToDb(String crossroadId, String startTimeId, ResponseEntity<String> result) throws JsonProcessingException {
-        LinkedHashMap<String, List<Integer>> mapping
-                = (LinkedHashMap<String, List<Integer>>) new ObjectMapper().readValue(result.getBody(), HashMap.class)
-                .get("lights_sequences");
-        List<List<Integer>> sequences = new ArrayList<>();
-        for (int i = 1; i <= mapping.size(); i++) {
-            sequences.add(mapping.get(String.valueOf(i)));
-        }
+        List<List<Integer>> resultList = objectMapper.readValue(result.getBody(), new TypeReference<>() {
+        });
 
         optimizationService.addOptimization(
                 crossroadId,
                 optimizationService.getFreeVersionNumber(crossroadId),
                 startTimeId,
-                sequences
+                resultList
         );
     }
 }

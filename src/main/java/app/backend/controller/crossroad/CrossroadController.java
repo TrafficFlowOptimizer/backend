@@ -8,15 +8,15 @@ import app.backend.document.user.Role;
 import app.backend.document.user.User;
 import app.backend.request.crossroad.CrossroadDescriptionRequest;
 import app.backend.response.crossroad.CrossroadDescriptionResponse;
-import app.backend.service.CrossroadService;
-import app.backend.service.RoadService;
+import app.backend.service.CarFlowService;
 import app.backend.service.CollisionService;
 import app.backend.service.ConnectionService;
-import app.backend.service.TrafficLightService;
-import app.backend.service.OptimizationService;
-import app.backend.service.StartTimeService;
-import app.backend.service.CarFlowService;
+import app.backend.service.CrossroadService;
 import app.backend.service.ImageService;
+import app.backend.service.OptimizationService;
+import app.backend.service.RoadService;
+import app.backend.service.StartTimeService;
+import app.backend.service.TrafficLightService;
 import app.backend.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -105,7 +105,7 @@ public class CrossroadController {
         );
         User user = userService.getUserById(userId);
 
-        if (user.getRole().equals(Role.ADMIN)){
+        if (user.getRole().equals(Role.ADMIN)) {
             return ResponseEntity
                     .ok()
                     .body(crossroadService.getAllCrossroads());
