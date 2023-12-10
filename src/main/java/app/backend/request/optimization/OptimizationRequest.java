@@ -26,9 +26,11 @@ public class OptimizationRequest {
     private List<List<Integer>> collisionConnections;
     private List<Integer> isConnectionFromIntermediate;
 
+    private List<List<Integer>> previousResults;
+
     public OptimizationRequest() {
         this(0, 0, new ArrayList<>(), 0, 0, 0, 0, 0, 0, new ArrayList<>(), new ArrayList<>(),
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
     public OptimizationRequest(
@@ -48,7 +50,8 @@ public class OptimizationRequest {
             List<List<Integer>> roadConnectionsOut,
             List<Integer> isCollisionImportant,
             List<List<Integer>> collisionConnections,
-            List<Integer> isConnectionFromIntermediate
+            List<Integer> isConnectionFromIntermediate,
+            List<List<Integer>> previousResults
     ) {
         this.optimizationTime = optimizationTime;
         this.scaling = scaling;
@@ -67,6 +70,7 @@ public class OptimizationRequest {
         this.isCollisionImportant = isCollisionImportant;
         this.collisionConnections = collisionConnections;
         this.isConnectionFromIntermediate = isConnectionFromIntermediate;
+        this.previousResults = previousResults;
     }
 
 
@@ -204,5 +208,13 @@ public class OptimizationRequest {
 
     public void setIsConnectionFromIntermediate(List<Integer> isConnectionFromIntermediate) {
         this.isConnectionFromIntermediate = isConnectionFromIntermediate;
+    }
+
+    public List<List<Integer>> getPreviousResults() {
+        return previousResults;
+    }
+
+    public void setPreviousResults(List<List<Integer>> previousResults) {
+        this.previousResults = previousResults;
     }
 }

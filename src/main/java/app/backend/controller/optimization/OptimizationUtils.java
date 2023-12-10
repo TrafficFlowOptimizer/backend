@@ -2,6 +2,7 @@ package app.backend.controller.optimization;
 
 import app.backend.document.Collision;
 import app.backend.document.Connection;
+import app.backend.document.Optimization;
 import app.backend.document.crossroad.Crossroad;
 import app.backend.document.light.TrafficLight;
 import app.backend.document.light.TrafficLightDirection;
@@ -241,6 +242,17 @@ public class OptimizationUtils {
                     .map(TrafficLight::getDirection)
                     .toList();
             optimizationRequest.setLightsTypes(setLightsType);
+
+            //  -----------------------------  previous results  -----------------------------
+
+            Optimization previousOptimization = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, startTimeId);
+            if(previousOptimization==null) {
+                optimizationRequest.setPreviousResults(null);
+            }
+            else{
+                optimizationRequest.setPreviousResults(previousOptimization.getResults());
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();
