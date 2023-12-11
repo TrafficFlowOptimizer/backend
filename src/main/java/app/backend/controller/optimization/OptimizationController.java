@@ -49,6 +49,7 @@ import static org.springframework.http.HttpStatus.EXPECTATION_FAILED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 
 @RestController
@@ -134,7 +135,7 @@ public class OptimizationController {
         String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
 
         //TODO: mocked optimizer FOR DEVELOPMENT ONLY!
-        boolean mocked = true;
+        boolean mocked = false;
         OptimizationResultMock optimizationResultMock = null;
         switch (optimizationTime) {
             case 1 -> optimizationResultMock = RANDOM;
@@ -167,19 +168,15 @@ public class OptimizationController {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
             optimizationUtils.addOptimizationResultsToDb(crossroadId, startTimeId, response);
         } catch (HttpClientErrorException exception) {
-            return ResponseEntity
-                    .status(BAD_REQUEST)
-                    .build();
-        } catch (HttpServerErrorException exception) {
-            if (exception.getStatusCode().value() == 515) {
+            if (exception.getStatusCode().value() == 422) {
                 return ResponseEntity
-                        .status(515)
+                        .status(UNPROCESSABLE_ENTITY)
                         .build();
             }
             return ResponseEntity
-                    .status(SERVICE_UNAVAILABLE)
+                    .status(BAD_REQUEST)
                     .build();
-        } catch (JsonProcessingException | ResourceAccessException exception) {
+        } catch (HttpServerErrorException | JsonProcessingException | ResourceAccessException exception) {
             return ResponseEntity
                     .status(SERVICE_UNAVAILABLE)
                     .build();
