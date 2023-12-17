@@ -69,13 +69,12 @@ public class OptimizationUtils {
     private final OptimizationService optimizationService;
     private final StartTimeService startTimeService;
     private final ObjectMapper objectMapper;
-
+    @Value("${optimizer.optimization_time_period_scaling}")
+    private final int OPTIMIZATION_TIME_PERIOD_SCALING = 3;
     @Value("${optimizer.host}")
     private String OPTIMIZER_HOST;
     @Value("${optimizer.port}")
     private int OPTIMIZER_PORT;
-    @Value("${optimizer.optimization_time_period_scaling}")
-    private final int OPTIMIZATION_TIME_PERIOD_SCALING = 3;
     @Value("${optimizer.password}")
     private String OT_PASSWORD;
 
@@ -171,11 +170,19 @@ public class OptimizationUtils {
     }
 
     public ResponseEntity<Void> addTrafficLightsCycles(MultipartFile file, String crossroadId) {
+        Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
+        if (crossroad == null) {
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        }
+
         int version = optimizationService.getFreeVersionNumber(crossroadId);
         List<String> startTimeIds = startTimeService.getAllStartTimeIds();
+        int trafficLightsCount = crossroad.getTrafficLightIds().size();
         List<List<Integer>> trafficLightsCycles;
         try {
-            trafficLightsCycles = parseTrafficLightsCyclesFile(file);
+            trafficLightsCycles = parseTrafficLightsCyclesFile(file, trafficLightsCount);
         } catch (IOException e) {
             return ResponseEntity
                     .status(INTERNAL_SERVER_ERROR)
@@ -201,11 +208,19 @@ public class OptimizationUtils {
     }
 
     public ResponseEntity<Void> addTrafficLightsCycles(MultipartFile file, String crossroadId, Day day, Hour hour) {
+        Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
+        if (crossroad == null) {
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        }
+
         int version = optimizationService.getFreeVersionNumber(crossroadId);
         String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
+        int trafficLightsCount = crossroad.getTrafficLightIds().size();
         List<List<Integer>> trafficLightsCycles;
         try {
-            trafficLightsCycles = parseTrafficLightsCyclesFile(file);
+            trafficLightsCycles = parseTrafficLightsCyclesFile(file, trafficLightsCount);
         } catch (IOException e) {
             return ResponseEntity
                     .status(INTERNAL_SERVER_ERROR)
@@ -228,11 +243,16 @@ public class OptimizationUtils {
                 .build();
     }
 
-    private List<List<Integer>> parseTrafficLightsCyclesFile(MultipartFile file) throws IOException, HttpClientErrorException {
+    private List<List<Integer>> parseTrafficLightsCyclesFile(
+            MultipartFile file,
+            int trafficLightsCount
+    ) throws IOException, HttpClientErrorException {
         List<List<Integer>> trafficLightsCycles = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line;
+            int linesCount = 0;
             while ((line = br.readLine()) != null) {
+                linesCount++;
                 String[] values = line.split(",");
                 if (values.length != 60) {
                     throw new HttpClientErrorException(BAD_REQUEST);
@@ -243,6 +263,9 @@ public class OptimizationUtils {
                                 .map(Integer::valueOf)
                                 .toList()
                 );
+            }
+            if (linesCount != trafficLightsCount) {
+                throw new HttpClientErrorException(BAD_REQUEST);
             }
         }
 
@@ -506,7 +529,8 @@ public class OptimizationUtils {
             String startTimeId,
             HttpResponse<String> result
     ) throws JsonProcessingException {
-        List<List<Integer>> resultList = objectMapper.readValue(result.body(), new TypeReference<>() {});
+        List<List<Integer>> resultList = objectMapper.readValue(result.body(), new TypeReference<>() {
+        });
 
         optimizationService.addOptimization(
                 crossroadId,
