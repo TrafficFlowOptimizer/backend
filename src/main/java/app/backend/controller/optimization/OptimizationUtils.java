@@ -100,16 +100,16 @@ public class OptimizationUtils {
     }
 
     public ResponseEntity<Void> orderOptimization(String crossroadId,
-                                                         int optimizationTime,
-                                                         Day day,
-                                                         Hour hour) {
+                                                  int optimizationTime,
+                                                  Day day,
+                                                  Hour hour) {
         String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
 
         //TODO: mocked optimizer FOR DEVELOPMENT ONLY!
-        boolean mocked = false;
+        boolean mocked = true;
         OptimizationResultMock optimizationResultMock = null;
         switch (optimizationTime) {
-            case 1 -> optimizationResultMock = RANDOM;
+            case 10 -> optimizationResultMock = RANDOM;
             case -1 -> mocked = false;
             default -> optimizationResultMock = LIGHT_BY_LIGHT;
         }
@@ -444,7 +444,7 @@ public class OptimizationUtils {
         HashMap<Integer, List<TrafficLight>> connectionsLightsMap = new HashMap<>();
         HashMap<Integer, List<TrafficLight>> roadsLightsMap = new HashMap<>();
         HashMap<Integer, TrafficLightDirection> lightsDirectionMap = new HashMap<>();
-        HashMap<Integer, Double> connectionsFlowMap = new HashMap<>();
+        HashMap<Integer, Integer> connectionsFlowMap = carFlowService.getConnectionIdxToCurrentCarFlowMapByStartTimeIdForCrossroad(crossroadId, startTimeId);
         HashMap<Integer, Integer> connectionsRoadMap = new HashMap<>();
         HashMap<Integer, Double> roadsFlowMap = new HashMap<>();
         HashMap<Integer, Double> connectionChanceToPickMap = new HashMap<>();
@@ -457,182 +457,124 @@ public class OptimizationUtils {
                         .build();
             }
 
-
-            //  -----------------------------  connectionsFlowMap  -----------------------------
-
-            crossroad.getConnectionIds()
-                    .stream()
-                    .map(connectionService::getConnectionById)
-                    .forEach(connection ->
-                            connectionsFlowMap.put(
-                                    connection.getIndex(),
-                                    (double) carFlowService.getNewestCarFlowByStartTimeIdForConnection(connection.getId(), startTimeId).getCarFlow()
-                            )
-                    );
-
-            //  -----------------------------  lightsSequenceMapCurrent  -----------------------------
-
             Optimization optimizationCurrent = optimizationService.getNewestOptimizationByCrossroadId(crossroadId, startTimeId);
+            Optimization optimizationPrevious = optimizationService.getSecondNewestOptimizationByCrossroadId(crossroadId, startTimeId);
             if (optimizationCurrent == null) {
                 return ResponseEntity
                         .status(NOT_FOUND)
                         .build();
             }
+
+
+//            getTrafficLightIds
+
             List<List<Integer>> resultCurrent = optimizationCurrent.getResults();
 
-            crossroad.getTrafficLightIds()
+            List<TrafficLight> trafficLightStream = crossroad.getTrafficLightIds()
                     .stream()
-                    .map(trafficLightService::getTrafficLightById)
-                    .forEach(trafficLight -> lightsSequenceMapCurrent.put(
-                                    trafficLight.getIndex(),
-                                    resultCurrent.get(trafficLight.getIndex() - 1)
-                            )
-                    );
-
-            //  -----------------------------  connectionsFlowRatioMapCurrent  -----------------------------
-
-            crossroad.getConnectionIds()
-                    .stream()
-                    .map(connectionService::getConnectionById)
-                    .forEach(connection -> connectionsFlowRatioMapCurrent.put(
-                                    connection.getIndex(),
-                                    connection.getTrafficLightIds()
-                                            .stream()
-                                            .map(trafficLightId ->
-                                                    lightsSequenceMapCurrent.get(trafficLightService.getTrafficLightById(trafficLightId).getIndex())
-                                                            .stream()
-                                                            .mapToInt(Integer::intValue)
-                                                            .sum())
-                                            .mapToInt(Integer::intValue)
-                                            .sum() / connectionsFlowMap.get(connection.getIndex())
-                            )
-                    );
-
-            //  -----------------------------  lightsSequenceMapPrevious  -----------------------------
-
-            Optimization optimizationPrevious = optimizationService.getSecondNewestOptimizationByCrossroadId(crossroadId, startTimeId);
-            if (optimizationPrevious != null) {
-                List<List<Integer>> resultPrevious = optimizationPrevious.getResults();
-
-                crossroad.getTrafficLightIds()
-                        .stream()
-                        .map(trafficLightService::getTrafficLightById)
-                        .forEach(trafficLight -> lightsSequenceMapPrevious.put(
-                                        trafficLight.getIndex(),
-                                        resultPrevious.get(trafficLight.getIndex() - 1)
-                                )
+                    .map(trafficLightService::getTrafficLightById).toList();
+            trafficLightStream.forEach(trafficLight -> {
+                        lightsSequenceMapCurrent.put(
+                                trafficLight.getIndex(),
+                                resultCurrent.get(trafficLight.getIndex() - 1)
                         );
-            }
+                        lightsDirectionMap.put(trafficLight.getIndex(), trafficLight.getDirection());
+                    }
+            );
 
-            //  -----------------------------  connectionsFlowRatioMapPrevious  -----------------------------
 
-            if (optimizationPrevious != null) {
-                crossroad.getConnectionIds()
-                        .stream()
-                        .map(connectionService::getConnectionById)
-                        .forEach(connection -> connectionsFlowRatioMapPrevious.put(
-                                        connection.getIndex(),
-                                        connection.getTrafficLightIds()
-                                                .stream()
-                                                .map(trafficLightId ->
-                                                        lightsSequenceMapPrevious.get(trafficLightService.getTrafficLightById(trafficLightId).getIndex())
-                                                                .stream()
-                                                                .mapToInt(Integer::intValue)
-                                                                .sum())
-                                                .mapToInt(Integer::intValue)
-                                                .sum() / connectionsFlowMap.get(connection.getIndex())
-                                )
+//            getConnectionIds
+            List<Connection> connectionStream = crossroad.getConnectionIds()
+                    .stream()
+                    .map(connectionService::getConnectionById).toList();
+            connectionStream.forEach(connection ->
+                    {
+                        connectionsFlowRatioMapCurrent.put(
+                                connection.getIndex(),
+                                connection.getTrafficLightIds()
+                                        .stream()
+                                        .map(trafficLightId ->
+                                                lightsSequenceMapCurrent.get(trafficLightService.getTrafficLightById(trafficLightId).getIndex())
+                                                        .stream()
+                                                        .mapToInt(Integer::intValue)
+                                                        .sum())
+                                        .mapToInt(Integer::intValue)
+                                        .sum() / (double) connectionsFlowMap.get(connection.getIndex())
                         );
-            }
+                        connectionsLightsMap.put(
+                                connection.getIndex(),
+                                connection.getTrafficLightIds()
+                                        .stream()
+                                        .map(trafficLightService::getTrafficLightById).toList()
+                        );
+                        connectionsRoadMap.put(connection.getIndex(), roadService.getRoadById(connection.getSourceId()).getIndex());
+                    }
+            );
 
-            //  -----------------------------  connectionsLightsMap  -----------------------------
+//            getRoadIds
 
-            crossroad.getConnectionIds()
+            List<Road> roadStream = crossroad.getRoadIds()
                     .stream()
-                    .map(connectionService::getConnectionById)
-                    .forEach(connection -> connectionsLightsMap.put(
-                                    connection.getIndex(),
-                                    connection.getTrafficLightIds()
-                                            .stream()
-                                            .map(trafficLightService::getTrafficLightById).toList()
-                            )
-                    );
-
-            //  -----------------------------  roadsLightsMap  -----------------------------
-
-            crossroad.getRoadIds()
-                    .stream()
-                    .map(roadService::getRoadById)
-                    .forEach(road -> roadsLightsMap.put(
-                                    road.getIndex(),
-                                    crossroad.getConnectionIds()
-                                            .stream()
-                                            .map(connectionService::getConnectionById)
-                                            .filter(connection -> Objects.equals(connection.getSourceId(), road.getId()))
-                                            .map(Connection::getTrafficLightIds)
-                                            .flatMap(List::stream)
-                                            .distinct()
-                                            .map(trafficLightService::getTrafficLightById)
-                                            .toList()
-                            )
-                    );
-
-            //  -----------------------------  lightsDirectionMap  -----------------------------
-
-            crossroad.getTrafficLightIds()
-                    .stream()
-                    .map(trafficLightService::getTrafficLightById)
-                    .forEach(trafficLight -> lightsDirectionMap.put(trafficLight.getIndex(), trafficLight.getDirection()));
-
-            //  -----------------------------  connectionsRoadMap  -----------------------------
-
-            crossroad.getConnectionIds()
-                    .stream()
-                    .map(connectionService::getConnectionById)
-                    .forEach(connection -> connectionsRoadMap.put(connection.getIndex(), roadService.getRoadById(connection.getSourceId()).getIndex()));
-
-            //  -----------------------------  roadsFlowMap  -----------------------------
-
-            crossroad.getRoadIds()
-                    .stream()
-                    .map(roadService::getRoadById)
-                    .forEach(road -> {
+                    .map(roadService::getRoadById).toList();
+            roadStream.forEach(road -> {
+                        roadsLightsMap.put(
+                                road.getIndex(),
+                                crossroad.getConnectionIds()
+                                        .stream()
+                                        .map(connectionService::getConnectionById)
+                                        .filter(connection -> Objects.equals(connection.getSourceId(), road.getId()))
+                                        .map(Connection::getTrafficLightIds)
+                                        .flatMap(List::stream)
+                                        .distinct()
+                                        .map(trafficLightService::getTrafficLightById)
+                                        .toList()
+                        );
                         double summedFlow = connectionService.getConnectionsOutByRoadId(crossroadId, road.getId())
                                 .stream()
-                                .map(connection ->
-                                        carFlowService.getNewestCarFlowByStartTimeIdForConnection(
-                                                connection.getId(),
-                                                startTimeId
-                                        ).getCarFlow()
-                                )
+                                .map(connection -> connectionsFlowMap.get(connection.getIndex()))
                                 .mapToInt(Integer::intValue)
                                 .sum();
                         roadsFlowMap.put(road.getIndex(), summedFlow);
-                    });
-
-            //  -----------------------------  connectionChanceToPickMap  -----------------------------
-
-            crossroad.getRoadIds()
-                    .stream()
-                    .map(roadService::getRoadById)
-                    .forEach(road -> {
-                        HashMap<Integer, Double> connectionCarFlowMap = new HashMap<>();
+                        HashMap<Integer, Integer> connectionCarFlowMap = new HashMap<>();
                         connectionService.getConnectionsOutByRoadId(crossroadId, road.getId())
                                 .forEach(connection ->
                                         connectionCarFlowMap.put(
                                                 connection.getIndex(),
-                                                (double) carFlowService.getNewestCarFlowByStartTimeIdForConnection(
-                                                        connection.getId(),
-                                                        startTimeId
-                                                ).getCarFlow()
+                                                connectionsFlowMap.get(connection.getIndex())
                                         )
                                 );
                         for (int connectionIndex : connectionCarFlowMap.keySet()) {
                             connectionChanceToPickMap.put(
                                     connectionIndex,
-                                    connectionCarFlowMap.get(connectionIndex) / roadsFlowMap.get(road.getIndex()));
+                                    connectionCarFlowMap.get(connectionIndex) / (double) roadsFlowMap.get(road.getIndex()));
                         }
-                    });
+                    }
+            );
+
+
+            if (optimizationPrevious != null) {
+                List<List<Integer>> resultPrevious = optimizationPrevious.getResults();
+
+                trafficLightStream.forEach(trafficLight -> lightsSequenceMapPrevious.put(
+                                trafficLight.getIndex(),
+                                resultPrevious.get(trafficLight.getIndex() - 1)
+                        )
+                );
+                connectionStream.forEach(connection -> connectionsFlowRatioMapPrevious.put(
+                                connection.getIndex(),
+                                connection.getTrafficLightIds()
+                                        .stream()
+                                        .map(trafficLightId ->
+                                                lightsSequenceMapPrevious.get(trafficLightService.getTrafficLightById(trafficLightId).getIndex())
+                                                        .stream()
+                                                        .mapToInt(Integer::intValue)
+                                                        .sum())
+                                        .mapToInt(Integer::intValue)
+                                        .sum() / (double) connectionsFlowMap.get(connection.getIndex())
+                        )
+                );
+            }
+
 
         } catch (Exception exception) {
             System.out.println(exception);

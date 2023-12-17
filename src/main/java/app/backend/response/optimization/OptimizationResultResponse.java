@@ -15,7 +15,7 @@ public class OptimizationResultResponse {
     private HashMap<Integer, List<TrafficLight>> connectionsLightsMap;
     private HashMap<Integer, List<TrafficLight>> roadsLightsMap;
     private HashMap<Integer, TrafficLightDirection> lightsDirectionMap;
-    private HashMap<Integer, Double> connectionsFlowMap;
+    private HashMap<Integer, Integer> connectionsFlowMap;
     private HashMap<Integer, Integer> connectionsRoadMap;
     private HashMap<Integer, Double> roadsFlowMap;
     private HashMap<Integer, Double> connectionChanceToPickMap;
@@ -27,7 +27,7 @@ public class OptimizationResultResponse {
                                       HashMap<Integer, List<TrafficLight>> connectionsLightsMap,
                                       HashMap<Integer, List<TrafficLight>> roadsLightsMap,
                                       HashMap<Integer, TrafficLightDirection> lightsDirectionMap,
-                                      HashMap<Integer, Double> connectionsFlowMap,
+                                      HashMap<Integer, Integer> connectionsFlowMap,
                                       HashMap<Integer, Integer> connectionsRoadMap,
                                       HashMap<Integer, Double> roadsFlowMap,
                                       HashMap<Integer, Double> connectionChanceToPickMap) {
@@ -100,11 +100,11 @@ public class OptimizationResultResponse {
         this.lightsDirectionMap = lightsDirectionMap;
     }
 
-    public HashMap<Integer, Double> getConnectionsFlowMap() {
+    public HashMap<Integer, Integer> getConnectionsFlowMap() {
         return connectionsFlowMap;
     }
 
-    public void setConnectionsFlowMap(HashMap<Integer, Double> connectionsFlowMap) {
+    public void setConnectionsFlowMap(HashMap<Integer, Integer> connectionsFlowMap) {
         this.connectionsFlowMap = connectionsFlowMap;
     }
 

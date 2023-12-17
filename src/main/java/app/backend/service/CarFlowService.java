@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -15,10 +17,12 @@ public class CarFlowService {
 
     private final CarFlowRepository carFlowRepository;
     ConnectionService connectionService;
+    CrossroadService crossroadService;
 
     @Autowired
-    public CarFlowService(CarFlowRepository carFlowRepository, ConnectionService connectionService) {
+    public CarFlowService(CarFlowRepository carFlowRepository, CrossroadService crossroadService, ConnectionService connectionService) {
         this.connectionService = connectionService;
+        this.crossroadService = crossroadService;
         this.carFlowRepository = carFlowRepository;
     }
 
@@ -91,11 +95,32 @@ public class CarFlowService {
         return connectionService.getConnectionById(connectionId).getCarFlowIds()
                 .stream()
                 .map(carFlowRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .filter(carFlow ->
-                        Objects.equals(carFlow.getStartTimeId(), startTimeId))
+                .flatMap(Optional::stream)
+                .filter(carFlow -> Objects.equals(carFlow.getStartTimeId(), startTimeId))
                 .max(Comparator.comparing(CarFlow::getVersion))
                 .orElse(null);
+    }
+
+    public HashMap<Integer, Integer> getConnectionIdxToCurrentCarFlowMapByStartTimeIdForCrossroad(String crossroadId, String startTimeId) {
+        HashMap<Integer, Integer> response = new HashMap<>();
+        crossroadService.getCrossroadById(crossroadId).getConnectionIds()
+                .stream()
+                .map(connectionService::getConnectionById)
+                .forEach(connection -> {
+                    List<CarFlow> carFlowList = connection.getCarFlowIds().stream()
+                            .map(carFlowRepository::findById)
+                            .flatMap(Optional::stream)
+                            .filter(carFlow -> Objects.equals(carFlow.getStartTimeId(), startTimeId))
+                            .sorted(Comparator.comparing(CarFlow::getVersion).reversed())
+                            .toList();
+                    double summedCarFlow = 0;
+                    double weight = 0;
+                    for (int i = 0; i < carFlowList.size(); i++) {
+                        summedCarFlow += carFlowList.get(i).getCarFlow() / (double) (i + 1);
+                        weight += 1 / (double) (i + 1);
+                    }
+                    response.put(connection.getIndex(), (int) Math.round(summedCarFlow / weight));
+                });
+        return response;
     }
 }
