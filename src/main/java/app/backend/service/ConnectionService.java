@@ -109,7 +109,7 @@ public class ConnectionService {
                 .map(connectionRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .filter(connection -> Objects.equals(connection.getSourceId(), roadId))
+                .filter(connection -> connection.getSourceId().equals(roadId))
                 .toList();
     }
 

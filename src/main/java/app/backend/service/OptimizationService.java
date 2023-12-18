@@ -90,7 +90,7 @@ public class OptimizationService {
     public Iterable<Optimization> getOptimizationsByCrossroadIdAndStartTime(String crossroadId, String startTimeID) {
         return StreamSupport
                 .stream(optimizationRepository.findAllByCrossroadId(crossroadId).spliterator(), false)
-                .filter(optimization -> Objects.equals(optimization.getStartTimeId(), startTimeID))
+                .filter(optimization -> optimization.getStartTimeId().equals(startTimeID))
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 
