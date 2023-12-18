@@ -30,9 +30,12 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -49,6 +52,7 @@ import static app.backend.controller.optimization.OptimizationResultMock.LIGHT_B
 import static app.backend.controller.optimization.OptimizationResultMock.RANDOM;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.EXPECTATION_FAILED;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
@@ -65,16 +69,14 @@ public class OptimizationUtils {
     private final OptimizationService optimizationService;
     private final StartTimeService startTimeService;
     private final ObjectMapper objectMapper;
-
-
+    @Value("${optimizer.optimization_time_period_scaling}")
+    private final int OPTIMIZATION_TIME_PERIOD_SCALING = 3;
     @Value("${optimizer.host}")
     private String OPTIMIZER_HOST;
     @Value("${optimizer.port}")
     private int OPTIMIZER_PORT;
-    @Value("${optimizer.optimization_time_period_scaling}")
-    private final int OPTIMIZATION_TIME_PERIOD_SCALING = 3;
     @Value("${optimizer.password}")
-    String OT_PASSWORD;
+    private String OT_PASSWORD;
 
     @Autowired
     public OptimizationUtils(
@@ -99,10 +101,12 @@ public class OptimizationUtils {
         this.objectMapper = objectMapper;
     }
 
-    public ResponseEntity<Void> orderOptimization(String crossroadId,
-                                                  int optimizationTime,
-                                                  Day day,
-                                                  Hour hour) {
+    public ResponseEntity<Void> orderOptimization(
+            String crossroadId,
+            int optimizationTime,
+            Day day,
+            Hour hour
+    ) {
         String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
 
         //TODO: mocked optimizer FOR DEVELOPMENT ONLY!
@@ -127,7 +131,6 @@ public class OptimizationUtils {
                     .status(NOT_FOUND)
                     .build();
         }
-
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -164,6 +167,109 @@ public class OptimizationUtils {
         return ResponseEntity
                 .status(OK)
                 .build();
+    }
+
+    public ResponseEntity<Void> addTrafficLightsCycles(MultipartFile file, String crossroadId) {
+        Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
+        if (crossroad == null) {
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        }
+
+        int version = optimizationService.getFreeVersionNumber(crossroadId);
+        List<String> startTimeIds = startTimeService.getAllStartTimeIds();
+        int trafficLightsCount = crossroad.getTrafficLightIds().size();
+        List<List<Integer>> trafficLightsCycles;
+        try {
+            trafficLightsCycles = parseTrafficLightsCyclesFile(file, trafficLightsCount);
+        } catch (IOException e) {
+            return ResponseEntity
+                    .status(INTERNAL_SERVER_ERROR)
+                    .build();
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity
+                    .status(e.getStatusCode())
+                    .build();
+        }
+
+        startTimeIds.forEach(startTimeId ->
+                optimizationService.addOptimization(
+                        crossroadId,
+                        version,
+                        startTimeId,
+                        trafficLightsCycles
+                )
+        );
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
+
+    public ResponseEntity<Void> addTrafficLightsCycles(MultipartFile file, String crossroadId, Day day, Hour hour) {
+        Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
+        if (crossroad == null) {
+            return ResponseEntity
+                    .status(NOT_FOUND)
+                    .build();
+        }
+
+        int version = optimizationService.getFreeVersionNumber(crossroadId);
+        String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
+        int trafficLightsCount = crossroad.getTrafficLightIds().size();
+        List<List<Integer>> trafficLightsCycles;
+        try {
+            trafficLightsCycles = parseTrafficLightsCyclesFile(file, trafficLightsCount);
+        } catch (IOException e) {
+            return ResponseEntity
+                    .status(INTERNAL_SERVER_ERROR)
+                    .build();
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity
+                    .status(e.getStatusCode())
+                    .build();
+        }
+
+        optimizationService.addOptimization(
+                crossroadId,
+                version,
+                startTimeId,
+                trafficLightsCycles
+        );
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
+
+    private List<List<Integer>> parseTrafficLightsCyclesFile(
+            MultipartFile file,
+            int trafficLightsCount
+    ) throws IOException, HttpClientErrorException {
+        List<List<Integer>> trafficLightsCycles = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            int linesCount = 0;
+            while ((line = br.readLine()) != null) {
+                linesCount++;
+                String[] values = line.split(",");
+                if (values.length != 60) {
+                    throw new HttpClientErrorException(BAD_REQUEST);
+                }
+
+                trafficLightsCycles.add(
+                        Arrays.stream(values)
+                                .map(Integer::valueOf)
+                                .toList()
+                );
+            }
+            if (linesCount != trafficLightsCount) {
+                throw new HttpClientErrorException(BAD_REQUEST);
+            }
+        }
+
+        return trafficLightsCycles;
     }
 
     private OptimizationRequest getOptimizationRequest(String crossroadId, String startTimeId, int time, int scaling) {
@@ -418,7 +524,11 @@ public class OptimizationUtils {
         );
     }
 
-    private void addOptimizationResultsToDb(String crossroadId, String startTimeId, HttpResponse<String> result) throws JsonProcessingException {
+    private void addOptimizationResultsToDb(
+            String crossroadId,
+            String startTimeId,
+            HttpResponse<String> result
+    ) throws JsonProcessingException {
         List<List<Integer>> resultList = objectMapper.readValue(result.body(), new TypeReference<>() {
         });
 
@@ -430,10 +540,11 @@ public class OptimizationUtils {
         );
     }
 
-    public ResponseEntity<OptimizationResultResponse> retrieveOptimizationResult(String crossroadId,
-                                                                                 Day day,
-                                                                                 Hour hour) {
-
+    public ResponseEntity<OptimizationResultResponse> retrieveOptimizationResult(
+            String crossroadId,
+            Day day,
+            Hour hour
+    ) {
         String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
 
         HashMap<Integer, List<Integer>> lightsSequenceMapCurrent = new HashMap<>();

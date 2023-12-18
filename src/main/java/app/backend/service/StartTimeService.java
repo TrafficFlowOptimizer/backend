@@ -7,6 +7,8 @@ import app.backend.repository.StartTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StartTimeService {
 
@@ -63,6 +65,13 @@ public class StartTimeService {
 
     public StartTimeRepository startTimeRepository() {
         return startTimeRepository;
+    }
+
+    public List<String> getAllStartTimeIds() {
+        return startTimeRepository.findAll()
+                .stream()
+                .map(StartTime::getId)
+                .toList();
     }
 
 }
