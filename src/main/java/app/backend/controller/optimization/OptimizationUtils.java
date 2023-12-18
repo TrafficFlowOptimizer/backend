@@ -522,7 +522,7 @@ public class OptimizationUtils {
                                 crossroad.getConnectionIds()
                                         .stream()
                                         .map(connectionService::getConnectionById)
-                                        .filter(connection -> Objects.equals(connection.getSourceId(), road.getId()))
+                                        .filter(connection -> connection.getSourceId().equals(road.getId()))
                                         .map(Connection::getTrafficLightIds)
                                         .flatMap(List::stream)
                                         .distinct()

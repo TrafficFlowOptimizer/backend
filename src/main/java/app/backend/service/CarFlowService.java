@@ -96,13 +96,14 @@ public class CarFlowService {
                 .stream()
                 .map(carFlowRepository::findById)
                 .flatMap(Optional::stream)
-                .filter(carFlow -> Objects.equals(carFlow.getStartTimeId(), startTimeId))
+                .filter(carFlow -> carFlow.getStartTimeId().equals(startTimeId))
                 .max(Comparator.comparing(CarFlow::getVersion))
                 .orElse(null);
     }
 
     public HashMap<Integer, Integer> getConnectionIdxToCurrentCarFlowMapByStartTimeIdForCrossroad(String crossroadId, String startTimeId) {
         HashMap<Integer, Integer> response = new HashMap<>();
+
         crossroadService.getCrossroadById(crossroadId).getConnectionIds()
                 .stream()
                 .map(connectionService::getConnectionById)
@@ -110,7 +111,7 @@ public class CarFlowService {
                     List<CarFlow> carFlowList = connection.getCarFlowIds().stream()
                             .map(carFlowRepository::findById)
                             .flatMap(Optional::stream)
-                            .filter(carFlow -> Objects.equals(carFlow.getStartTimeId(), startTimeId))
+                            .filter(carFlow -> carFlow.getStartTimeId().equals(startTimeId))
                             .sorted(Comparator.comparing(CarFlow::getVersion).reversed())
                             .toList();
                     double summedCarFlow = 0;
