@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/optimization")
@@ -20,9 +20,7 @@ public class OptimizationController {
     private final OptimizationUtils optimizationUtils;
 
     @Autowired
-    public OptimizationController(
-            OptimizationUtils optimizationUtils
-    ) {
+    public OptimizationController(OptimizationUtils optimizationUtils) {
         this.optimizationUtils = optimizationUtils;
     }
 
@@ -73,5 +71,19 @@ public class OptimizationController {
             @RequestParam Hour hour
     ) {
         return optimizationUtils.retrieveOptimizationResult(crossroadId, day, hour);
+    }
+
+    @PostMapping(value = "/base")
+    public ResponseEntity<Void> addTrafficLightsCycles(
+            @RequestParam("file") MultipartFile trafficLightsCycles,
+            @RequestParam("crossroadId") String crossroadId,
+            @RequestParam(value = "day", required = false) Day day,
+            @RequestParam(value = "hour", required = false) Hour hour
+    ) {
+        if (day == null || hour == null) {
+            return optimizationUtils.addTrafficLightsCycles(trafficLightsCycles, crossroadId);
+        } else {
+            return optimizationUtils.addTrafficLightsCycles(trafficLightsCycles, crossroadId, day, hour);
+        }
     }
 }
