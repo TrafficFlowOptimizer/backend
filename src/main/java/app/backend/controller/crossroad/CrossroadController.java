@@ -261,12 +261,7 @@ public class CrossroadController {
             for (Hour hour : Hour.values()) {
                 String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
                 crossroad.getConnectionIds()
-                        .forEach(
-                                connIds -> connectionService.updateConnectionAddCarFlowId(
-                                        connIds,
-                                        carFlowService.addCarFlow(10, startTimeId, connIds).getId()
-                                )
-                        );
+                        .forEach(connId -> carFlowService.addCarFlow(10, startTimeId, connId));
                 crossroadService.getCrossroadById(crossroad.getId());
             }
         }
