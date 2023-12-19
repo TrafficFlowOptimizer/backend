@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -33,9 +32,9 @@ public class CarFlowService {
     }
 
     public CarFlow addCarFlow(int carFlow, String startTimeId, String connectionId) {
-
         Connection connection = connectionService.getConnectionById(connectionId);
         int version = connection.getCarFlowIds().size();
+
         CarFlow newCarFlow = new CarFlow(
                 carFlow,
                 startTimeId,
@@ -44,15 +43,21 @@ public class CarFlowService {
         newCarFlow = carFlowRepository.insert(newCarFlow);
 
         connection.getCarFlowIds().add(newCarFlow.getId());
-        connectionService.updateConnection(connectionId, connection.getIndex(), connection.getName(),
-                connection.getTrafficLightIds(), connection.getSourceId(), connection.getTargetId(),
-                connection.getCarFlowIds());
+        connectionService.updateConnection(
+                connectionId,
+                connection.getIndex(),
+                connection.getName(),
+                connection.getTrafficLightIds(),
+                connection.getSourceId(),
+                connection.getTargetId(),
+                connection.getCarFlowIds()
+        );
 
         return newCarFlow;
     }
 
     //Use only in populationg default Crossroad
-    public CarFlow addCarFlow(int carFlow, String startTimeId, Integer version) {
+    public CarFlow addCarFlow(int carFlow, String startTimeId, int version) {
         return carFlowRepository.insert(
                 new CarFlow(
                         carFlow,

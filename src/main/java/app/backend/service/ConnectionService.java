@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -84,24 +83,24 @@ public class ConnectionService {
         return connectionToUpdate;
     }
 
-    public Connection updateConnectionAddCarFlowId(
-            String id,
-            String carFlowID
-    ) {
-        Optional<Connection> connection = connectionRepository.findById(id);
-        if (connection.isEmpty()) {
-            return null;
-        }
-
-        Connection connectionToUpdate = connection.get();
-        List<String> carFlowIDs = connectionToUpdate.getCarFlowIds();
-        carFlowIDs.add(carFlowID);
-        connectionToUpdate.setCarFlowIds(carFlowIDs);
-
-        connectionRepository.save(connectionToUpdate);
-
-        return connectionToUpdate;
-    }
+//    public Connection updateConnectionAddCarFlowId(
+//            String id,
+//            String carFlowID
+//    ) {
+//        Optional<Connection> connection = connectionRepository.findById(id);
+//        if (connection.isEmpty()) {
+//            return null;
+//        }
+//
+//        Connection connectionToUpdate = connection.get();
+//        List<String> carFlowIDs = connectionToUpdate.getCarFlowIds();
+//        carFlowIDs.add(carFlowID);
+//        connectionToUpdate.setCarFlowIds(carFlowIDs);
+//
+//        connectionRepository.save(connectionToUpdate);
+//
+//        return connectionToUpdate;
+//    }
 
     public List<Connection> getConnectionsOutByRoadId(String crossroadId, String roadId) {
         return crossroadService.getCrossroadById(crossroadId).getConnectionIds()
