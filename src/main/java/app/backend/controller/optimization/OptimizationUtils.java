@@ -138,7 +138,7 @@ public class OptimizationUtils {
             requestBody = "{\"optimization_request\": " + requestBody + "}";
             HttpRequest request = HttpRequest.newBuilder()
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                    .uri(URI.create("http://" + OPTIMIZER_HOST + ":" + OPTIMIZER_PORT + "/optimization"))
+                    .uri(URI.create("http://" + OPTIMIZER_HOST + ":" + OPTIMIZER_PORT + "/optimization?password=" + OT_PASSWORD))
                     .header("Content-Type", "application/json")
                     .build();
 
@@ -305,10 +305,7 @@ public class OptimizationUtils {
                     .stream()
                     .map(collisionService::getCollisionById)
                     .sorted(Comparator.comparingInt(Collision::getIndex))
-                    .map(collision -> {
-                        return collision.getBothCanBeOn() ? 0 : 1;
-
-                    })
+                    .map(collision -> collision.getBothCanBeOn() ? 0 : 1)
                     .toList();
 
             List<List<Integer>> CollisionConnections = crossroad
@@ -436,7 +433,7 @@ public class OptimizationUtils {
 
             List<String> lights = crossroad.getTrafficLightIds();
 
-            Collections.reverse(connectionsLights);
+//            Collections.reverse(connectionsLights);
             optimizationRequest.setConnectionLights(connectionsLights);
             optimizationRequest.setLightCount(lights.size());
 
