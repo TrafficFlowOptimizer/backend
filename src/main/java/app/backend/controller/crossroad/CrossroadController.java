@@ -42,7 +42,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-
 @RestController
 @CrossOrigin("*")
 @RequestMapping(value = "/crossroad")
@@ -270,7 +269,6 @@ public class CrossroadController {
                 .ok()
                 .body(true);
     }
-
 
     @DeleteMapping(value = "/{crossroadId}")
     public ResponseEntity<Boolean> deleteCrossroad(

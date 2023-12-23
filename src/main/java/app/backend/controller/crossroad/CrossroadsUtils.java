@@ -12,7 +12,6 @@ import app.backend.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class CrossroadsUtils {
     private final CrossroadService crossroadService;

@@ -73,7 +73,6 @@ public class OptimizationRequest {
         this.previousResults = previousResults;
     }
 
-
     public int getOptimizationTime() {
         return optimizationTime;
     }

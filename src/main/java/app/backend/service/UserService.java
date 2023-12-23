@@ -41,7 +41,6 @@ public class UserService implements UserDetailsService {
                 .orElse(null);
     }
 
-
     public User addUser(String username, String email, String password) {
         try {
             return userRepository.insert(

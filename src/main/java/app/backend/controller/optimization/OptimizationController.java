@@ -63,7 +63,6 @@ public class OptimizationController {
         return optimizationUtils.orderOptimization(crossroadId, optimizationTime, day, hour);
     }
 
-
     @GetMapping(value = "/result/{crossroadId}")
     public ResponseEntity<OptimizationResultResponse> getOptimizationResult(
             @PathVariable String crossroadId,

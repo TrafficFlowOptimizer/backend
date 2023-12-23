@@ -64,7 +64,6 @@ class OptimizationServiceTest {
         optimizationService.addOptimization("0", 2, startTimeId3, results);
         optimizationService.addOptimization("1", 1, startTimeId3, results);
 
-
         assertEquals(1, optimizationService.getNewestOptimizationByCrossroadId("0", startTimeId1).getVersion());
         assertEquals(3, optimizationService.getNewestOptimizationByCrossroadId("0", startTimeId2).getVersion());
         assertEquals(1, optimizationService.getNewestOptimizationByCrossroadId("1", startTimeId3).getVersion());
@@ -89,7 +88,6 @@ class OptimizationServiceTest {
         optimizationService.addOptimization("0", 1, startTimeId2, results);
         optimizationService.addOptimization("0", 0, startTimeId2, results);
         optimizationService.addOptimization("0", 1, startTimeId3, results);
-
 
         assertEquals(0, optimizationService.getSecondNewestOptimizationByCrossroadId("0", startTimeId1).getVersion());
         assertEquals(0, optimizationService.getSecondNewestOptimizationByCrossroadId("0", startTimeId2).getVersion());

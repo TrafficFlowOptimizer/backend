@@ -64,7 +64,6 @@ public class OptimizationServiceTestOnMocks {
         assertEquals(6, result);
     }
 
-
     @Test
     public void testGetOptimizations_NoMatchingStartTime() {
         // Setup

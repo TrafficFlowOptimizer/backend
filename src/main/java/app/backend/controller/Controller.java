@@ -36,7 +36,6 @@ import static app.backend.document.light.TrafficLightDirection.ARROW_LEFT;
 import static app.backend.document.light.TrafficLightDirection.FORWARD;
 import static app.backend.document.light.TrafficLightDirection.LEFT;
 
-
 @RestController
 public class Controller {
 
@@ -217,14 +216,12 @@ public class Controller {
             ArrayList<String> carFlowsIDsTMP = new ArrayList<>();
             Connection connection;
 
-
             sourceId = roadsIDs.get((i * 3 + 1) % numberOfRoads);
             targetId = roadsIDs.get(((i * 3 + 1) + 8) % numberOfRoads);
             lightsIDsTMP.add(lightsIDs.get(i * 3));
             carFlowsIDsTMP.add(carFlowsIDs.get(i * 3));
             connection = connectionService.addConnection(3 * i + 1, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
-
 
             sourceId = roadsIDs.get((i * 3 + 2) % numberOfRoads);
             targetId = roadsIDs.get(((i * 3 + 1) + 4) % numberOfRoads);
@@ -234,7 +231,6 @@ public class Controller {
             carFlowsIDsTMP.add(carFlowsIDs.get(i * 3 + 1));
             connection = connectionService.addConnection(3 * i + 2, "name", lightsIDsTMP, sourceId, targetId, carFlowsIDsTMP);
             collisionsIDs.add(connection.getId());
-
 
             sourceId = roadsIDs.get((i * 3 + 2) % numberOfRoads);
             targetId = roadsIDs.get(((i * 3 + 1 + 1)) % numberOfRoads);

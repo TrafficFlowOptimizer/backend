@@ -46,7 +46,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import static app.backend.controller.optimization.OptimizationResultMock.LIGHT_BY_LIGHT;
 import static app.backend.controller.optimization.OptimizationResultMock.RANDOM;
@@ -339,7 +338,6 @@ public class OptimizationUtils {
             HashMap<Integer, List<Integer>> roadConnectionsOutMap = new HashMap<>();
             List<Integer> isConnectionFromIntermediate = new ArrayList<>();
 
-
             connections.stream()
                     .map(connectionService::getConnectionById)
                     .sorted(Comparator.comparingInt(Connection::getIndex))
@@ -461,7 +459,6 @@ public class OptimizationUtils {
                 optimizationRequest.setPreviousResults(previousOptimization.getResults());
             }
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -576,7 +573,6 @@ public class OptimizationUtils {
                         .build();
             }
 
-
 //            getTrafficLightIds
 
             List<List<Integer>> resultCurrent = optimizationCurrent.getResults();
@@ -592,7 +588,6 @@ public class OptimizationUtils {
                         lightsDirectionMap.put(trafficLight.getIndex(), trafficLight.getDirection());
                     }
             );
-
 
 //            getConnectionIds
             List<Connection> connectionStream = crossroad.getConnectionIds()
@@ -662,7 +657,6 @@ public class OptimizationUtils {
                     }
             );
 
-
             if (optimizationPrevious != null) {
                 List<List<Integer>> resultPrevious = optimizationPrevious.getResults();
 
@@ -685,7 +679,6 @@ public class OptimizationUtils {
                         )
                 );
             }
-
 
         } catch (Exception exception) {
             System.out.println(exception);
