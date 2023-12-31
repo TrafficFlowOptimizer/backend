@@ -121,12 +121,11 @@ public class CarFlowService {
                             .toList();
                     double summedCarFlow = 0;
                     double weight = 0;
-                    if(carFlowList.size()==1){
+                    if (carFlowList.size() == 1) {
                         summedCarFlow = carFlowList.get(0).getCarFlow();
                         weight = 1;
-                    }
-                    else {
-                        for (int i = 0; i < carFlowList.size()-1; i++) {
+                    } else {
+                        for (int i = 0; i < carFlowList.size() - 1; i++) {
                             summedCarFlow += carFlowList.get(i).getCarFlow() / (double) (i + 1);
                             weight += 1 / (double) (i + 1);
                         }
