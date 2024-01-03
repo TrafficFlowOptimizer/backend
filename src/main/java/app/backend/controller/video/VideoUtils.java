@@ -105,23 +105,28 @@ public class VideoUtils {
         stream.write(out);
     }
 
-    public Detection[] analyseVideo(String videoId, int skipFrames, List<DetectionRectangle> detectionRectangles) {
+    public ResponseEntity<Detection[]> analyseVideo(String videoId, int skipFrames, List<DetectionRectangle> detectionRectangles) {
+        System.out.println("a");
         int secondsInMinute = 60;
         HttpURLConnection connection;
-        Detection[] detections = null;
+        Detection[] detections;
+        int responseCode;
 
         try {
             connection = setUpConnection();
             Video video = videoService.getVideo(videoId);
             if (video == null) {
-                throw new RuntimeException("No video with id: " + videoId);
+                return ResponseEntity
+                        .status(NOT_FOUND)
+                        .build();
             }
+            System.out.println("b");
 
             JSONObject body = createRequestBody(video, skipFrames, detectionRectangles);
 
             sendAnalyseRequestToCarRecognition(connection, body);
 
-            int responseCode = connection.getResponseCode();
+            responseCode = connection.getResponseCode();
             String responseValue = new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             connection.disconnect();
 
@@ -135,10 +140,14 @@ public class VideoUtils {
 
             System.out.println("INFO:\n" + responseCode + " " + responseValue);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            return ResponseEntity
+                    .status(INTERNAL_SERVER_ERROR)
+                    .build();
         }
 
-        return detections;
+        return ResponseEntity
+                .status(responseCode)
+                .body(detections);
     }
 
     public ResponseEntity<InputStreamResource> getSampleFrame(String videoId) {
