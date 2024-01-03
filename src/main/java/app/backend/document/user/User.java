@@ -25,11 +25,11 @@ public class User {
     private String password;
     private Role role;
 
-    public User(String username, String email, String password) {
+    public User(String username, String email, String password, Role role) {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.role = Role.USER;
+        this.role = role;
     }
 
     public String getId() {

@@ -1,5 +1,6 @@
 package app.backend.service;
 
+import app.backend.document.user.Role;
 import app.backend.document.user.User;
 import app.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,8 @@ public class UserService implements UserDetailsService {
                     new User(
                             username,
                             email,
-                            password
+                            password,
+                            Role.USER
                     )
             );
         } catch (DuplicateKeyException e) {
