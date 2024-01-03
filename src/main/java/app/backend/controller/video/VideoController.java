@@ -82,10 +82,7 @@ public class VideoController {
             @RequestParam int skipFrames,
             @RequestBody List<DetectionRectangle> detectionRectangles
     ) {
-        Detection[] detections = videoUtils.analyseVideo(id, skipFrames, detectionRectangles);
-        return ResponseEntity
-                .ok()
-                .body(detections);
+        return videoUtils.analyseVideo(id, skipFrames, detectionRectangles);
     }
 
     @GetMapping
