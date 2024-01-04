@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,8 @@ import java.util.stream.Collectors;
 public class BackendApplication implements CommandLineRunner {
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     public static void main(String[] args) {
         SpringApplication.run(BackendApplication.class, args);
@@ -27,7 +30,7 @@ public class BackendApplication implements CommandLineRunner {
         List<User> users = userRepository.findAll();
         List<User> admins = users.stream().filter(u -> {return u.getRole().equals(Role.ADMIN);}).toList();
         if (admins.size() == 0){
-            userRepository.insert(new User("admin", "admin@gmail.com", "12345678", Role.ADMIN));
+            userRepository.insert(new User("admin", "admin@gmail.com", passwordEncoder.encode("12345678"), Role.ADMIN));
         }
     }
 }
