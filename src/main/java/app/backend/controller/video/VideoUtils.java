@@ -106,7 +106,6 @@ public class VideoUtils {
     }
 
     public ResponseEntity<Detection[]> analyseVideo(String videoId, int skipFrames, List<DetectionRectangle> detectionRectangles) {
-        System.out.println("a");
         int secondsInMinute = 60;
         HttpURLConnection connection;
         Detection[] detections;
@@ -120,7 +119,6 @@ public class VideoUtils {
                         .status(NOT_FOUND)
                         .build();
             }
-            System.out.println("b");
 
             JSONObject body = createRequestBody(video, skipFrames, detectionRectangles);
 
