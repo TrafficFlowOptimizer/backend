@@ -275,18 +275,19 @@ public class CrossroadController {
             @PathVariable String crossroadId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken
     ) {
-        String creatorId = jwtUtil.getId(
+        String userId = jwtUtil.getId(
                 jwtUtil.parseJwtClaims(
                         jwtToken.split(" ")[1]
                 )
         );
+        User user = userService.getUserById(userId);
 
         Crossroad crossroad = crossroadService.getCrossroadById(crossroadId);
         if (crossroad == null) {
             return ResponseEntity
                     .status(NOT_FOUND)
                     .build();
-        } else if (!crossroad.getCreatorId().equals(creatorId)) {
+        } else if (!crossroad.getCreatorId().equals(userId) && user.getRole() != Role.ADMIN) {
             return ResponseEntity
                     .status(UNAUTHORIZED)
                     .build();
