@@ -11,8 +11,9 @@ Plik [pom.xml](pom.xml) deklaruje pozostałe biblioteki oraz ich wersje (depende
 
 ## Jak uruchomić moduł
 
-Backend można uruchomić na dwa sposoby.\
-Prostszym sposobem jest wykorzystanie Dockera. Jednak w przypadku chęci włączenia modułu w trybie deweloperskim można to zrobić wykorzystując Mavena.
+Backend można uruchomić na dwa sposoby: lokalnie lub na Dockerze.
+Jednak w wersji zwirtualizowanej OpenCV nie działa poprawnie i z tego powodu nie jest zwracana pierwsza klatka przesyłanego nagrania.
+Dlatego zaleca się uruchamianie lokalnie, które działa całkowicie poprawnie.
 
 ### Za pomocą Dockera
 
