@@ -106,7 +106,6 @@ public class VideoUtils {
     }
 
     public ResponseEntity<Detection[]> analyseVideo(String videoId, int skipFrames, List<DetectionRectangle> detectionRectangles) {
-        int secondsInMinute = 60;
         HttpURLConnection connection;
         Detection[] detections;
         int responseCode;
@@ -131,8 +130,8 @@ public class VideoUtils {
             detections = Detection.getDetections(responseValue);
 
             for (Detection detection : detections) {
-                detection.setDetectedCars((detection.getDetectedCars() * secondsInMinute) / video.getDuration());
-                detection.setDetectedBuses((detection.getDetectedBuses() * secondsInMinute) / video.getDuration());
+                detection.setDetectedCars(detection.getDetectedCars() / video.getDuration());
+                detection.setDetectedBuses(detection.getDetectedBuses() / video.getDuration());
                 carFlowService.addCarFlow(detection.getDetectedBuses() * BUS_SIZE_MULTIPLIER + detection.getDetectedCars(), video.getStartTimeId(), detection.getConnectionId());
             }
 
