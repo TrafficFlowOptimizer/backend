@@ -11,6 +11,10 @@ services:
       - CR_PORT=8081
       - OPTIMIZER_HOST=minizinc-python-server
       - OPTIMIZER_PORT=9091
+      - CR_PASSWORD=1234
+      - OT_PASSWORD=4321
+      - OPTIMIZATION_TIME_PERIOD_SCALING=3
+      - BUS_MULTIPLIER=3
     networks:
       - tfo-net
     ports:
