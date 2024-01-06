@@ -11,7 +11,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class BackendApplication implements CommandLineRunner {
@@ -28,8 +27,13 @@ public class BackendApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
         List<User> users = userRepository.findAll();
-        List<User> admins = users.stream().filter(u -> {return u.getRole().equals(Role.ADMIN);}).toList();
-        if (admins.size() == 0){
+        List<User> admins = users.stream().filter(u -> {
+            if (u.getRole() == null) {
+                return false;
+            }
+            return u.getRole().equals(Role.ADMIN);
+        }).toList();
+        if (admins.size() == 0) {
             userRepository.insert(new User("admin", "admin@gmail.com", passwordEncoder.encode("12345678"), Role.ADMIN));
         }
     }
