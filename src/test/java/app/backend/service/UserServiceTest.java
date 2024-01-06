@@ -117,8 +117,6 @@ class UserServiceTest {
         User user = userService.addUser(username, email, password);
 
         String id = user.getId();
-        String firstNameUpdated = "Jon";
-        String lastNameUpdated = "Tho";
         String usernameUpdated = "JTho";
         String emailUpdated = "j.dup@gmail.com";
         String passwordUpdated = "password@234";
@@ -131,7 +129,7 @@ class UserServiceTest {
 
         User updated = userService.getUserById(id);
 
-        assertEquals(1, userService.getUserRepository().count());
+        assertEquals(2, userService.getUserRepository().count()); // admin
         assertNotNull(updated);
         assertEquals(usernameUpdated, updated.getUsername());
         assertEquals(emailUpdated, updated.getEmail());
