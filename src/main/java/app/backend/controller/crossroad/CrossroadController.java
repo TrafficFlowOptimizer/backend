@@ -104,7 +104,7 @@ public class CrossroadController {
         );
         User user = userService.getUserById(userId);
 
-        if (user.getRole().equals(Role.ADMIN)) {
+        if (user.getRole() != null && user.getRole().equals(Role.ADMIN)) {
             return ResponseEntity
                     .ok()
                     .body(crossroadService.getAllCrossroads());

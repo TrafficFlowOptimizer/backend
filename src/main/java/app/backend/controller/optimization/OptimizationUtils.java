@@ -42,13 +42,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import static app.backend.controller.optimization.OptimizationResultMock.LIGHT_BY_LIGHT;
-import static app.backend.controller.optimization.OptimizationResultMock.RANDOM;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.EXPECTATION_FAILED;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -108,19 +105,6 @@ public class OptimizationUtils {
     ) {
         String startTimeId = startTimeService.getStartTimeIdByDayTime(day, hour);
 
-        //TODO: mocked optimizer FOR DEVELOPMENT ONLY!
-        boolean mocked = true;
-        OptimizationResultMock optimizationResultMock = null;
-        switch (optimizationTime) {
-            case 10 -> optimizationResultMock = RANDOM;
-            case -1 -> mocked = false;
-            default -> optimizationResultMock = LIGHT_BY_LIGHT;
-        }
-        if (mocked) {
-            mockResponseToDb(crossroadId, startTimeId, optimizationResultMock);
-            return ResponseEntity
-                    .status(OK).build();
-        }
 
         OptimizationRequest optimizationRequest;
         try {
@@ -385,7 +369,6 @@ public class OptimizationUtils {
                 roadConnectionsOut.add(newCons);
             }
 
-            Collections.reverse(isConnectionFromIntermediate);
             optimizationRequest.setIsConnectionFromIntermediate(isConnectionFromIntermediate);
 
             optimizationRequest.setRoadConnectionsIn(roadConnectionsIn);
@@ -407,7 +390,6 @@ public class OptimizationUtils {
                         return null;
                     }).toList());
 
-            Collections.reverse(carFlows);
             optimizationRequest.setExpectedCarFlow(carFlows);
 
             //  -----------------------------  lights  -----------------------------
@@ -431,7 +413,6 @@ public class OptimizationUtils {
 
             List<String> lights = crossroad.getTrafficLightIds();
 
-//            Collections.reverse(connectionsLights);
             optimizationRequest.setConnectionLights(connectionsLights);
             optimizationRequest.setLightCount(lights.size());
 
