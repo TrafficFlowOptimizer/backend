@@ -21,6 +21,7 @@ Prostszym sposobem jest wykorzystanie Dockera. Jednak w przypadku chęci włącz
 * zainstalowane narzędzie Docker Compose
 * uruchomiona Baza Danych
 
+***jeśli uruchamiasz Optymalizator lokalnie (nie za pomocą Dockera) należy zmienić wartość zmiennej OPTIMIZER_HOST w [pliku docker compose](docker-compose.yaml) na `host.docker.internal`***
 ##### Instrukcja:
 * uruchomić Dockera
 * w katalogu projektu: `docker compose up`
