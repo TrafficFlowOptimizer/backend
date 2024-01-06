@@ -1,14 +1,5 @@
 ###
 
-# Not adding maven wrappers to git
-# May change in final version
-.mvn
-mvnw
-mvnw.cmd
-# If maven is in Path `mvn -N wrapper:wrapper` generates these files
-
-###
-
 # Compiled class file
 *.class
 
